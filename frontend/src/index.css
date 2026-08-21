@@ -1,0 +1,513 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #fff7ed;
+  --color-brand-100: #ffedd5;
+  --color-brand-200: #fed7aa;
+  --color-brand-300: #fdba74;
+  --color-brand-400: #fb923c;
+  --color-brand-500: #f97316;
+  --color-brand-600: #ea580c;
+  --color-brand-700: #c2410c;
+  --color-brand-800: #9a3412;
+  --color-brand-900: #7c2d12;
+
+  --color-carbon-50: #fafaf9;
+  --color-carbon-100: #f5f5f4;
+  --color-carbon-200: #e7e5e4;
+  --color-carbon-300: #d6d3d1;
+  --color-carbon-400: #a8a29e;
+  --color-carbon-500: #78716c;
+  --color-carbon-600: #57534e;
+  --color-carbon-700: #44403c;
+  --color-carbon-800: #292524;
+  --color-carbon-900: #1c1917;
+  --color-carbon-950: #0c0a09;
+
+  --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: var(--font-display);
+    background-color: var(--color-carbon-50);
+    color: var(--color-carbon-900);
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    font-family: var(--font-display);
+    background-color: var(--color-carbon-50);
+    color: var(--color-carbon-900);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background-color: var(--color-brand-500);
+    color: #fff;
+  }
+}
+
+@layer components {
+  .garaje-input {
+    @apply w-full rounded-xl border-2 border-brand-300 bg-white px-3.5 py-2.5 text-carbon-900 placeholder:text-carbon-400 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15 transition;
+  }
+
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-b from-brand-500 to-brand-700 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand-600/25 ring-1 ring-brand-700/40 transition-all duration-200 hover:from-brand-400 hover:to-brand-600 hover:shadow-xl hover:shadow-brand-600/35 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-dark {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-carbon-900 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-carbon-900/20 transition-all duration-200 hover:bg-carbon-700 hover:shadow-xl active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl border border-carbon-300 bg-white px-4 py-2.5 text-sm font-semibold text-carbon-800 transition-all duration-200 hover:border-brand-400 hover:bg-brand-50 hover:text-brand-700 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-outline {
+    @apply relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl border-2 border-brand-500 px-4 py-2.5 text-sm font-semibold text-brand-600 transition-all duration-200 hover:bg-brand-600 hover:text-white active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .card {
+    @apply rounded-2xl border border-carbon-200/80 bg-white;
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.04),
+      0 4px 12px rgba(0, 0, 0, 0.03);
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.3s ease;
+  }
+  .card:hover {
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.05),
+      0 10px 28px rgba(0, 0, 0, 0.08);
+    border-color: rgba(255, 122, 0, 0.35);
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold;
+  }
+
+  .prose-link {
+    @apply text-brand-600 hover:text-brand-700;
+  }
+}
+
+@layer utilities {
+  .gradient-text {
+    background: linear-gradient(92deg, #fb923c, #ea580c 55%, #fdba74 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-size: 200% auto;
+    -webkit-animation: gradient-move 6s ease infinite;
+    animation: gradient-move 6s ease infinite;
+  }
+
+  /* Floating back-to-top button */
+  .back-to-top {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 9999px;
+    background: var(--color-brand-600);
+    color: #fff;
+    box-shadow: 0 8px 20px -6px rgba(234, 88, 12, 0.5);
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease;
+  }
+  .back-to-top.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .back-to-top:hover {
+    background: var(--color-brand-500);
+  }
+
+  /* Marquee (trust badges) */
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 28s linear infinite;
+  }
+  .marquee-mask:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  /* Floating theme toggle */
+  .theme-float {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--color-white, #ffffff);
+    border: 1px solid var(--color-carbon-200, #e5e7eb);
+    color: var(--color-carbon-500, #737373);
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+  body.dark .theme-float {
+    background: var(--color-carbon-800, #1a1a1a);
+    border-color: var(--color-carbon-700, #404040);
+    color: var(--color-carbon-400, #a3a3a3);
+  }
+  .theme-float:hover {
+    border-color: var(--color-brand-500, #EA580C);
+    color: var(--color-brand-600, #EA580C);
+  }
+
+  /* Floating chat bot */
+  .chat-float {
+    position: fixed;
+    bottom: 86px;
+    left: 20px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 9999px;
+    background: var(--color-brand-600);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 24px -8px rgba(234, 88, 12, 0.55);
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  .chat-float:hover {
+    background: var(--color-brand-700);
+    transform: translateY(-2px);
+  }
+  .chat-panel {
+    position: fixed;
+    bottom: 156px;
+    left: 20px;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    width: min(92vw, 360px);
+    max-height: min(70vh, 560px);
+    overflow: hidden;
+    border: 1px solid var(--color-carbon-200);
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.35);
+  }
+  .chat-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 0.75rem;
+    overflow-y: auto;
+    min-height: 160px;
+    flex: 1 1 auto;
+    background: var(--color-carbon-50);
+    scrollbar-width: thin;
+  }
+  .chat-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--color-brand-400);
+    animation: chat-bounce 1.2s infinite ease-in-out;
+  }
+  @keyframes chat-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  /* Smooth theme transition */
+  body,
+  header,
+  .card,
+  .glass {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .dot-grid {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  /* Efecto de elevación al hover */
+  .lift {
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 0.3s ease;
+  }
+  .lift:hover {
+    transform: translateY(-5px);
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.04),
+      0 12px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  /* CTA card — tarjeta de llamada a la acción */
+  .cta-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, #ea580c, #c2410c);
+    border-radius: 4px 0 0 4px;
+  }
+
+  /* Reveal al hacer scroll — contenido SIEMPRE visible, animación sutil al entrar */
+  .reveal {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: opacity, transform;
+  }
+}
+
+/* Animaciones utilitarias */
+@keyframes moto-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes moto-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(249, 115, 22, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(249, 115, 22, 0);
+  }
+}
+
+@keyframes orb-float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(24px, -18px) scale(1.08);
+  }
+  66% {
+    transform: translate(-18px, 14px) scale(0.95);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.anim-fade-up {
+  animation: moto-fade-up 0.4s ease-out both;
+}
+
+.anim-pulse-ring {
+  animation: moto-pulse-ring 2s infinite;
+}
+
+.anim-orb {
+  animation: orb-float 14s ease-in-out infinite;
+}
+
+.anim-orb-2 {
+  animation: orb-float 18s ease-in-out infinite reverse;
+}
+
+.anim-marquee {
+  animation: marquee 22s linear infinite;
+}
+
+.anim-spin-slow {
+  animation: spin-slow 22s linear infinite;
+}
+
+/* Brain de brillo para botones primarios */
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 2.6s ease-in-out infinite;
+}
+
+.delay-75 { animation-delay: 75ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* Nuevo gradiente dinámico para texto */
+@keyframes gradient-move {
+  0% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+
+/* ═══════════ MODO OSCURO ═══════════
+   Al añadir .dark a <html> se invierte la escala completa:
+   superficies claras -> oscuras, textos oscuros -> claros.
+   El naranja de identidad (#EA580C) se mantiene igual en ambos temas
+   y los heroes profundos (bg-carbon-950) se conservan oscuros. */
+html.dark {
+  --color-carbon-50: #171412;
+  --color-carbon-100: #1c1816;
+  --color-carbon-200: #26211e;
+  --color-carbon-300: #57534e;
+  --color-carbon-400: #78716c;
+  --color-carbon-500: #a8a29e;
+  --color-carbon-600: #d6d3d1;
+  --color-carbon-700: #e7e5e4;
+  --color-carbon-800: #f5f5f4;
+  --color-carbon-900: #fafaf9;
+  --color-white: #1c1816;
+}
+
+/* El texto blanco sobre rojo/heroes se conserva SIEMPRE blanco */
+html.dark .text-white { color: #fff !important; }
+
+/* Superficies blancas -> superficies oscuras (tarjetas, header, inputs) */
+html.dark .bg-white { background-color: #1c1816; }
+html.dark .card { background-color: #1c1816; border-color: var(--color-carbon-200); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.08); }
+html.dark .card:hover { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 24px rgba(0, 0, 0, 0.12); }
+html.dark .garaje-input { background-color: #1c1816; border-color: var(--color-carbon-300); color: var(--color-carbon-900); }
+
+/* Superficies "grafito" estructurales se mantienen oscuras (heroes, footer, botones oscuros) */
+html.dark .bg-carbon-800 { background-color: #26211e; }
+html.dark .bg-carbon-900 { background-color: #1c1816; }
+html.dark .bg-carbon-950 { background-color: #0c0a09; }
+html.dark .bg-carbon-50\/50 { background-color: rgba(12, 10, 9, 0.55); }
+html.dark .bg-carbon-50\/60 { background-color: rgba(12, 10, 9, 0.6); }
+html.dark .bg-carbon-950\/75 { background-color: rgba(12, 10, 9, 0.75); }
+html.dark .bg-carbon-950\/90 { background-color: rgba(12, 10, 9, 0.9); }
+
+/* Fondo naranja suave (iconos/chips) -> tinte naranja oscuro translúcido */
+html.dark .bg-brand-50 { background-color: rgba(249, 115, 22, 0.16); }
+html.dark .bg-brand-50\/40 { background-color: rgba(249, 115, 22, 0.12); }
+html.dark .bg-brand-50\/50 { background-color: rgba(249, 115, 22, 0.14); }
+html.dark .bg-brand-50\/60 { background-color: rgba(249, 115, 22, 0.16); }
+html.dark .bg-brand-100 { background-color: rgba(249, 115, 22, 0.22); color: #fed7aa; }
+html.dark .text-brand-600 { color: #fdba74; }
+html.dark .text-brand-500 { color: #fb923c; }
+html.dark .text-brand-400 { color: #f97316; }
+html.dark .text-brand-300 { color: #fdba74; }
+html.dark .border-brand-200 { border-color: rgba(249, 115, 22, 0.35); }
+
+/* Footer oscuro fijo en ambos temas */
+html.dark footer { background-color: #0c0a09; color: #aab3c4; }
+html.dark footer .text-carbon-500 { color: #6f7b92; }
+
+/* Header, nav, form elements: ensure light text on dark bg */
+html.dark header { color: var(--color-carbon-700); background-color: var(--color-carbon-100); }
+html.dark header .text-carbon-700 { color: var(--color-carbon-700) !important; }
+html.dark header .text-carbon-600 { color: var(--color-carbon-600) !important; }
+html.dark header .text-carbon-500 { color: var(--color-carbon-500) !important; }
+html.dark header .border-carbon-200 { border-color: var(--color-carbon-200) !important; }
+html.dark header .border-carbon-300 { border-color: var(--color-carbon-300) !important; }
+html.dark header .bg-white { background-color: var(--color-carbon-100) !important; }
+html.dark header .hover\:bg-carbon-100:hover { background-color: var(--color-carbon-200) !important; }
+
+/* Cards: dark bg + light text */
+html.dark .card { color: var(--color-carbon-800); }
+html.dark .card .text-carbon-900 { color: var(--color-carbon-800); }
+html.dark .card .text-carbon-800 { color: var(--color-carbon-700); }
+html.dark .card .text-carbon-700 { color: var(--color-carbon-600); }
+html.dark .card .text-carbon-600 { color: var(--color-carbon-500); }
+html.dark .card .text-carbon-500 { color: var(--color-carbon-400); }
+html.dark .card .border-carbon-100 { border-color: var(--color-carbon-200); }
+html.dark .card .bg-carbon-50 { background-color: var(--color-carbon-100); }
+
+/* Sections: ensure text adapts */
+html.dark .bg-carbon-50 { color: var(--color-carbon-700); }
+html.dark .bg-carbon-50 .text-carbon-900 { color: var(--color-carbon-800); }
+html.dark .bg-carbon-50 .text-carbon-500 { color: var(--color-carbon-400); }
+html.dark .bg-carbon-50 .text-carbon-400 { color: var(--color-carbon-300); }
+html.dark .bg-carbon-50 .border-carbon-200 { border-color: var(--color-carbon-200); }
+
+/* Input/select/textarea: dark bg + light text + visible placeholder */
+html.dark input, html.dark select, html.dark textarea {
+  background-color: var(--color-carbon-100);
+  border-color: var(--color-carbon-300);
+  color: var(--color-carbon-800);
+}
+html.dark input::placeholder, html.dark select::placeholder, html.dark textarea::placeholder {
+  color: var(--color-carbon-400);
+}
+html.dark .garaje-input { color: var(--color-carbon-800); }
+
+/* Chips adapt */
+html.dark .chip.bg-carbon-100 { background-color: var(--color-carbon-200); color: var(--color-carbon-600); }
+
+/* Section bg-white -> adapt */
+html.dark section.bg-white { background-color: var(--color-carbon-100); }
+
+/* CTA cards: adapt to dark mode */
+html.dark .cta-card {
+  background-color: var(--color-carbon-100);
+  border-color: var(--color-carbon-200);
+}
+html.dark .cta-card .text-carbon-900 { color: var(--color-carbon-800); }
+html.dark .cta-card .text-carbon-500 { color: var(--color-carbon-400); }

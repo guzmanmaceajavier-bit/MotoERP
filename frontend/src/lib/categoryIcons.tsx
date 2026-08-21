@@ -1,0 +1,86 @@
+import {
+  Wrench,
+  Cog,
+  Bike,
+  Fuel,
+  Battery,
+  Droplet,
+  Gauge,
+  Shield,
+  Package,
+  Box,
+  Truck,
+  Sparkles,
+  Zap,
+  Key,
+  Plug,
+  Lightbulb,
+  Thermometer,
+  Wind,
+  BadgeCheck,
+  ShoppingBag,
+  Car,
+  Star,
+  Heart,
+  type LucideIcon,
+} from 'lucide-react'
+
+export const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  wrench: Wrench,
+  cog: Cog,
+  bike: Bike,
+  fuel: Fuel,
+  battery: Battery,
+  droplet: Droplet,
+  gauge: Gauge,
+  shield: Shield,
+  package: Package,
+  box: Box,
+  truck: Truck,
+  sparkles: Sparkles,
+  zap: Zap,
+  key: Key,
+  plug: Plug,
+  lightbulb: Lightbulb,
+  thermometer: Thermometer,
+  wind: Wind,
+  badgecheck: BadgeCheck,
+  bag: ShoppingBag,
+  car: Car,
+  star: Star,
+  heart: Heart,
+}
+
+export const CATEGORY_ICON_NAMES = Object.keys(CATEGORY_ICONS)
+
+export const CATEGORY_ICON_LABELS: Record<string, string> = {
+  wrench: 'Llave',
+  cog: 'Engranaje',
+  bike: 'Moto',
+  fuel: 'Combustible',
+  battery: 'Batería',
+  droplet: 'Gota',
+  gauge: 'Medidor',
+  shield: 'Escudo',
+  package: 'Paquete',
+  box: 'Caja',
+  truck: 'Envío',
+  sparkles: 'Destellos',
+  zap: 'Rayo',
+  key: 'Llave',
+  plug: 'Enchufe',
+  lightbulb: 'Foco',
+  thermometer: 'Temperatura',
+  wind: 'Viento',
+  badgecheck: 'Verificado',
+  bag: 'Bolsa',
+  car: 'Auto',
+  star: 'Estrella',
+  heart: 'Corazón',
+}
+
+export function CategoryIcon({ name, className }: { name?: string | null; className?: string }) {
+  const Icon = name ? CATEGORY_ICONS[name] : undefined
+  if (!Icon) return <Package className={className} />
+  return <Icon className={className} />
+}
