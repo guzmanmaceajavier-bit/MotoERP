@@ -89,12 +89,14 @@ class DatabaseSeeder extends Seeder
             'Victory' => ['V6 250', 'Cross 250'],
         ];
 
+        $password = env('SEED_PASSWORD', Str::random(16));
+
         $admin = User::firstOrCreate(
             ['email' => 'admin@motohub.test'],
             ['name' => 'Administrador', 'phone' => '3000000000', 'role' => 'admin',
-                'password' => Hash::make('secret123')]
+                'password' => Hash::make($password)]
         );
-        $this->command?->info("Admin creado: admin@motohub.test / secret123");
+        $this->command?->info("Admin creado: admin@motohub.test / {$password}");
 
         $brandModels = [];
         foreach ($brands as $brandName => $modelNames) {

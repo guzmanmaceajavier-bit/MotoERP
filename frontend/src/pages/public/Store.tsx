@@ -8,8 +8,10 @@ import { usePageMeta } from '../../lib/usePageMeta'
 import Pagination from '../../components/Pagination'
 import { GridSkeleton } from '../../components/Skeletons'
 import type { Paginated } from '../../lib/pagination'
-import type { Brand, Category, MotorcycleModel, Product, RecommendedCatalog } from '../../lib/types'
+import type { Category, Product, RecommendedCatalog } from '../../lib/types'
 import { CategoryIcon } from '../../lib/categoryIcons'
+import { useHero } from '../../lib/useSiteImages'
+import { HeroBg } from '../../components/HeroBg'
 
 const fmt = (n: number) => '$' + n.toLocaleString('es-CO')
 
@@ -18,11 +20,11 @@ function ProductImage({ src, alt, className = '' }: { src?: string | null; alt: 
   const [err, setErr] = useState(false)
   const show = src && !err
   return (
-    <div className={`flex items-center justify-center overflow-hidden bg-carbon-100 ${className || 'h-48 w-full'}`}>
+    <div className={`flex items-center justify-center overflow-hidden bg-gray-100 ${className || 'h-48 w-full'}`}>
       {show ? (
         <img src={src} alt={alt} onError={() => setErr(true)} className="h-full w-full object-cover" />
       ) : (
-        <div className="flex flex-col items-center gap-2 px-2 text-carbon-300">
+        <div className="flex flex-col items-center gap-2 px-2 text-gray-300">
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="2" />
             <circle cx="9" cy="9" r="2" />
@@ -65,21 +67,21 @@ function ProductCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
   const partType = p.part_type ?? 'original'
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-carbon-100 bg-white shadow-sm transition hover:shadow-md">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:shadow-md">
       {/* image area */}
       <div className="relative">
         <ProductImage src={p.image} alt={p.name} className="h-48 w-full" />
 
         {/* badge: ORIGINAL / ALTERNATIVO */}
         <span className={`absolute left-3 top-3 rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
-          partType === 'original' ? 'bg-brand-600 text-white' : 'bg-amber-400 text-white'
+          partType === 'original' ? 'bg-orange-600 text-white' : 'bg-amber-400 text-white'
         }`}>
           {partType === 'original' ? 'ORIGINAL' : 'ALTERNATIVO'}
         </span>
 
         {/* brand tag */}
         {p.brand && (
-          <span className="absolute right-3 top-3 rounded-md bg-white/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-carbon-600 shadow-sm backdrop-blur">
+          <span className="absolute right-3 top-3 rounded-md bg-white/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gray-600 shadow-sm backdrop-blur">
             {p.brand}
           </span>
         )}
@@ -96,25 +98,25 @@ function ProductCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
 
       {/* content */}
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="line-clamp-2 text-sm font-bold leading-snug text-carbon-900">{p.name}</h3>
+        <h3 className="line-clamp-2 text-sm font-bold leading-snug text-gray-900">{p.name}</h3>
 
         {p.description && (
-          <p className="line-clamp-2 text-xs text-carbon-400">{p.description}</p>
+          <p className="line-clamp-2 text-xs text-gray-400">{p.description}</p>
         )}
 
         {/* price */}
         <div className="mt-auto flex items-baseline gap-2">
           {hasPromo && (
-            <span className="text-xs text-carbon-400 line-through">{fmt(p.price)}</span>
+            <span className="text-xs text-gray-400 line-through">{fmt(p.price)}</span>
           )}
-          <span className="text-lg font-black text-brand-600">{fmt(price)}</span>
+          <span className="text-lg font-black text-orange-600">{fmt(price)}</span>
         </div>
 
         {/* stock */}
         <div className="flex items-center gap-1.5">
-          <span className={`h-2 w-2 rounded-full ${p.available !== false ? 'bg-emerald-500' : 'bg-rose-400'}`} />
-          <span className={`text-[11px] font-medium ${p.available !== false ? 'text-emerald-600' : 'text-rose-500'}`}>
-            {p.available !== false ? 'En stock' : 'Agotado'}
+          <span className={`h-2 w-2 rounded-full ${p.available > 0 ? 'bg-emerald-500' : 'bg-rose-400'}`} />
+          <span className={`text-[11px] font-medium ${p.available > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
+            {p.available > 0 ? 'En stock' : 'Agotado'}
           </span>
         </div>
 
@@ -122,14 +124,14 @@ function ProductCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
         <div className="mt-1 flex gap-2">
           <button
             onClick={(e) => { e.stopPropagation(); onDetail(p) }}
-            className="flex-1 rounded-xl border border-carbon-200 bg-white px-3 py-2.5 text-xs font-semibold text-carbon-700 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
+            className="flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-semibold text-gray-700 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
           >
             Ver detalle
           </button>
           <button
-            onClick={(e) => { e.stopPropagation(); add(p) }}
-            disabled={p.available === false}
-            className="flex-1 rounded-xl bg-brand-600 px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-brand-700 hover:shadow active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={(e) => { e.stopPropagation(); add({ productId: p.id, name: p.name, price, unit: p.unit, available: p.available, image: p.image, brand: p.brand }) }}
+            disabled={p.available === 0}
+            className="flex-1 rounded-xl bg-orange-600 px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-orange-700 hover:shadow active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
           >
             Agregar al carrito
           </button>
@@ -142,8 +144,8 @@ function ProductCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
 /* ─────── sidebar filter section (collapsible) ─────── */
 function FilterSection({ title, open, onToggle, children }: { title: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
   return (
-    <div className="border-b border-carbon-100 py-4 first:pt-0">
-      <button type="button" onClick={onToggle} className="flex w-full items-center justify-between text-xs font-bold uppercase tracking-widest text-carbon-500">
+    <div className="border-b border-gray-100 py-4 first:pt-0">
+      <button type="button" onClick={onToggle} className="flex w-full items-center justify-between text-xs font-bold uppercase tracking-widest text-gray-500">
         {title}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className={`transition ${open ? 'rotate-180' : ''}`}>
           <path d="M6 9l6 6 6-6" />
@@ -157,12 +159,12 @@ function FilterSection({ title, open, onToggle, children }: { title: string; ope
 /* ─────── radio option with count ─────── */
 function RadioOption({ label, count, checked, onChange }: { label: string; count?: number; checked: boolean; onChange: () => void }) {
   return (
-    <button type="button" onClick={onChange} className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition ${checked ? 'bg-brand-50 text-brand-700' : 'text-carbon-600 hover:bg-carbon-50'}`}>
-      <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${checked ? 'border-brand-600' : 'border-carbon-300'}`}>
-        {checked && <span className="h-2 w-2 rounded-full bg-brand-600" />}
+    <button type="button" onClick={onChange} className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition ${checked ? 'bg-orange-50 text-orange-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+      <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${checked ? 'border-orange-600' : 'border-gray-300'}`}>
+        {checked && <span className="h-2 w-2 rounded-full bg-orange-600" />}
       </span>
       <span className="flex-1 truncate">{label}</span>
-      {count != null && <span className="text-[11px] text-carbon-400">({count})</span>}
+      {count != null && <span className="text-[11px] text-gray-400">({count})</span>}
     </button>
   )
 }
@@ -174,34 +176,34 @@ function RowCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
   const { add } = useCart()
   const price = p.final_price ?? p.price
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-carbon-100 bg-white p-3 shadow-sm transition hover:shadow-md">
+    <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-3 shadow-sm transition hover:shadow-md">
       <ProductImage src={p.image} alt={p.name} className="h-20 w-20 shrink-0 rounded-xl" />
       <div className="flex flex-1 flex-col gap-1">
-        <h3 className="text-sm font-bold text-carbon-900 line-clamp-1">{p.name}</h3>
+        <h3 className="text-sm font-bold text-gray-900 line-clamp-1">{p.name}</h3>
         <div className="flex items-center gap-2">
-          {p.brand && <span className="text-[10px] font-bold uppercase text-brand-600">{p.brand}</span>}
-          <span className={`text-[10px] font-bold uppercase ${p.part_type === 'original' ? 'text-brand-500' : 'text-amber-500'}`}>{p.part_type ?? 'original'}</span>
+          {p.brand && <span className="text-[10px] font-bold uppercase text-orange-600">{p.brand}</span>}
+          <span className={`text-[10px] font-bold uppercase ${p.part_type === 'original' ? 'text-orange-500' : 'text-amber-500'}`}>{p.part_type ?? 'original'}</span>
         </div>
-        <span className="text-lg font-black text-brand-600">{fmt(price)}</span>
+        <span className="text-lg font-black text-orange-600">{fmt(price)}</span>
       </div>
       <div className="flex items-center gap-2">
         <HeartButton active={!!isFavorite} loading={favLoading} onClick={(e) => { e.stopPropagation(); onToggleFav?.(e, p) }} />
-        <button onClick={() => onDetail(p)} className="rounded-xl border border-carbon-200 px-3 py-2 text-xs font-semibold text-carbon-600 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700">Ver</button>
-        <button onClick={() => add(p)} disabled={p.available === false} className="rounded-xl bg-brand-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-brand-700 active:scale-[0.97] disabled:opacity-50">Agregar</button>
+        <button onClick={() => onDetail(p)} className="rounded-xl border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700">Ver</button>
+        <button onClick={() => add({ productId: p.id, name: p.name, price, unit: p.unit, available: p.available, image: p.image, brand: p.brand })} disabled={p.available === 0} className="rounded-xl bg-orange-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-orange-700 active:scale-[0.97] disabled:opacity-50">Agregar</button>
       </div>
     </div>
   )
 }
 
 /* ─────── section (recommended) ─────── */
-function Section({ subtitle, products: items, highlight, onDetail, isFavorite, onToggleFav, favLoading }: {
-  subtitle: string; products: Product[]; highlight?: string; onDetail: (p: Product) => void
+function Section({ subtitle, products: items, onDetail, isFavorite, onToggleFav, favLoading }: {
+  subtitle: string; products: Product[]; onDetail: (p: Product) => void
   isFavorite?: (id: number) => boolean; onToggleFav?: (e: React.MouseEvent, p: Product) => void; favLoading?: boolean
 }) {
   if (!items.length) return null
   return (
     <div className="mb-6">
-      <p className="mb-3 text-sm font-semibold text-carbon-600">{subtitle}</p>
+      <p className="mb-3 text-sm font-semibold text-gray-600">{subtitle}</p>
       <div className="flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {items.map((p) => (
           <div key={p.id} className="w-44 shrink-0">
@@ -220,13 +222,12 @@ export default function Store() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const toast = useToast().toast
+  const hero = useHero('store')
 
   /* data */
   const [categories, setCategories] = useState<Category[]>([])
-  const [brands, setBrands] = useState<Brand[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 })
-  const [models, setModels] = useState<MotorcycleModel[]>([])
   const [recommended, setRecommended] = useState<RecommendedCatalog | null>(null)
   const [storeFilters, setStoreFilters] = useState<{ brands: { id: number; name: string; count: number }[]; models: { id: number; name: string; brand_id: number; count: number }[]; part_types: { type: string; count: number }[]; price_range: { min: number; max: number } } | null>(null)
 
@@ -250,7 +251,7 @@ export default function Store() {
   /* sidebar search */
   const [brandSearch, setBrandSearch] = useState('')
   const [modelSearch, setModelSearch] = useState('')
-  const [sidebarOpen, setSidebarOpen] = useState({ brand: true, model: true, partType: true, category: true, price: false })
+  const [sidebarOpen, setSidebarOpen] = useState({ brand: false, model: false, partType: false, category: false, price: false })
   const [catsOpen, setCatsOpen] = useState(false)
 
   /* favorites */
@@ -293,16 +294,8 @@ export default function Store() {
   /* ─── initial data ─── */
   useEffect(() => {
     api<Category[]>('/categories').then(setCategories).catch(() => {})
-    api<Brand[]>('/brands').then(setBrands).catch(() => {})
     api<{ brands: any[]; models: any[]; part_types: any[]; price_range: any }>('/store/filters').then(setStoreFilters).catch(() => {})
   }, [])
-
-  /* ─── models for selected brand ─── */
-  useEffect(() => {
-    setModel('')
-    if (!brand) { setModels([]); return }
-    api<MotorcycleModel[]>(`/brands/${brand}/models`).then(setModels).catch(() => setModels([]))
-  }, [brand])
 
   /* ─── recommended ─── */
   useEffect(() => {
@@ -374,37 +367,61 @@ export default function Store() {
   return (
     <div>
       {/* ──── HERO ──── */}
-      <section className="relative flex min-h-[280px] items-center overflow-hidden bg-carbon-950 md:h-[340px]">
-        <div className="absolute inset-0 opacity-60 [background-image:radial-gradient(circle_at_20%_20%,rgba(229,57,53,0.35)_0,transparent_42%),radial-gradient(circle_at_80%_70%,rgba(255,92,92,0.22)_0,transparent_40%)]" />
-        <div className="absolute inset-0 dot-grid opacity-20" />
-        <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center gap-6 px-4 py-8 md:flex-row md:items-center md:justify-between">
-          <div className="max-w-xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="chip border border-emerald-500/30 bg-emerald-500/15 text-emerald-300">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5" /></svg>
-                Stock en vivo
-              </span>
+      <section className="relative overflow-hidden bg-white pb-10 pt-14 md:pt-20">
+        <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-orange-400/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-orange-500/15 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 left-1/3 h-48 w-48 rounded-full bg-amber-400/10 blur-3xl" />
+        <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-400 via-orange-500 to-orange-300" />
+        <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-orange-300 via-orange-500 to-orange-400" />
+
+        <div className="relative mx-auto max-w-6xl px-4">
+          <div className="flex flex-col items-center gap-8 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-xl text-center md:text-left">
+              <h1 className="text-3xl font-black leading-[1.08] tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
+                Tienda de repuestos <span className="gradient-text">y accesorios para tu moto</span>
+              </h1>
+              <p className="mt-4 max-w-md text-base leading-relaxed text-gray-500">
+                Encuentra repuestos originales y accesorios de alta calidad para mantener tu moto siempre en su mejor versión.
+              </p>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-4 md:justify-start">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-50 text-orange-500">🛡️</span>
+                  Productos de calidad
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-50 text-orange-500">🚚</span>
+                  Envíos rápidos
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-50 text-orange-500">↩️</span>
+                  Devoluciones
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-50 text-orange-500">🎧</span>
+                  ¿Necesitas ayuda?
+                </div>
+              </div>
+              <div className="relative mt-6 w-full max-w-sm mx-auto md:mx-0">
+                <svg className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Buscar producto…"
+                  className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-10 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm transition focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                />
+                {search && (
+                  <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition hover:bg-gray-200 hover:text-gray-600" aria-label="Limpiar búsqueda">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                  </button>
+                )}
+              </div>
             </div>
-            <h1 className="mt-4 text-4xl font-black leading-tight tracking-tight text-white md:text-5xl">
-              Repuestos y accesorios <span className="gradient-text">para tu moto</span>
-            </h1>
-            <div className="mt-3 h-1 w-16 rounded-full bg-brand-500" />
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-carbon-300">
-              Todos nuestros productos listos para envío o instalación en el taller. Busca, filtra y agrega a tu carrito.
-            </p>
-          </div>
-          <div className="relative w-full max-w-sm">
-            <svg className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar producto…"
-              className="w-full rounded-xl border border-carbon-700 bg-white/10 py-3 pl-11 pr-10 text-sm text-white placeholder:text-carbon-400 backdrop-blur transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/20"
-            />
-            {search && (
-              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-carbon-300 transition hover:bg-white/20" aria-label="Limpiar búsqueda">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
-              </button>
+            {hero.images && hero.images.length > 0 && (
+              <div className="relative shrink-0">
+                <div className="relative h-[200px] w-[280px] overflow-hidden rounded-2xl border border-gray-200 shadow-xl shadow-gray-200/50 sm:h-[240px] sm:w-[340px] md:h-[280px] md:w-[400px]">
+                  <HeroBg images={hero.images} />
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -413,34 +430,34 @@ export default function Store() {
       <div className="mx-auto max-w-6xl px-4 py-8">
         {/* ──── CATEGORY TILES (collapsible) ──── */}
         <div className="mb-6">
-          <div className="flex items-center justify-between gap-3 rounded-2xl border border-carbon-200 bg-white p-3 shadow-sm">
+          <div className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
             <button
               onClick={() => setCatsOpen((v) => !v)}
               className="flex flex-1 items-center gap-3 text-left"
               aria-expanded={catsOpen}
             >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /></svg>
               </span>
               <span className="min-w-0">
-                <span className="block text-sm font-black text-carbon-900">Categorías</span>
-                <span className="block text-xs text-carbon-500">
+                <span className="block text-sm font-black text-gray-900">Categorías</span>
+                <span className="block text-xs text-gray-500">
                   {category
-                    ? `Filtrando: ${categories.find((c) => c.slug === category)?.name ?? 'Todas'}`
-                    : 'Mostrando todas las categorías'}
+                    ? `Filtrando: ${categories.find((c) => c.slug === category)?.name ?? ''}`
+                    : 'Mostrando todos los productos'}
                 </span>
               </span>
             </button>
             <div className="flex shrink-0 items-center gap-2">
               {hasFilters && (
-                <button onClick={clearFilters} className="inline-flex items-center gap-1.5 rounded-lg border border-carbon-200 px-2.5 py-2 text-xs font-semibold text-carbon-500 transition hover:border-rose-300 hover:text-rose-600">
+                <button onClick={clearFilters} className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 py-2 text-xs font-semibold text-gray-500 transition hover:border-rose-300 hover:text-rose-600">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
                   Limpiar
                 </button>
               )}
               <button
                 onClick={() => setCatsOpen((v) => !v)}
-                className={`flex h-9 w-9 items-center justify-center rounded-lg border transition ${catsOpen ? 'border-brand-500 bg-brand-50 text-brand-600' : 'border-carbon-200 bg-white text-carbon-600 hover:border-brand-300 hover:text-brand-600'}`}
+                className={`flex h-9 w-9 items-center justify-center rounded-lg border transition ${catsOpen ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-gray-200 bg-white text-gray-600 hover:border-orange-300 hover:text-orange-600'}`}
                 aria-label={catsOpen ? 'Ocultar categorías' : 'Mostrar categorías'}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-200 ${catsOpen ? 'rotate-180' : ''}`}>
@@ -453,29 +470,23 @@ export default function Store() {
           {catsOpen && (
             <div className="anim-fade-up mt-3">
               <div className="flex items-center gap-2">
-                <button onClick={() => scrollCats(-1)} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-carbon-200 bg-white text-carbon-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600" aria-label="Categorías anteriores">
+                <button onClick={() => scrollCats(-1)} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition hover:border-orange-300 hover:text-orange-600" aria-label="Categorías anteriores">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
                 </button>
                 <div ref={catScrollRef} className="flex gap-2.5 overflow-x-auto pb-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <button onClick={() => setCategory('')} className={`flex w-[104px] shrink-0 flex-col items-center gap-1 rounded-xl border px-3 py-3 transition ${!category ? 'border-brand-500 bg-brand-50 shadow-sm' : 'border-carbon-200 bg-white hover:border-brand-300 hover:bg-brand-50/40'}`}>
-                  <span className={`flex h-9 w-9 items-center justify-center rounded-full ${!category ? 'bg-brand-600 text-white' : 'bg-brand-100 text-brand-600'}`}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /></svg>
-                  </span>
-                  <span className="text-center text-xs font-semibold leading-tight">Todas</span>
-                </button>
                 {categories.map((c) => (
-                  <button key={c.id} onClick={() => setCategory(c.slug)} className={`flex w-[104px] shrink-0 flex-col items-center gap-1 rounded-xl border px-3 py-3 transition ${category === c.slug ? 'border-brand-500 bg-brand-50 shadow-sm' : 'border-carbon-200 bg-white hover:border-brand-300 hover:bg-brand-50/40'}`}>
-                    <span className={`flex h-9 w-9 items-center justify-center rounded-full ${category === c.slug ? 'bg-brand-600 text-white' : 'bg-brand-100 text-brand-600'}`}>
+                  <button key={c.id} onClick={() => setCategory(c.slug)} className={`flex w-[104px] shrink-0 flex-col items-center gap-1 rounded-xl border px-3 py-3 transition ${category === c.slug ? 'border-orange-500 bg-orange-50 shadow-sm' : 'border-gray-200 bg-white hover:border-orange-300 hover:bg-orange-50/40'}`}>
+                    <span className={`flex h-9 w-9 items-center justify-center rounded-full ${category === c.slug ? 'bg-orange-600 text-white' : 'bg-orange-100 text-orange-600'}`}>
                       <CategoryIcon name={c.icon} className="h-5 w-5" />
                     </span>
                     <span className="text-center text-xs font-semibold leading-tight">{c.name}</span>
                     {c.products_count > 0 && (
-                      <span className={`text-[10px] font-medium ${category === c.slug ? 'text-brand-600' : 'text-carbon-400'}`}>{c.products_count} items</span>
+                      <span className={`text-[10px] font-medium ${category === c.slug ? 'text-orange-600' : 'text-gray-400'}`}>{c.products_count} items</span>
                     )}
                   </button>
                 ))}
               </div>
-                <button onClick={() => scrollCats(1)} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-carbon-200 bg-white text-carbon-500 shadow-sm transition hover:border-brand-300 hover:text-brand-600" aria-label="Siguientes categorías">
+                <button onClick={() => scrollCats(1)} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition hover:border-orange-300 hover:text-orange-600" aria-label="Siguientes categorías">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
                 </button>
               </div>
@@ -487,18 +498,17 @@ export default function Store() {
         <div className="flex gap-6">
           {/* ── SIDEBAR ── */}
           <aside className="hidden w-64 shrink-0 md:block">
-            <div className="sticky top-4 rounded-2xl border border-carbon-100 bg-white p-5 shadow-sm">
+            <div className="sticky top-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-sm font-black text-carbon-900">FILTRAR PRODUCTOS</h3>
+                <h3 className="text-sm font-black text-gray-900">FILTRAR PRODUCTOS</h3>
                 {filterCount > 0 && (
-                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-600 px-1.5 text-[10px] font-bold text-white">{filterCount}</span>
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-600 px-1.5 text-[10px] font-bold text-white">{filterCount}</span>
                 )}
               </div>
 
               {/* Category */}
               <FilterSection title="Categoría" open={sidebarOpen.category} onToggle={() => setSidebarOpen((s) => ({ ...s, category: !s.category }))}>
                 <div className="space-y-0.5">
-                  <RadioOption label="Todas las categorías" checked={!category} onChange={() => setCategory('')} />
                   {categories.map((c) => (
                     <RadioOption key={c.id} label={c.name} count={c.products_count} checked={category === c.slug} onChange={() => setCategory(c.slug)} />
                   ))}
@@ -508,23 +518,23 @@ export default function Store() {
               {/* Brand */}
               <FilterSection title="Marca de moto" open={sidebarOpen.brand} onToggle={() => setSidebarOpen((s) => ({ ...s, brand: !s.brand }))}>
                 <div className="relative mb-2">
-                  <svg className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-carbon-300" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
-                  <input value={brandSearch} onChange={(e) => setBrandSearch(e.target.value)} placeholder="Buscar marca…" className="w-full rounded-lg border border-carbon-200 bg-carbon-50 py-1.5 pl-8 pr-2.5 text-xs text-carbon-700 placeholder:text-carbon-400 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/10" />
+                  <svg className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-300" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+                  <input value={brandSearch} onChange={(e) => setBrandSearch(e.target.value)} placeholder="Buscar marca…" className="w-full rounded-lg border border-gray-200 bg-gray-50 py-1.5 pl-8 pr-2.5 text-xs text-gray-700 placeholder:text-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500/10" />
                 </div>
                 <div className="max-h-48 space-y-0.5 overflow-y-auto">
                   <RadioOption label="Todas las marcas" checked={!brand} onChange={() => setBrand('')} />
                   {filteredBrands.map((b) => (
                     <RadioOption key={b.id} label={b.name} count={b.count} checked={brand === String(b.id)} onChange={() => setBrand(String(b.id))} />
                   ))}
-                  {filteredBrands.length === 0 && <p className="py-2 text-center text-xs text-carbon-400">Sin resultados</p>}
+                  {filteredBrands.length === 0 && <p className="py-2 text-center text-xs text-gray-400">Sin resultados</p>}
                 </div>
               </FilterSection>
 
               {/* Model */}
               <FilterSection title="Modelo de moto" open={sidebarOpen.model} onToggle={() => setSidebarOpen((s) => ({ ...s, model: !s.model }))}>
                 <div className="relative mb-2">
-                  <svg className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-carbon-300" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
-                  <input value={modelSearch} onChange={(e) => setModelSearch(e.target.value)} placeholder="Buscar modelo…" className="w-full rounded-lg border border-carbon-200 bg-carbon-50 py-1.5 pl-8 pr-2.5 text-xs text-carbon-700 placeholder:text-carbon-400 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/10" />
+                  <svg className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-300" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
+                  <input value={modelSearch} onChange={(e) => setModelSearch(e.target.value)} placeholder="Buscar modelo…" className="w-full rounded-lg border border-gray-200 bg-gray-50 py-1.5 pl-8 pr-2.5 text-xs text-gray-700 placeholder:text-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500/10" />
                 </div>
                 <div className="max-h-48 space-y-0.5 overflow-y-auto">
                   <RadioOption label={brand ? 'Todos los modelos' : 'Elige una marca'} checked={!model} onChange={() => setModel('')} />
@@ -534,10 +544,10 @@ export default function Store() {
                         <RadioOption key={m.id} label={m.name} count={m.count} checked={model === String(m.id)} onChange={() => setModel(String(m.id))} />
                       ))
                     ) : (
-                      <p className="py-2 text-center text-xs text-carbon-400">Sin modelos</p>
+                      <p className="py-2 text-center text-xs text-gray-400">Sin modelos</p>
                     )
                   ) : (
-                    <p className="py-2 text-center text-xs text-carbon-400">Selecciona una marca</p>
+                    <p className="py-2 text-center text-xs text-gray-400">Selecciona una marca</p>
                   )}
                 </div>
               </FilterSection>
@@ -556,37 +566,37 @@ export default function Store() {
               <FilterSection title="Precio" open={sidebarOpen.price} onToggle={() => setSidebarOpen((s) => ({ ...s, price: !s.price }))}>
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1">
-                    <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-carbon-400">$</span>
+                    <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400">$</span>
                     <input
                       type="number"
                       min={0}
                       value={priceMin}
                       onChange={(e) => setPriceMin(e.target.value)}
                       placeholder={storeFilters ? String(Math.floor(storeFilters.price_range.min)) : 'Mín'}
-                      className="w-full rounded-lg border border-carbon-200 bg-carbon-50 py-2 pl-6 pr-2 text-xs text-carbon-700 placeholder:text-carbon-400 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/10"
+                      className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-6 pr-2 text-xs text-gray-700 placeholder:text-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500/10"
                     />
                   </div>
-                  <span className="text-carbon-400">–</span>
+                  <span className="text-gray-400">–</span>
                   <div className="relative flex-1">
-                    <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-carbon-400">$</span>
+                    <span className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-gray-400">$</span>
                     <input
                       type="number"
                       min={0}
                       value={priceMax}
                       onChange={(e) => setPriceMax(e.target.value)}
                       placeholder={storeFilters ? String(Math.ceil(storeFilters.price_range.max)) : 'Máx'}
-                      className="w-full rounded-lg border border-carbon-200 bg-carbon-50 py-2 pl-6 pr-2 text-xs text-carbon-700 placeholder:text-carbon-400 focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/10"
+                      className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-6 pr-2 text-xs text-gray-700 placeholder:text-gray-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-500/10"
                     />
                   </div>
                 </div>
-                <p className="mt-2 text-[11px] text-carbon-400">
+                <p className="mt-2 text-[11px] text-gray-400">
                   Rango disponible: {storeFilters ? `$${Math.floor(storeFilters.price_range.min).toLocaleString('es-CO')} – $${Math.ceil(storeFilters.price_range.max).toLocaleString('es-CO')}` : '…'}
                 </p>
               </FilterSection>
 
               {/* Clear */}
               {filterCount > 0 && (
-                <button onClick={clearFilters} className="mt-4 w-full rounded-xl border border-carbon-200 bg-white py-2.5 text-xs font-semibold text-carbon-600 transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700">
+                <button onClick={clearFilters} className="mt-4 w-full rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-semibold text-gray-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700">
                   Limpiar filtros
                 </button>
               )}
@@ -597,8 +607,8 @@ export default function Store() {
           <div className="min-w-0 flex-1">
             {/* toolbar */}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-carbon-500">
-                <span className="font-bold text-carbon-800">{meta.total}</span> producto{meta.total === 1 ? '' : 's'}
+              <p className="text-sm text-gray-500">
+                <span className="font-bold text-gray-800">{meta.total}</span> producto{meta.total === 1 ? '' : 's'}
                 {category && ` en «${categories.find((c) => c.slug === category)?.name ?? ''}»`}
                 {brand && ` · ${storeFilters?.brands.find((b) => String(b.id) === brand)?.name ?? ''}`}
                 {model && ` · ${storeFilters?.models.find((m) => String(m.id) === model)?.name ?? ''}`}
@@ -606,22 +616,22 @@ export default function Store() {
                 {search.trim() && ` · "${search.trim()}"`}
               </p>
               <div className="flex items-center gap-2">
-                <select value={perPage} onChange={(e) => setPerPage(Number(e.target.value))} className="rounded-xl border border-carbon-300 bg-white px-2 py-2 text-sm text-carbon-900 transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15" title="Productos por página">
+                <select value={perPage} onChange={(e) => setPerPage(Number(e.target.value))} className="rounded-xl border border-gray-300 bg-white px-2 py-2 text-sm text-gray-900 transition focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-500/15" title="Productos por página">
                   <option value={12}>12 / pág</option>
                   <option value={24}>24 / pág</option>
                   <option value={48}>48 / pág</option>
                 </select>
-                <select value={sort} onChange={(e) => setSort(e.target.value)} className="rounded-xl border border-carbon-300 bg-white px-3 py-2 text-sm text-carbon-900 transition focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-500/15">
+                <select value={sort} onChange={(e) => setSort(e.target.value)} className="rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 transition focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-500/15">
                   <option value="name">Nombre A-Z</option>
                   <option value="price_asc">Precio: menor a mayor</option>
                   <option value="price_desc">Precio: mayor a menor</option>
                   <option value="newest">Más recientes</option>
                 </select>
-                <div className="flex items-center gap-1 rounded-xl border border-carbon-200 bg-white p-1">
-                  <button onClick={() => setView('grid')} title="Vista cuadrícula" className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${view === 'grid' ? 'bg-brand-600 text-white shadow-sm' : 'text-carbon-500 hover:bg-brand-50 hover:text-brand-600'}`}>
+                <div className="flex items-center gap-1 rounded-xl border border-gray-200 bg-white p-1">
+                  <button onClick={() => setView('grid')} title="Vista cuadrícula" className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${view === 'grid' ? 'bg-orange-600 text-white shadow-sm' : 'text-gray-500 hover:bg-orange-50 hover:text-orange-600'}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /></svg>
                   </button>
-                  <button onClick={() => setView('list')} title="Vista lista" className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${view === 'list' ? 'bg-brand-600 text-white shadow-sm' : 'text-carbon-500 hover:bg-brand-50 hover:text-brand-600'}`}>
+                  <button onClick={() => setView('list')} title="Vista lista" className={`flex h-8 w-8 items-center justify-center rounded-lg transition ${view === 'list' ? 'bg-orange-600 text-white shadow-sm' : 'text-gray-500 hover:bg-orange-50 hover:text-orange-600'}`}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 6h13M8 12h13M8 18h13" /><path d="M4 6h.01M4 12h.01M4 18h.01" /></svg>
                   </button>
                 </div>
@@ -630,21 +640,21 @@ export default function Store() {
 
             {/* recommended */}
             {user && recommended && (
-              <div className="mb-8 rounded-3xl border border-brand-100 bg-gradient-to-br from-brand-50/60 to-white p-5 md:p-7">
+              <div className="mb-8 rounded-3xl border border-orange-100 bg-gradient-to-br from-orange-50/60 to-white p-5 md:p-7">
                 <div className="mb-2 flex items-center justify-between">
-                  <h2 className="flex items-center gap-2 text-lg font-black text-carbon-900">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-600 text-white">
+                  <h2 className="flex items-center gap-2 text-lg font-black text-gray-900">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-600 text-white">
                       <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
                     </span>
                     Recomendado para ti
                   </h2>
-                  <span className="hidden rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-brand-600 shadow-sm sm:block">Basado en tu garaje</span>
+                  <span className="hidden rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-orange-600 shadow-sm sm:block">Basado en tu garaje</span>
                 </div>
-                {recommended.compatible && recommended.compatible.length > 0 && <Section subtitle="Compatible con tu garaje." products={recommended.compatible} highlight="brand" onDetail={goDetail} {...favProps} />}
-                {recommended.lubricants && recommended.lubricants.length > 0 && <Section subtitle="Los adecuados para tu tipo de motor." products={recommended.lubricants} highlight="green" onDetail={goDetail} {...favProps} />}
-                {recommended.accessories && recommended.accessories.length > 0 && <Section subtitle="Para complementar tu moto." products={recommended.accessories} highlight="blue" onDetail={goDetail} {...favProps} />}
-                {recommended.promotions && recommended.promotions.length > 0 && <Section subtitle="Ofertas seleccionadas para ti." products={recommended.promotions} highlight="dark" onDetail={goDetail} {...favProps} />}
-                {recommended.alternatives && recommended.alternatives.length > 0 && <Section subtitle="Alternativas de buena relación calidad-precio." products={recommended.alternatives} highlight="amber" onDetail={goDetail} {...favProps} />}
+                {recommended.compatible && recommended.compatible.length > 0 && <Section subtitle="Compatible con tu garaje." products={recommended.compatible} onDetail={goDetail} {...favProps} />}
+                {recommended.lubricants && recommended.lubricants.length > 0 && <Section subtitle="Los adecuados para tu tipo de motor." products={recommended.lubricants} onDetail={goDetail} {...favProps} />}
+                {recommended.accessories && recommended.accessories.length > 0 && <Section subtitle="Para complementar tu moto." products={recommended.accessories} onDetail={goDetail} {...favProps} />}
+                {recommended.promotions && recommended.promotions.length > 0 && <Section subtitle="Ofertas seleccionadas para ti." products={recommended.promotions} onDetail={goDetail} {...favProps} />}
+                {recommended.alternatives && recommended.alternatives.length > 0 && <Section subtitle="Alternativas de buena relación calidad-precio." products={recommended.alternatives} onDetail={goDetail} {...favProps} />}
                 {recommended.suggestions && recommended.suggestions.length > 0 && <Section subtitle="Otras sugerencias disponibles." products={recommended.suggestions} onDetail={goDetail} {...favProps} />}
               </div>
             )}
@@ -653,11 +663,11 @@ export default function Store() {
             {loading ? (
               <div className="mt-2"><GridSkeleton count={9} /></div>
             ) : products.length === 0 ? (
-              <div className="mt-6 flex flex-col items-center gap-3 rounded-3xl border border-dashed border-carbon-300 bg-white p-10 text-center">
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-50 text-brand-500">
+              <div className="mt-6 flex flex-col items-center gap-3 rounded-3xl border border-dashed border-gray-300 bg-white p-10 text-center">
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-50 text-orange-500">
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
                 </span>
-                <p className="text-sm font-medium text-carbon-600">No hay productos que coincidan con tu búsqueda.</p>
+                <p className="text-sm font-medium text-gray-600">No hay productos que coincidan con tu búsqueda.</p>
                 <button onClick={clearFilters} className="btn-outline">Limpiar filtros</button>
               </div>
             ) : view === 'grid' ? (
@@ -681,22 +691,39 @@ export default function Store() {
         {/* ──── TRUST BAR ──── */}
         <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
           {[
-            { icon: 'truck', label: 'Envío gratis', sub: 'En pedidos +$150.000' },
-            { icon: 'shield', label: 'Garantía', sub: 'Repuestos con garantía' },
-            { icon: 'wrench', label: 'Instalación', sub: 'En nuestro taller' },
-            { icon: 'headset', label: 'Asesoría', sub: 'Soporte experto' },
-          ].map((t) => (
-            <div key={t.icon} className="flex flex-col items-center gap-2 rounded-2xl border border-carbon-100 bg-white py-5 text-center shadow-sm">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-600">
-                {t.icon === 'truck' && <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 3h15v13H1z" /><path d="M16 8h4l3 3v5h-7V8z" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>}
-                {t.icon === 'shield' && <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="M9 12l2 2 4-4" /></svg>}
-                {t.icon === 'wrench' && <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" /></svg>}
-                {t.icon === 'headset' && <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 18v-6a9 9 0 0118 0v6" /><path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z" /></svg>}
-              </span>
-              <p className="text-sm font-bold text-carbon-900">{t.label}</p>
-              <p className="text-[11px] text-carbon-400">{t.sub}</p>
+            { icon: '🛡️', label: 'Productos 100% originales', sub: 'Trabajamos con las mejores marcas del mercado.' },
+            { icon: '✅', label: 'Garantía asegurada', sub: 'Todos nuestros productos cuentan con garantía.' },
+            { icon: '📦', label: 'Empaque seguro', sub: 'Tus pedidos llegan en perfectas condiciones.' },
+            { icon: '🎧', label: 'Atención personalizada', sub: 'Te ayudamos a encontrar lo que tu moto necesita.' },
+          ].map((t, i) => (
+            <div key={i} className="flex items-start gap-3 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-lg">{t.icon}</span>
+              <div>
+                <p className="text-sm font-bold text-gray-900">{t.label}</p>
+                <p className="mt-0.5 text-xs leading-relaxed text-gray-500">{t.sub}</p>
+              </div>
             </div>
           ))}
+        </div>
+
+        {/* ──── CTA WHATSAPP ──── */}
+        <div className="mt-8 flex flex-col items-center gap-4 rounded-3xl border border-gray-100 bg-white px-8 py-8 shadow-sm sm:flex-row sm:justify-between sm:px-12">
+          <div className="flex items-center gap-4 text-center sm:text-left">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-50 text-2xl">🔍</div>
+            <div>
+              <h2 className="text-lg font-black text-gray-900">¿No encuentras lo que buscas?</h2>
+              <p className="text-sm text-gray-500">Escríbenos y te ayudamos a encontrar el repuesto ideal para tu moto.</p>
+            </div>
+          </div>
+          <a
+            href="https://wa.me/573016838490"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-orange-500 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all duration-300 hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/30"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Contáctanos por WhatsApp
+          </a>
         </div>
       </div>
     </div>

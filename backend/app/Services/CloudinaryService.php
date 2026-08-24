@@ -15,20 +15,17 @@ class CloudinaryService
      */
     public static function cloudName(): ?string
     {
-        return config('services.cloudinary.cloud_name')
-            ?: Settings::get('cloudinary_cloud_name') ?: null;
+        return config('services.cloudinary.cloud_name') ?: env('CLOUDINARY_CLOUD_NAME') ?: null;
     }
 
     public static function apiKey(): ?string
     {
-        return config('services.cloudinary.api_key')
-            ?: Settings::get('cloudinary_api_key') ?: null;
+        return config('services.cloudinary.api_key') ?: env('CLOUDINARY_API_KEY') ?: null;
     }
 
     public static function apiSecret(): ?string
     {
-        return config('services.cloudinary.api_secret')
-            ?: Settings::get('cloudinary_api_secret') ?: null;
+        return config('services.cloudinary.api_secret') ?: env('CLOUDINARY_API_SECRET') ?: null;
     }
 
     public static function configured(): bool

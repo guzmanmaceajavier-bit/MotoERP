@@ -10,7 +10,6 @@ import ChatBot from '../components/ChatBot'
 import SiteFooter from '../components/SiteFooter'
 import { BackToTop } from '../components/BackToTop'
 import { CookieConsent } from '../components/CookieConsent'
-import PageBreadcrumb from '../components/PageBreadcrumb'
 import { publicBreadcrumbs } from '../lib/pageMeta'
 import { useSiteInfo } from '../lib/useSiteImages'
 import { Logo } from '../components/Logo'
@@ -228,9 +227,6 @@ export default function PublicLayout() {
         )}
       </header>
       <main>
-        {location.pathname !== '/' && (
-          <PageBreadcrumb zone="web" crumbs={publicBreadcrumbs(location.pathname)} />
-        )}
         <Outlet />
       </main>
       <BackToTop />

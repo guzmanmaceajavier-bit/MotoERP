@@ -3,8 +3,9 @@ import type { FormEvent } from 'react'
 import { api } from '../../lib/api'
 import { usePageMeta } from '../../lib/usePageMeta'
 import { Reveal } from '../../components/Reveal'
-import PageHero from '../../components/PageHero'
 import { useHero } from '../../lib/useSiteImages'
+
+const fmt = (n: number) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n)
 
 interface TrackResult {
   order_number: string
@@ -61,27 +62,21 @@ export default function TrackOrder() {
   }
 
   return (
-    <div className="bg-carbon-50">
-      <PageHero
-        title={
-          hero.title ? (
-            <>{hero.title}</>
-          ) : (
-            <>Consulta tu <span className="gradient-text">orden</span></>
-          )
-        }
-        subtitle={hero.subtitle || 'Ingresa el número de orden para conocer el estado de tu reparación en tiempo real.'}
-        images={hero.images}
-        badge={
-          <>
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-xl">🔍</span>
-            <div>
-              <p className="text-sm font-bold text-carbon-900">Seguimiento en vivo</p>
-              <p className="text-xs text-carbon-500">Estado actualizado al minuto</p>
-            </div>
-          </>
-        }
-      />
+    <div className="bg-gray-50">
+      <section className="relative overflow-hidden bg-white pb-10 pt-14 md:pt-20">
+        <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-orange-400/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-orange-500/15 blur-3xl" />
+        <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-400 via-orange-500 to-orange-300" />
+        <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-orange-300 via-orange-500 to-orange-400" />
+        <div className="relative mx-auto max-w-4xl px-4 text-center">
+          <h1 className="text-3xl font-black leading-[1.08] tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
+            {hero.title ? <>{hero.title}</> : <>Consulta tu <span className="gradient-text">orden</span></>}
+          </h1>
+          <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-gray-500">
+            {hero.subtitle || 'Ingresa el número de orden para conocer el estado de tu reparación en tiempo real.'}
+          </p>
+        </div>
+      </section>
 
       <section className="mx-auto max-w-2xl px-4 py-12">
         <Reveal>

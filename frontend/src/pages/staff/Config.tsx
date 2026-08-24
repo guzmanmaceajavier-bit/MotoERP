@@ -118,6 +118,7 @@ type Tab = 'identity' | 'hours' | 'web' | 'content' | 'store' | 'payments' | 'wh
 // Páginas públicas con hero propio. Todas admiten varias imágenes (carrusel).
 const HERO_PAGES: { key: string; label: string; multi?: boolean; hint: string }[] = [
   { key: 'home', label: 'Portada (Inicio)', multi: true, hint: 'Varias imágenes rotan como carrusel del hero.' },
+  { key: 'store', label: 'Tienda', multi: true, hint: 'Cabeza de la página /tienda. Sube varias para un carrusel.' },
   { key: 'about', label: 'Nosotros', multi: true, hint: 'Cabeza de la página /nosotros. Sube varias para un carrusel.' },
   { key: 'services', label: 'Servicios', multi: true, hint: 'Cabeza de la página /servicios. Sube varias para un carrusel.' },
   { key: 'blog', label: 'Blog', multi: true, hint: 'Cabeza de la página /blog. Sube varias para un carrusel.' },
@@ -409,16 +410,16 @@ export default function Config() {
   }
 
   function cleanHolidays(): Holiday[] {
-    return holidays
-      .map((h) => {
-        const date = h.date || ''
-        if (!date) return null
-        const mode = h.mode || 'closed'
-        if (mode === 'closed') return { date, mode: 'closed' }
-        if (mode === 'saturday') return { date, mode: 'saturday' }
-        return { date, mode: 'custom', open: h.open || '09:00', close: h.close || '14:00' }
-      })
-      .filter((h): h is Holiday => h !== null)
+    const result: Holiday[] = []
+    for (const h of holidays) {
+      const date = h.date || ''
+      if (!date) continue
+      const mode = h.mode || 'closed'
+      if (mode === 'closed') { result.push({ date, mode: 'closed' }); continue }
+      if (mode === 'saturday') { result.push({ date, mode: 'saturday' }); continue }
+      result.push({ date, mode: 'custom', open: h.open || '09:00', close: h.close || '14:00' })
+    }
+    return result
   }
 
   function setHoliday(i: number, patch: Partial<Holiday>) {
@@ -1150,6 +1151,9 @@ export default function Config() {
               <p className="-mt-2 text-xs text-carbon-400">
                 Se obtienen en <strong>Meta Business Suite → WhatsApp → Configuración de API</strong>.
               </p>
+              <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                Por seguridad, el access token se configura directamente en el archivo <code className="font-mono">.env</code> del servidor como <code className="font-mono">WHATSAPP_ACCESS_TOKEN</code>. No se almacena en la base de datos.
+              </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="Access token">
                   <Input value={waToken} onChange={(e) => setWaToken(e.target.value)} variant="brand" placeholder="EAAG..." />
@@ -1185,7 +1189,6 @@ export default function Config() {
                 disabled={saving}
                 onClick={() => save({
                   whatsapp_enabled: waEnabled,
-                  whatsapp_token: waToken,
                   whatsapp_phone_id: waPhoneId,
                   whatsapp_template: waTemplate,
                   whatsapp_template_lang: waTemplateLang,
@@ -1230,6 +1233,9 @@ export default function Config() {
 
             <div className={`${cardCls} space-y-4`}>
               <h2 className="font-semibold text-carbon-900">Credenciales</h2>
+              <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                Por seguridad, la API secret se configura en el archivo <code className="font-mono">.env</code> del servidor como <code className="font-mono">CLOUDINARY_API_SECRET</code>. No se almacena en la base de datos.
+              </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <Field label="Cloud name">
                   <Input value={cloudName} onChange={(e) => setCloudName(e.target.value)} variant="brand" placeholder="tu-nube" />
@@ -1247,8 +1253,6 @@ export default function Config() {
                   disabled={saving}
                   onClick={() => save({
                     cloudinary_cloud_name: cloudName,
-                    cloudinary_api_key: cloudKey,
-                    cloudinary_api_secret: cloudSecret,
                   })}
                 >
                   {saving ? 'Guardando...' : 'Guardar Cloudinary'}

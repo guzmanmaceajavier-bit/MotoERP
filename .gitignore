@@ -1,10 +1,12 @@
 backend/.env
 backend/vendor/
+backend/scripts/
 backend/storage/logs/*
 backend/storage/framework/cache/*
 backend/storage/framework/sessions/*
 backend/storage/framework/views/*
 backend/storage/app/public/*
+backend/storage/app/backups/*
 frontend/node_modules/
 frontend/dist/
 frontend/.env
@@ -16,3 +18,4 @@ frontend/.env.production
 Thumbs.db
 *.log
 npm-debug.log*
+dump.sql

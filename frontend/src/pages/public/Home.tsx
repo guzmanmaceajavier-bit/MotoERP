@@ -114,16 +114,6 @@ function Icon({ name, className = '' }: { name: string; className?: string }) {
   )
 }
 
-function Stars({ n, className = 'text-brand-500' }: { n: number; className?: string }) {
-  return (
-    <div className={`flex gap-0.5 ${className}`}>
-      {Array.from({ length: 5 }).map((_, k) => (
-        <svg key={k} width="14" height="14" viewBox="0 0 24 24" fill={k < n ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
-      ))}
-    </div>
-  )
-}
-
 function ProductCard({ p }: { p: Product }) {
   const { add } = useCart()
   const price = p.final_price ?? p.price
@@ -176,7 +166,7 @@ export default function Home() {
   const [banners, setBanners] = useState<Banner[]>([])
   const [data, setData] = useState<HomeData | null>(null)
   const [brands, setBrands] = useState<Brand[]>([])
-  const [openFaq, setOpenFaq] = useState<number | null>(0)
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
   const hero = useHero('home')
   const { workshop_name: siteName } = useSiteInfo()
 
@@ -331,11 +321,7 @@ export default function Home() {
         <section className="mx-auto max-w-6xl px-4 py-16">
           <Reveal className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand-700 ring-1 ring-brand-200">
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-                Servicios
-              </span>
-              <h2 className="mt-2 text-3xl font-black tracking-tight md:text-4xl">Todo para tu <span className="gradient-text">moto</span></h2>
+              <h2 className="text-3xl font-black tracking-tight md:text-4xl">Todo para tu <span className="gradient-text">moto</span></h2>
             </div>
             <Link to="/servicios" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:text-brand-700">
               Ver todos los servicios
@@ -367,11 +353,8 @@ export default function Home() {
       {/* ═══════════ CÓMO FUNCIONA ═══════════ */}
       <section className="mx-auto max-w-6xl px-4 pb-16">
         <Reveal className="text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand-700 ring-1 ring-brand-200">
-            <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-            Cómo funciona
-          </span>
-          <h2 className="mt-2 text-3xl font-black md:text-4xl">En <span className="gradient-text">3 pasos</span></h2>
+          <h2 className="text-3xl font-black md:text-4xl">En <span className="gradient-text">3 pasos</span></h2>
+          <p className="mx-auto mt-2 max-w-xl text-carbon-500">Así de fácil agendamos tu cita o atendemos tu consulta.</p>
         </Reveal>
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
           {steps.map((s, i) => (
@@ -393,11 +376,8 @@ export default function Home() {
       {brands.length > 0 && (
         <section className="border-y border-carbon-100 bg-white py-10">
           <div className="mx-auto max-w-6xl px-4">
-            <p className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand-700 ring-1 ring-brand-200">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-              Trabajamos con las marcas de tu confianza
-            </p>
-            <div className="relative mt-6 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]">
+            <h2 className="text-center text-2xl font-black text-carbon-900">Trabajamos con las marcas <span className="gradient-text">que tú conoces</span></h2>
+            <div className="relative mt-8 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]">
               <div className="flex w-max gap-10 anim-marquee">
                 {[...brands, ...brands].map((b, i) => (
                   <Link key={`${b.id}-${i}`} to={`/tienda?brand=${b.id}`} className="flex items-center gap-3 whitespace-nowrap transition hover:opacity-70">
@@ -423,11 +403,7 @@ export default function Home() {
           <div className="mx-auto max-w-6xl px-4">
             <Reveal className="flex flex-wrap items-end justify-between gap-4">
               <div>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand-700 ring-1 ring-brand-200">
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-                  Tienda
-                </span>
-                <h2 className="mt-2 text-3xl font-black tracking-tight md:text-4xl">Repuestos <span className="gradient-text">destacados</span></h2>
+                <h2 className="text-3xl font-black tracking-tight md:text-4xl">Repuestos <span className="gradient-text">destacados</span></h2>
               </div>
               <Link to="/tienda" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:text-brand-700">
                 Ir a la tienda
@@ -476,11 +452,7 @@ export default function Home() {
         <section className="mx-auto max-w-6xl px-4 pb-16">
           <Reveal className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand-700 ring-1 ring-brand-200">
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-                Blog
-              </span>
-              <h2 className="mt-2 text-3xl font-black tracking-tight md:text-4xl">Consejos y <span className="gradient-text">novedades</span></h2>
+              <h2 className="text-3xl font-black tracking-tight md:text-4xl">Consejos y <span className="gradient-text">novedades</span></h2>
             </div>
             <Link to="/blog" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:text-brand-700">
               Ver blog completo
@@ -513,11 +485,7 @@ export default function Home() {
       {/* ═══════════ FAQ ═══════════ */}
       <section className="mx-auto max-w-3xl px-4 py-16">
         <Reveal className="text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand-700 ring-1 ring-brand-200">
-            <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-            Preguntas frecuentes
-          </span>
-          <h2 className="mt-2 text-3xl font-black md:text-4xl">Resolvemos tus <span className="gradient-text">dudas</span></h2>
+          <h2 className="text-3xl font-black md:text-4xl">Resolvemos tus <span className="gradient-text">dudas</span></h2>
         </Reveal>
         <div className="mt-8 space-y-3">
           {faqs.map((f, i) => (
@@ -557,11 +525,7 @@ export default function Home() {
       <section className="border-t border-carbon-100 bg-carbon-50/70 py-20">
         <div className="mx-auto max-w-6xl px-4">
           <Reveal className="text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3.5 py-1.5 text-xs font-bold text-brand-700 ring-1 ring-brand-200">
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
-              Empieza hoy
-            </span>
-            <h2 className="mt-2 text-3xl font-black tracking-tight md:text-4xl">¿Listo para cuidar tu <span className="gradient-text">moto</span>?</h2>
+            <h2 className="text-3xl font-black tracking-tight md:text-4xl">¿Listo para cuidar tu <span className="gradient-text">moto</span>?</h2>
             <p className="mx-auto mt-4 max-w-2xl text-carbon-600">
               Agenda una cita, compra repuestos o crea tu garaje digital en menos de un minuto.
             </p>

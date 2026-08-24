@@ -168,11 +168,16 @@ export default function CatalogSimple({
         fd.append('brand_id', String(Number(form.brand_id)))
         fd.append('year', form.year ? String(Number(form.year)) : '')
       } else {
-        if (imageFile) fd.append('image', imageFile)
-        else if (form.image.trim() && (!editing || form.image.trim() !== (editing.image || ''))) fd.append('image_url', form.image.trim())
+        if (imageFile) {
+          fd.append('image', imageFile)
+        }
+        if (form.image.trim()) {
+          fd.append('image_url', form.image.trim())
+        }
       }
       if (editing) {
-        await api(`${endpoint}/${editing.id}`, { method: 'PATCH', body: fd })
+        fd.append('_method', 'PATCH')
+        await api(`${endpoint}/${editing.id}`, { method: 'POST', body: fd })
         toast.success(`${entity} actualizada`)
       } else {
         await api(endpoint, { method: 'POST', body: fd })

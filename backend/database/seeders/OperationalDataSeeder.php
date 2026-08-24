@@ -15,6 +15,7 @@ use App\Models\Warranty;
 use App\Models\WorkOrder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class OperationalDataSeeder extends Seeder
 {
@@ -31,17 +32,19 @@ class OperationalDataSeeder extends Seeder
 
     private function ensureDemoCredentials(): void
     {
-        $password = Hash::make('secret123');
-        User::whereIn('email', ['admin@gmail.com', 'carlos@gmail.com', 'cliente@demo.com'])->update(['password' => $password]);
+        $password = env('SEED_PASSWORD', Str::random(16));
+        User::whereIn('email', ['admin@gmail.com', 'carlos@gmail.com', 'cliente@demo.com'])->update(['password' => Hash::make($password)]);
     }
 
     private function staff(): array
     {
+        $password = env('SEED_PASSWORD', Str::random(16));
+
         $andres = User::firstOrCreate(
             ['email' => 'andres@motohub.test'],
             [
                 'name' => 'Andrés Mejía', 'phone' => '3001112233', 'role' => 'mechanic',
-                'password' => Hash::make('secret123'),
+                'password' => Hash::make($password),
                 'specialty' => 'Mecánica general y transmisión',
                 'bio' => 'Más de 8 años de experiencia en motos de 125 a 400 cc. Especialista en transmisión y motores de 4 tiempos.',
             ]
@@ -50,7 +53,7 @@ class OperationalDataSeeder extends Seeder
             ['email' => 'daniela@motohub.test'],
             [
                 'name' => 'Daniela Ríos', 'phone' => '3004445566', 'role' => 'mechanic',
-                'password' => Hash::make('secret123'),
+                'password' => Hash::make($password),
                 'specialty' => 'Suspensión y sistema eléctrico',
                 'bio' => 'Técnica en mantenimiento de motocicletas. Se enfoca en suspensión, frenos y diagnóstico eléctrico.',
             ]
@@ -59,7 +62,7 @@ class OperationalDataSeeder extends Seeder
             ['email' => 'valentina@motohub.test'],
             [
                 'name' => 'Valentina Gómez', 'phone' => '3007778899', 'role' => 'receptionist',
-                'password' => Hash::make('secret123'),
+                'password' => Hash::make($password),
                 'specialty' => 'Atención al cliente',
                 'bio' => 'Encargada de recibir tu moto, agendar citas y mantenerte al día con tus servicios.',
             ]
@@ -87,7 +90,7 @@ class OperationalDataSeeder extends Seeder
         if (! $client) {
             $client = User::create([
                 'name' => 'Cliente Demo', 'email' => 'cliente@demo.com', 'phone' => '3105550101',
-                'role' => 'customer', 'password' => Hash::make('secret123'), 'points_balance' => 0,
+                'role' => 'customer', 'password' => Hash::make($password), 'points_balance' => 0,
             ]);
         }
 

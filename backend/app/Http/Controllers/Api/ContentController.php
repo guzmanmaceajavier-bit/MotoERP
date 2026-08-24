@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\Rating;
 use App\Models\WorkOrder;
+use App\Support\Input;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -34,6 +35,8 @@ class ContentController extends Controller
 
         $post = Post::create([
             ...$validated,
+            'excerpt' => Input::clean($validated['excerpt'] ?? null),
+            'content' => $validated['content'],
             'user_id' => $request->user()->id,
             'published_at' => ! empty($validated['is_published']) ? now() : null,
         ]);
@@ -52,6 +55,9 @@ class ContentController extends Controller
             'is_published' => 'nullable|boolean',
         ]);
 
+        if (array_key_exists('excerpt', $validated)) {
+            $validated['excerpt'] = Input::clean($validated['excerpt']);
+        }
         if (array_key_exists('is_published', $validated)) {
             $validated['published_at'] = $validated['is_published'] ? ($post->published_at ?? now()) : null;
         }

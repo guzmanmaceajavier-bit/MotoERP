@@ -6,6 +6,7 @@ use App\Models\MaintenanceRule;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 /**
  * Arranque de BD vacía: crea el admin inicial (requerido para entrar) y las
@@ -15,16 +16,18 @@ class BootstrapFreshSeeder extends Seeder
 {
     public function run(): void
     {
+        $password = env('SEED_PASSWORD', Str::random(16));
+
         User::firstOrCreate(
             ['email' => 'admin@motohub.test'],
             [
                 'name' => 'Administrador',
                 'phone' => '',
                 'role' => 'admin',
-                'password' => Hash::make('secret123'),
+                'password' => Hash::make($password),
             ]
         );
-        $this->command?->info('Admin de arranque: admin@motohub.test / secret123');
+        $this->command?->info("Admin de arranque: admin@motohub.test / {$password}");
 
         $rules = [
             ['service_name' => 'Cambio de aceite', 'interval_km' => 5000, 'interval_months' => 6, 'category' => 'aceite'],

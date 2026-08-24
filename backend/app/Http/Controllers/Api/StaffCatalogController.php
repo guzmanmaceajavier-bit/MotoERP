@@ -76,7 +76,9 @@ class StaffCatalogController extends Controller
 
         $data = ['name' => $validated['name']];
         if ($request->hasFile('image')) {
-            $data['image'] = \App\Services\CloudinaryService::upload($request->file('image'), 'brands');
+            $file = $request->file('image');
+            $data['image'] = \App\Services\CloudinaryService::upload($file, 'brands')
+                ?? url('/storage/' . $file->store('brands', 'public'));
         } elseif ($request->filled('image_url')) {
             $data['image'] = $request->input('image_url');
         }
@@ -94,7 +96,9 @@ class StaffCatalogController extends Controller
 
         $data = collect($validated)->except(['image', 'image_url'])->all();
         if ($request->hasFile('image')) {
-            $data['image'] = \App\Services\CloudinaryService::upload($request->file('image'), 'brands');
+            $file = $request->file('image');
+            $data['image'] = \App\Services\CloudinaryService::upload($file, 'brands')
+                ?? url('/storage/' . $file->store('brands', 'public'));
         } elseif ($request->filled('image_url')) {
             $data['image'] = $request->input('image_url');
         }

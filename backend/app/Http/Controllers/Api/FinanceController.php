@@ -1071,13 +1071,12 @@ return response()->json([
             'payment_options' => json_decode((string) Settings::get('payment_options', '[]'), true) ?: [],
             'payment_instructions' => (string) Settings::get('payment_instructions', ''),
             'whatsapp_enabled' => app(NotificationService::class)->whatsappEnabled(),
-            'whatsapp_token' => Settings::get('whatsapp_token', ''),
+            'whatsapp_configured' => app(NotificationService::class)->whatsappEnabled(),
             'whatsapp_phone_id' => Settings::get('whatsapp_phone_id', ''),
             'whatsapp_template' => Settings::get('whatsapp_template', config('services.whatsapp.template')),
             'whatsapp_template_lang' => Settings::get('whatsapp_template_lang', 'es'),
             'cloudinary_configured' => CloudinaryService::configured(),
-            'cloudinary_cloud_name' => Settings::get('cloudinary_cloud_name', ''),
-            'cloudinary_api_key' => Settings::get('cloudinary_api_key', ''),
+            'cloudinary_cloud_name' => Settings::get('cloudinary_cloud_name', env('CLOUDINARY_CLOUD_NAME', '')),
             'maintenance_rules' => MaintenanceRule::orderBy('service_name')->get(),
             'terms_content' => (string) Settings::get('terms_content', ''),
             'privacy_content' => (string) Settings::get('privacy_content', ''),
@@ -1124,13 +1123,10 @@ return response()->json([
             'payment_options.*.extra' => 'nullable|string|max:120',
             'payment_instructions' => 'nullable|string|max:4000',
             'whatsapp_enabled' => 'nullable|boolean',
-            'whatsapp_token' => 'nullable|string|max:255',
             'whatsapp_phone_id' => 'nullable|string|max:60',
             'whatsapp_template' => 'nullable|string|max:120',
             'whatsapp_template_lang' => 'nullable|string|max:10',
             'cloudinary_cloud_name' => 'nullable|string|max:120',
-            'cloudinary_api_key' => 'nullable|string|max:120',
-            'cloudinary_api_secret' => 'nullable|string|max:120',
             'terms_content' => 'nullable|string|max:20000',
             'privacy_content' => 'nullable|string|max:20000',
             'store_shipping_fee' => 'nullable|numeric|min:0',
@@ -1197,9 +1193,6 @@ return response()->json([
         if (array_key_exists('whatsapp_enabled', $validated)) {
             Settings::set('whatsapp_enabled', (bool) $validated['whatsapp_enabled']);
         }
-        if (array_key_exists('whatsapp_token', $validated)) {
-            Settings::set('whatsapp_token', (string) $validated['whatsapp_token']);
-        }
         if (array_key_exists('whatsapp_phone_id', $validated)) {
             Settings::set('whatsapp_phone_id', (string) $validated['whatsapp_phone_id']);
         }
@@ -1211,12 +1204,6 @@ return response()->json([
         }
         if (array_key_exists('cloudinary_cloud_name', $validated)) {
             Settings::set('cloudinary_cloud_name', (string) $validated['cloudinary_cloud_name']);
-        }
-        if (array_key_exists('cloudinary_api_key', $validated)) {
-            Settings::set('cloudinary_api_key', (string) $validated['cloudinary_api_key']);
-        }
-        if (array_key_exists('cloudinary_api_secret', $validated)) {
-            Settings::set('cloudinary_api_secret', (string) $validated['cloudinary_api_secret']);
         }
         if (array_key_exists('terms_content', $validated)) {
             Settings::set('terms_content', (string) $validated['terms_content']);

@@ -30,22 +30,23 @@ export function useHeroImages(page: string): string[] {
 export interface SiteInfo {
   workshop_name: string
   workshop_logo: string
+  workshop_phone: string
 }
 
 let siteCache: SiteInfo | null = null
 let sitePromise: Promise<SiteInfo> | null = null
 
 export function useSiteInfo(): SiteInfo {
-  const [info, setInfo] = useState<SiteInfo>({ workshop_name: '', workshop_logo: '' })
+  const [info, setInfo] = useState<SiteInfo>({ workshop_name: '', workshop_logo: '', workshop_phone: '' })
   useEffect(() => {
     if (!sitePromise) {
-      sitePromise = api<{ workshop_name?: string; workshop_logo?: string }>('/site-info')
+      sitePromise = api<{ workshop_name?: string; workshop_logo?: string; workshop_phone?: string }>('/site-info')
         .then((d) => {
-          siteCache = { workshop_name: d.workshop_name || '', workshop_logo: d.workshop_logo || '' }
+          siteCache = { workshop_name: d.workshop_name || '', workshop_logo: d.workshop_logo || '', workshop_phone: d.workshop_phone || '' }
           return siteCache
         })
         .catch(() => {
-          siteCache = { workshop_name: '', workshop_logo: '' }
+          siteCache = { workshop_name: '', workshop_logo: '', workshop_phone: '' }
           return siteCache
         })
     }

@@ -31,7 +31,7 @@ const PUBLIC_PAGES: { match: RegExp; crumbs: (m: RegExpMatchArray) => Breadcrumb
     crumbs: () => [{ label: 'Consultar compra' }],
   },
   {
-    match: /^\/lista-compartida/,
+    match: /^\/lista\//,
     crumbs: () => [{ label: 'Lista compartida' }],
   },
   {

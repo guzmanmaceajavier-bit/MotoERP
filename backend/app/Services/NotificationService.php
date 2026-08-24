@@ -135,8 +135,8 @@ class NotificationService
 
     private function viaMeta(string $phone, string $message): bool
     {
-        $token = Settings::get('whatsapp_token') ?: config('services.whatsapp.token');
-        $phoneId = Settings::get('whatsapp_phone_id') ?: config('services.whatsapp.phone_id');
+        $token = config('services.whatsapp.token') ?: env('WHATSAPP_ACCESS_TOKEN');
+        $phoneId = config('services.whatsapp.phone_id') ?: env('WHATSAPP_PHONE_ID');
 
         if (! $token || ! $phoneId) {
             Log::info("WhatsApp [META][NO-CONFIGURADO] a {$phone}: {$message}");
@@ -164,8 +164,8 @@ class NotificationService
 
     private function viaMetaTemplate(string $phone, string $template, string $code): bool
     {
-        $token = Settings::get('whatsapp_token') ?: config('services.whatsapp.token');
-        $phoneId = Settings::get('whatsapp_phone_id') ?: config('services.whatsapp.phone_id');
+        $token = config('services.whatsapp.token') ?: env('WHATSAPP_ACCESS_TOKEN');
+        $phoneId = config('services.whatsapp.phone_id') ?: env('WHATSAPP_PHONE_ID');
 
         if (! $token || ! $phoneId || ! $template) {
             Log::info("WhatsApp [META][NO-CONFIGURADO] código a {$phone}: {$code} (template: {$template})");

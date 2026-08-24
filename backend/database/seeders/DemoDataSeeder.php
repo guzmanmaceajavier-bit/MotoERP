@@ -17,6 +17,7 @@ use App\Models\WorkOrderStatus;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DemoDataSeeder extends Seeder
 {
@@ -27,10 +28,12 @@ class DemoDataSeeder extends Seeder
             return;
         }
 
+        $password = env('SEED_PASSWORD', Str::random(16));
+
         // ---- Staff ----
-        $mechanic1 = User::create(['name' => 'Jorge Pérez', 'email' => 'jorge@motohub.test', 'phone' => '3001112222', 'role' => 'mechanic', 'password' => Hash::make('secret123')]);
-        $mechanic2 = User::create(['name' => 'Luis Gómez', 'email' => 'luis@motohub.test', 'phone' => '3003334444', 'role' => 'mechanic', 'password' => Hash::make('secret123')]);
-        $reception = User::create(['name' => 'María Torres', 'email' => 'reception@motohub.test', 'phone' => '3005556666', 'role' => 'receptionist', 'password' => Hash::make('secret123')]);
+        $mechanic1 = User::create(['name' => 'Jorge Pérez', 'email' => 'jorge@motohub.test', 'phone' => '3001112222', 'role' => 'mechanic', 'password' => Hash::make($password)]);
+        $mechanic2 = User::create(['name' => 'Luis Gómez', 'email' => 'luis@motohub.test', 'phone' => '3003334444', 'role' => 'mechanic', 'password' => Hash::make($password)]);
+        $reception = User::create(['name' => 'María Torres', 'email' => 'reception@motohub.test', 'phone' => '3005556666', 'role' => 'receptionist', 'password' => Hash::make($password)]);
 
         // ---- Cliente ----
         $carlos = User::create([
@@ -38,7 +41,7 @@ class DemoDataSeeder extends Seeder
             'email' => 'carlos@test.com',
             'phone' => '3119876543',
             'role' => 'customer',
-            'password' => Hash::make('secret123'),
+            'password' => Hash::make($password),
             'points_balance' => 49,
         ]);
 

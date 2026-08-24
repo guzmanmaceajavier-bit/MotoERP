@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ChatMessage;
 use App\Models\User;
+use App\Support\Input;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -36,7 +37,7 @@ class ChatController extends Controller
         $message = ChatMessage::create([
             'user_id' => $request->user()->id,
             'sender' => 'client',
-            'message' => trim($validated['message']),
+            'message' => Input::clean($validated['message']),
             'is_read' => false,
         ]);
 
@@ -139,7 +140,7 @@ class ChatController extends Controller
             'user_id' => $client->id,
             'sender' => 'staff',
             'staff_id' => $request->user()->id,
-            'message' => trim($validated['message']),
+            'message' => Input::clean($validated['message']),
             'is_read' => false,
         ]);
 
