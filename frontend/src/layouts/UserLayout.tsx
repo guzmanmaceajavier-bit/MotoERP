@@ -7,7 +7,7 @@ import ThemeToggle from '../components/ThemeToggle'
 import HeaderClock from '../components/HeaderClock'
 import OpenStatusChip from '../components/OpenStatusChip'
 import PageBreadcrumb from '../components/PageBreadcrumb'
-import { CookieConsent } from '../components/CookieConsent'
+import CookieConsent from '../components/CookieConsent'
 
 const links = [
   { to: '/panel', label: 'Dashboard', section: null, icon: 'M20 13V7a2 2 0 00-2-2H6a2 2 0 00-2 2v6m14 0H8m14 0a2 2 0 012 2v3a2 2 0 01-2 2H6a2 2 0 01-2-2v-3a2 2 0 012-2m14 0V9H8v4' },

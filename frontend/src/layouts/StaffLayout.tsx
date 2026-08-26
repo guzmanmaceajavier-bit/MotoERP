@@ -7,7 +7,7 @@ import ThemeToggle from '../components/ThemeToggle'
 import HeaderClock from '../components/HeaderClock'
 import OpenStatusChip from '../components/OpenStatusChip'
 import PageBreadcrumb from '../components/PageBreadcrumb'
-import { CookieConsent } from '../components/CookieConsent'
+import CookieConsent from '../components/CookieConsent'
 import {
   LayoutDashboard,
   ClipboardList,
