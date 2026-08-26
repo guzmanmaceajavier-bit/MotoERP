@@ -74,17 +74,13 @@ function Protected({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
   if (loading) return <div className="p-8 text-carbon-500">Cargando...</div>
   if (!user) return <Navigate to="/" replace />
-  if (isStaffRole(user.role)) return <Navigate to="/admin/dashboard" replace />
   return <>{children}</>
 }
 
 function RequireGuest({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
   if (loading) return <div className="p-8 text-carbon-500">Cargando...</div>
-  if (user) {
-    if (isStaffRole(user.role)) return <Navigate to="/admin/dashboard" replace />
-    return <Navigate to="/panel" replace />
-  }
+  if (user && !isStaffRole(user.role)) return <Navigate to="/panel" replace />
   return <>{children}</>
 }
 
