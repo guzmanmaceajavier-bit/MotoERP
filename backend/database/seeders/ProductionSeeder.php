@@ -18,7 +18,7 @@ class ProductionSeeder extends Seeder
             [
                 'name' => 'Administrador',
                 'phone' => '3000000000',
-                'role' => 'super_admin',
+                'role' => 'admin',
                 'password' => Hash::make($password),
             ]
         );
