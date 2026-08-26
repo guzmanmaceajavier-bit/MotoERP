@@ -33,7 +33,6 @@ POINTS_VALUE=100
 EOF
 
 php artisan key:generate --force
-
-php artisan migrate --force 2>&1 || echo "Migration skipped (tables already exist)"
-php artisan db:seed --force 2>&1 || echo "Seeder skipped"
+php artisan migrate --force 2>&1 || echo "Migration skipped"
+php artisan db:seed --force 2>&1 || echo "Seed skipped"
 php artisan serve --host=0.0.0.0 --port=8000

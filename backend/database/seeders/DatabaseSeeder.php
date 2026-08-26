@@ -91,11 +91,12 @@ class DatabaseSeeder extends Seeder
 
         $password = env('SEED_PASSWORD', Str::random(16));
 
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@motohub.test'],
-            ['name' => 'Administrador', 'phone' => '3000000000', 'role' => 'admin',
-                'password' => Hash::make($password)]
-        );
+        $admin = User::where('email', 'admin@motohub.test')->first();
+        if ($admin) {
+            $admin->update(['name' => 'Carlos Mendoza', 'role' => 'admin']);
+        } else {
+            User::create(['email' => 'admin@motohub.test', 'name' => 'Carlos Mendoza', 'phone' => '3000000000', 'role' => 'admin', 'password' => Hash::make($password)]);
+        }
         $this->command?->info("Admin creado: admin@motohub.test / {$password}");
 
         $brandModels = [];
@@ -171,5 +172,6 @@ class DatabaseSeeder extends Seeder
         $this->call(MaintenanceRuleSeeder::class);
         $this->call(RealDataSeeder::class);
         $this->call(OperationalDataSeeder::class);
+        $this->call(ProductionSeeder::class);
     }
 }

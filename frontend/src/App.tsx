@@ -7,6 +7,7 @@ import PublicLayout from './layouts/PublicLayout'
 import UserLayout from './layouts/UserLayout'
 import StaffLayout from './layouts/StaffLayout'
 import OfflineAlert from './components/OfflineAlert'
+import CookieConsent from './components/CookieConsent'
 import { isStaffRole } from './lib/roles'
 
 const Home = lazy(() => import('./pages/public/Home'))
@@ -102,6 +103,7 @@ export default function App() {
         <StaffAuthProvider>
           <CartProvider>
             <OfflineAlert />
+            <CookieConsent />
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route

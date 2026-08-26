@@ -13,17 +13,24 @@ class ProductionSeeder extends Seeder
     {
         $password = env('SEED_PASSWORD', 'secret123');
 
-        User::firstOrCreate(
-            ['email' => 'admin@motohub.test'],
-            [
-                'name' => 'Administrador',
+        $admin = User::where('email', 'admin@motohub.test')->first();
+        if ($admin) {
+            $admin->update([
+                'role' => 'admin',
+                'name' => 'Carlos Mendoza',
+                'password' => Hash::make($password),
+            ]);
+        } else {
+            User::create([
+                'email' => 'admin@motohub.test',
+                'name' => 'Carlos Mendoza',
                 'phone' => '3000000000',
                 'role' => 'admin',
                 'password' => Hash::make($password),
-            ]
-        );
+            ]);
+        }
 
-        $this->command?->info("Admin creado: admin@motohub.test / {$password}");
+        $this->command?->info("Admin listo: admin@motohub.test / {$password}");
 
         Setting::firstOrCreate(
             ['key' => 'workshop_name'],
