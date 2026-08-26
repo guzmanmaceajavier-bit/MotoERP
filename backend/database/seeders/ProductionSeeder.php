@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Settings;
+use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class ProductionSeeder extends Seeder
 {
@@ -26,15 +25,15 @@ class ProductionSeeder extends Seeder
 
         $this->command?->info("Admin creado: admin@motohub.test / {$password}");
 
-        Settings::firstOrCreate(
+        Setting::firstOrCreate(
             ['key' => 'workshop_name'],
             ['value' => 'MotoHouse']
         );
-        Settings::firstOrCreate(
+        Setting::firstOrCreate(
             ['key' => 'workshop_phone'],
             ['value' => '573016838490']
         );
-        Settings::firstOrCreate(
+        Setting::firstOrCreate(
             ['key' => 'workshop_logo'],
             ['value' => '']
         );

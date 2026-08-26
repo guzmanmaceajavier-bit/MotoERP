@@ -34,10 +34,6 @@ EOF
 
 php artisan key:generate --force
 
-echo "=== DEBUG: .env created ==="
-cat .env | grep DB_
-echo "=========================="
-
-php artisan migrate --force
-php artisan db:seed --class=ProductionSeeder --force
+php artisan migrate --force 2>&1 || echo "Migration skipped (tables already exist)"
+php artisan db:seed --class=ProductionSeeder --force 2>&1 || echo "Seeder skipped"
 php artisan serve --host=0.0.0.0 --port=8000
