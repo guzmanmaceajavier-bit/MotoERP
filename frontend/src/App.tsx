@@ -7,6 +7,7 @@ import PublicLayout from './layouts/PublicLayout'
 import UserLayout from './layouts/UserLayout'
 import StaffLayout from './layouts/StaffLayout'
 import OfflineAlert from './components/OfflineAlert'
+import ErrorBoundary from './components/ErrorBoundary'
 import { isStaffRole } from './lib/roles'
 
 const Home = lazy(() => import('./pages/public/Home'))
@@ -98,6 +99,7 @@ export default function App() {
         <StaffAuthProvider>
           <CartProvider>
             <OfflineAlert />
+            <ErrorBoundary>
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 <Route
@@ -181,6 +183,7 @@ export default function App() {
                 </Route>
               </Routes>
             </Suspense>
+            </ErrorBoundary>
           </CartProvider>
         </StaffAuthProvider>
       </AuthProvider>

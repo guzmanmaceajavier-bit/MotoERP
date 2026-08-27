@@ -67,6 +67,8 @@ interface Settings {
   workshop_name: string
   workshop_phone: string
   workshop_address: string
+  workshop_map_lat: string
+  workshop_map_lng: string
   workshop_logo: string
   workshop_email: string
   workshop_country: string
@@ -276,6 +278,8 @@ export default function Config() {
   // Identidad
   const [workshopName, setWorkshopName] = useState('')
   const [workshopAddress, setWorkshopAddress] = useState('')
+  const [workshopMapLat, setWorkshopMapLat] = useState('')
+  const [workshopMapLng, setWorkshopMapLng] = useState('')
   const [workshopLogo, setWorkshopLogo] = useState('')
   const [workshopCountry, setWorkshopCountry] = useState('CO')
   const [phoneLocal, setPhoneLocal] = useState('')
@@ -345,6 +349,8 @@ export default function Config() {
     setData(s)
     setWorkshopName(s.workshop_name)
     setWorkshopAddress(s.workshop_address)
+    setWorkshopMapLat(s.workshop_map_lat || '')
+    setWorkshopMapLng(s.workshop_map_lng || '')
     setWorkshopLogo(s.workshop_logo)
     setWorkshopCountry(s.workshop_country || 'CO')
     setWorkshopEmail(s.workshop_email || '')
@@ -717,6 +723,12 @@ export default function Config() {
                   <Field label="Dirección">
                     <Input value={workshopAddress} onChange={(e) => setWorkshopAddress(e.target.value)} variant="brand" />
                   </Field>
+                  <Field label="Latitud del mapa" hint="ej: 4.6603">
+                    <Input value={workshopMapLat} onChange={(e) => setWorkshopMapLat(e.target.value)} variant="brand" placeholder="4.6603" />
+                  </Field>
+                  <Field label="Longitud del mapa" hint="ej: -74.0681">
+                    <Input value={workshopMapLng} onChange={(e) => setWorkshopMapLng(e.target.value)} variant="brand" placeholder="-74.0681" />
+                  </Field>
                   <Field label="Teléfono / WhatsApp">
                     <div className="flex items-stretch gap-2">
                       <div className="min-w-[150px]">
@@ -767,6 +779,8 @@ export default function Config() {
                 onClick={() => save({
                   workshop_name: workshopName,
                   workshop_address: workshopAddress,
+                  workshop_map_lat: workshopMapLat,
+                  workshop_map_lng: workshopMapLng,
                   workshop_logo: workshopLogo,
                   workshop_country: workshopCountry,
                   workshop_phone: buildPhone(),

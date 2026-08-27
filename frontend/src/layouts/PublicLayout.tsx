@@ -13,6 +13,7 @@ import CookieConsent from '../components/CookieConsent'
 import CartDrawer from '../components/CartDrawer'
 import { publicBreadcrumbs } from '../lib/pageMeta'
 import { useSiteInfo } from '../lib/useSiteImages'
+import { APP_NAME } from '../lib/config'
 import { Logo } from '../components/Logo'
 
 const links = [
@@ -37,7 +38,7 @@ export default function PublicLayout() {
   const { workshop_name: siteName, workshop_logo: siteLogo } = useSiteInfo()
 
   useEffect(() => {
-    const name = siteName || 'MotoHouse'
+    const name = siteName || APP_NAME
     const label = (publicBreadcrumbs(location.pathname).slice(-1)[0]?.label ?? 'Inicio').trim()
     document.title = location.pathname === '/' ? name : `${label} · ${name}`
   }, [location.pathname, siteName])

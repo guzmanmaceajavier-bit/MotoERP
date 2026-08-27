@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { api } from '../lib/api'
 import { useSiteInfo } from '../lib/useSiteImages'
+import { APP_NAME } from '../lib/config'
 
 const DEFAULT_PRIVACY = [
   {
@@ -146,7 +147,7 @@ export default function LegalPage({ title }: { title: string }) {
   const isPrivacy = title === 'Política de privacidad'
   const [custom, setCustom] = useState<string | null>(null)
   const { workshop_name: siteName, workshop_phone: sitePhone, workshop_address: siteAddress } = useSiteInfo()
-  const name = siteName || 'MotoHouse'
+  const name = siteName || APP_NAME
   const phone = sitePhone || ''
   const address = siteAddress || ''
   const email = 'informacion@motohouse.com'

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useSiteInfo } from '../lib/useSiteImages'
+import { APP_NAME } from '../lib/config'
 
 const COOKIE_KEY = 'motohub_cookie_consent'
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false)
   const { workshop_name: siteName } = useSiteInfo()
-  const name = siteName || 'MotoHouse'
+  const name = siteName || APP_NAME
 
   useEffect(() => {
     const consent = localStorage.getItem(COOKIE_KEY)

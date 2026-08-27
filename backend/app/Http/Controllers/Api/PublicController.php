@@ -268,6 +268,8 @@ class PublicController extends Controller
             'workshop_country' => \App\Support\Settings::get('workshop_country', 'CO'),
             'workshop_phone' => \App\Support\Settings::get('workshop_phone', ''),
             'workshop_address' => \App\Support\Settings::get('workshop_address', ''),
+            'workshop_map_lat' => \App\Support\Settings::get('workshop_map_lat', '4.6603'),
+            'workshop_map_lng' => \App\Support\Settings::get('workshop_map_lng', '-74.0681'),
             'closed_days' => json_decode((string) \App\Support\Settings::get('closed_days', '[]'), true) ?: [],
             'schedule_open' => \App\Support\Settings::get('schedule_open', '09:00'),
             'schedule_close' => \App\Support\Settings::get('schedule_close', '18:00'),

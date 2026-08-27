@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Logo } from './Logo'
 import { api } from '../lib/api'
+import { APP_NAME } from '../lib/config'
 
 interface AuthShellProps {
   title: string
@@ -56,7 +57,7 @@ export function AuthShell({ title, subtitle, badge, dark = false, children, foot
             <p className="mt-1 text-sm text-carbon-400">{subtitle}</p>
             <div className="mt-7">{children}</div>
             {footer && <div className="mt-6">{footer}</div>}
-            <p className="mt-8 border-t border-carbon-800 pt-4 text-xs text-carbon-500">© {new Date().getFullYear()} {site.workshop_name || 'MotoHouse'} · Acceso restringido al equipo del taller.</p>
+            <p className="mt-8 border-t border-carbon-800 pt-4 text-xs text-carbon-500">© {new Date().getFullYear()} {site.workshop_name || APP_NAME} · Acceso restringido al equipo del taller.</p>
           </div>
         </div>
       </div>

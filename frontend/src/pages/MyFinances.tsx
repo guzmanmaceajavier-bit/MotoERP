@@ -6,6 +6,7 @@ import type { Paginated } from '../lib/pagination'
 import { unwrapList } from '../lib/pagination'
 import type { InvoiceDetail, InvoiceSummary, LoyaltyInfo, Warranty } from '../lib/types'
 import { useSiteInfo } from '../lib/useSiteImages'
+import { APP_NAME } from '../lib/config'
 
 type Tab = 'invoices' | 'points' | 'warranties'
 
@@ -346,7 +347,7 @@ export default function MyFinances() {
             </button>
             <button
               onClick={() => {
-                const text = `${siteName || 'MotoHouse'} · Factura ${detail.invoice_number} · Total ${currency(detail.total)}`
+                const text = `${siteName || APP_NAME} · Factura ${detail.invoice_number} · Total ${currency(detail.total)}`
                 window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
               }}
               className="btn-outline mt-2 w-full"

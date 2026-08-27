@@ -1,3 +1,5 @@
+import { APP_NAME } from '../lib/config'
+
 export function Logo({
   size = 28,
   light = false,
@@ -9,7 +11,7 @@ export function Logo({
   name?: string
   image?: string
 }) {
-  const label = name.trim() || 'MotoHouse'
+  const label = name.trim() || APP_NAME
   const [first, ...rest] = label.split(/\s+/)
   return (
     <span className={`group flex items-center gap-3 ${light ? 'text-white' : 'text-carbon-900'}`}>

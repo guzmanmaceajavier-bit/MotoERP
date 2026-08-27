@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { Reveal } from '../../components/Reveal'
 import { api } from '../../lib/api'
 import { usePageMeta } from '../../lib/usePageMeta'
 import { scheduleSummary, type ScheduleInfo } from '../../lib/schedule'
 import { useHero, useSiteInfo } from '../../lib/useSiteImages'
+import { APP_NAME } from '../../lib/config'
 import { HeroBg } from '../../components/HeroBg'
 import heroImg from '../../assets/hero.png'
 
@@ -39,7 +41,7 @@ export default function Contact() {
   const [submitting, setSubmitting] = useState(false)
   const [site, setSite] = useState<SiteInfo | null>(null)
   const hero = useHero('contact')
-  const { workshop_name: siteName } = useSiteInfo()
+  const { workshop_name: siteName, workshop_map_lat: mapLat, workshop_map_lng: mapLng } = useSiteInfo()
 
   usePageMeta(
     `${siteName ? siteName + ' | ' : ''}Contacto`,
@@ -280,7 +282,7 @@ export default function Contact() {
                 <div className="relative">
                   <iframe
                     title={`Mapa ${siteName || 'del taller'}`}
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=-74.0981%2C4.6403%2C-74.0381%2C4.6803&layer=mapnik&marker=4.6603%2C-74.0681"
+                    src={`https://www.openstreetmap.org/export/embed.html?bbox=${(Number(mapLng) || -74.0681) - 0.03}%2C${(Number(mapLat) || 4.6603) - 0.02}%2C${(Number(mapLng) || -74.0681) + 0.03}%2C${(Number(mapLat) || 4.6603) + 0.02}&layer=mapnik&marker=${mapLat || '4.6603'}%2C${mapLng || '-74.0681'}`}
                     className="h-[220px] w-full grayscale-[20%]"
                     loading="lazy"
                   />
@@ -323,7 +325,7 @@ export default function Contact() {
       <section className="mx-auto max-w-6xl px-4 pb-16">
         <div className="relative overflow-hidden rounded-3xl bg-gray-900">
           <div className="absolute inset-0 opacity-20">
-            <img src={heroImg} alt="MotoHouse taller de motos" className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
+            <img src={heroImg} alt={`${APP_NAME} taller de motos`} className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
           </div>
           <div className="relative flex flex-col items-center gap-6 p-8 sm:flex-row sm:justify-between sm:px-12">
             <div className="text-center sm:text-left">
@@ -333,14 +335,14 @@ export default function Contact() {
               </h2>
               <p className="mt-2 text-gray-400">Agenda tu cita ahora y deja tu moto en manos expertas.</p>
             </div>
-            <a
-              href="/agendar"
+            <Link
+              to="/agendar"
               className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-orange-500 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition hover:bg-orange-600 hover:shadow-xl"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
               Agendar tu cita
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-            </a>
+            </Link>
           </div>
         </div>
       </section>

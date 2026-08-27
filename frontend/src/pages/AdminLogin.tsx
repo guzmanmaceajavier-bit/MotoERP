@@ -5,6 +5,7 @@ import { useStaffAuth } from '../auth/StaffAuthContext'
 import { isStaffRole } from '../lib/roles'
 import { api } from '../lib/api'
 import { useEffect } from 'react'
+import { APP_NAME } from '../lib/config'
 
 export default function AdminLogin() {
   const { login, logout } = useStaffAuth()
@@ -57,7 +58,7 @@ export default function AdminLogin() {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-sm font-bold text-white">MH</div>
             )}
             <div>
-              <p className="text-lg font-extrabold text-carbon-900">{site.workshop_name || 'MotoHouse'}</p>
+              <p className="text-lg font-extrabold text-carbon-900">{site.workshop_name || APP_NAME}</p>
               <p className="text-xs text-carbon-500">Taller y tienda de motos</p>
             </div>
           </div>
@@ -65,7 +66,7 @@ export default function AdminLogin() {
 
         <div className="relative z-10">
           <h2 className="text-4xl font-black leading-tight text-carbon-900">
-            Bienvenido<br />a <span className="text-brand-600">{site.workshop_name || 'MotoHouse'}</span>
+            Bienvenido<br />a <span className="text-brand-600">{site.workshop_name || APP_NAME}</span>
           </h2>
           <div className="mt-3 h-1 w-12 rounded-full bg-brand-600" />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-carbon-500">
@@ -111,7 +112,7 @@ export default function AdminLogin() {
             ) : (
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-600 text-sm font-bold text-white">MH</div>
             )}
-            <p className="text-lg font-extrabold text-carbon-900">{site.workshop_name || 'MotoHouse'}</p>
+            <p className="text-lg font-extrabold text-carbon-900">{site.workshop_name || APP_NAME}</p>
           </div>
 
           <div className="flex justify-center">
@@ -225,7 +226,7 @@ export default function AdminLogin() {
           </div>
 
           <p className="mt-8 border-t border-carbon-100 pt-5 text-center text-xs text-carbon-400">
-            © {new Date().getFullYear()} {site.workshop_name || 'MotoHouse'} · Acceso restringido al equipo del taller.
+            © {new Date().getFullYear()} {site.workshop_name || APP_NAME} · Acceso restringido al equipo del taller.
           </p>
         </div>
       </div>

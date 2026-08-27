@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Route;
 // (esto causaba 500/502 cuando una sesión expiraba y se consultaba un endpoint protegido).
 Route::name('login')->get('login', fn () => response()->json(['message' => 'No autenticado'], 401));
 
+Route::get('health', fn () => response()->json(['ok' => true, 'time' => now()->toIso8601String()]));
+
 Route::prefix('v1')->group(function () {
     Route::post('register', [AuthController::class, 'register'])->middleware('throttle:6,60');
     Route::post('login', [AuthController::class, 'login'])->middleware('throttle:10,60');
@@ -83,7 +85,6 @@ Route::get('products', [PublicController::class, 'products']);
         Route::get('my-orders/calendar', [OrderController::class, 'myCalendar']);
         Route::get('orders/{order}', [OrderController::class, 'show']);
         Route::get('orders/{order}/photos', [StaffController::class, 'listPhotos']);
-        Route::get('orders/{order}/quotations', [OrderController::class, 'quotationHistory']);
         Route::post('orders/{order}/respond', [OrderController::class, 'respondQuotation']);
         Route::delete('orders/{order}', [OrderController::class, 'cancelOwnOrder']);
 Route::get('orders/{order}/quotation/pdf', [OrderController::class, 'quotationPdf']);

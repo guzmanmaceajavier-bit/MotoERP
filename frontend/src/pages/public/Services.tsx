@@ -6,6 +6,7 @@ import { api } from '../../lib/api'
 import { usePageMeta } from '../../lib/usePageMeta'
 import { HeroBg } from '../../components/HeroBg'
 import { useHero, useSiteInfo } from '../../lib/useSiteImages'
+import { APP_NAME } from '../../lib/config'
 
 interface Service {
   id: number
@@ -280,7 +281,7 @@ export default function Services() {
           <div className="w-full flex-1">
             <Reveal>
               <h2 className="text-3xl font-black text-gray-900 md:text-4xl">
-                ¿Por qué elegir <span className="gradient-text">{siteName || 'MotoHouse'}</span>?
+                ¿Por qué elegir <span className="gradient-text">{siteName || APP_NAME}</span>?
               </h2>
               <p className="mt-3 text-gray-500">Nos mueve tu idea, nos mueve acompañarte. Tu moto, nuestro compromiso.</p>
             </Reveal>

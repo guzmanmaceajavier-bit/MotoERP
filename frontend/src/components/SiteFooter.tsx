@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { api } from '../lib/api'
 import { scheduleSummary, type ScheduleInfo } from '../lib/schedule'
 import { Logo } from './Logo'
+import { APP_NAME } from '../lib/config'
 
 const quickLinks = [
   { to: '/', label: 'Inicio' },
@@ -42,7 +43,7 @@ export default function SiteFooter() {
   const {
     workshop_phone: phone = '',
     workshop_address: address = '',
-    workshop_name: siteName = 'MotoHouse',
+    workshop_name: siteName = APP_NAME,
     workshop_logo: siteLogo = '',
     social_facebook: fb,
     social_instagram: ig,

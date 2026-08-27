@@ -6,6 +6,7 @@ import type { Paginated } from '../lib/pagination'
 import { unwrapList } from '../lib/pagination'
 import type { Product } from '../lib/types'
 import { useSiteInfo } from '../lib/useSiteImages'
+import { APP_NAME } from '../lib/config'
 
 interface Msg {
   from: 'bot' | 'user'
@@ -217,7 +218,7 @@ export default function ChatBot() {
         const reply = getAnswer(key)
       if (key === 'asesor' && phone) {
         reply.links = [
-          { href: waLink(phone, `Hola! Necesito hablar con un asesor de ${siteName || 'MotoHouse'}.`), label: 'Abrir WhatsApp' },
+          { href: waLink(phone, `Hola! Necesito hablar con un asesor de ${siteName || APP_NAME}.`), label: 'Abrir WhatsApp' },
           { to: '/contacto', label: 'Ir a contacto' },
         ]
       }
@@ -285,7 +286,7 @@ function getAnswer(key: string): Msg {
           <div className="flex items-center gap-3 bg-carbon-900 px-4 py-3 text-white">
             <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-lg">🤖</span>
             <div className="min-w-0">
-              <p className="text-sm font-bold">Asistente {siteName || 'MotoHouse'}</p>
+              <p className="text-sm font-bold">Asistente {siteName || APP_NAME}</p>
               <p className="flex items-center gap-1 text-xs text-green-400">● En línea</p>
             </div>
           </div>

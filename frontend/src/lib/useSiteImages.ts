@@ -32,22 +32,24 @@ export interface SiteInfo {
   workshop_logo: string
   workshop_phone: string
   workshop_address: string
+  workshop_map_lat: string
+  workshop_map_lng: string
 }
 
 let siteCache: SiteInfo | null = null
 let sitePromise: Promise<SiteInfo> | null = null
 
 export function useSiteInfo(): SiteInfo {
-  const [info, setInfo] = useState<SiteInfo>({ workshop_name: '', workshop_logo: '', workshop_phone: '', workshop_address: '' })
+  const [info, setInfo] = useState<SiteInfo>({ workshop_name: '', workshop_logo: '', workshop_phone: '', workshop_address: '', workshop_map_lat: '', workshop_map_lng: '' })
   useEffect(() => {
     if (!sitePromise) {
-      sitePromise = api<{ workshop_name?: string; workshop_logo?: string; workshop_phone?: string; workshop_address?: string }>('/site-info')
+      sitePromise = api<{ workshop_name?: string; workshop_logo?: string; workshop_phone?: string; workshop_address?: string; workshop_map_lat?: string; workshop_map_lng?: string }>('/site-info')
         .then((d) => {
-          siteCache = { workshop_name: d.workshop_name || '', workshop_logo: d.workshop_logo || '', workshop_phone: d.workshop_phone || '', workshop_address: d.workshop_address || '' }
+          siteCache = { workshop_name: d.workshop_name || '', workshop_logo: d.workshop_logo || '', workshop_phone: d.workshop_phone || '', workshop_address: d.workshop_address || '', workshop_map_lat: d.workshop_map_lat || '', workshop_map_lng: d.workshop_map_lng || '' }
           return siteCache
         })
         .catch(() => {
-          siteCache = { workshop_name: '', workshop_logo: '', workshop_phone: '', workshop_address: '' }
+          siteCache = { workshop_name: '', workshop_logo: '', workshop_phone: '', workshop_address: '', workshop_map_lat: '', workshop_map_lng: '' }
           return siteCache
         })
     }

@@ -5,6 +5,7 @@ import { usePageMeta } from '../../lib/usePageMeta'
 import type { ReactNode } from 'react'
 import { Reveal } from '../../components/Reveal'
 import { useHero, useSiteInfo } from '../../lib/useSiteImages'
+import { APP_NAME } from '../../lib/config'
 
 interface PostCard {
   id: number
@@ -58,8 +59,8 @@ export default function BlogPage() {
   const [email, setEmail] = useState('')
 
   usePageMeta(
-    post ? `${post.title} | ${siteName || 'MotoHouse'}` : `${siteName ? siteName + ' | ' : ''}Blog`,
-    post?.excerpt || `Consejos, mantenimiento y novedades del taller ${siteName || 'MotoHouse'}.`,
+    post ? `${post.title} | ${siteName || APP_NAME}` : `${siteName ? siteName + ' | ' : ''}Blog`,
+    post?.excerpt || `Consejos, mantenimiento y novedades del taller ${siteName || APP_NAME}.`,
   )
 
   useEffect(() => {
@@ -110,7 +111,7 @@ export default function BlogPage() {
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100 text-xs font-bold text-orange-700">
                   {(post.author || 'M')[0].toUpperCase()}
                 </span>
-                <span className="font-semibold text-gray-700">{post.author || 'MotoHouse'}</span>
+                <span className="font-semibold text-gray-700">{post.author || APP_NAME}</span>
               </span>
               <span className="text-gray-300">|</span>
               <span className="inline-flex items-center gap-1.5">
@@ -234,7 +235,7 @@ export default function BlogPage() {
                 {hero.images && hero.images.length > 0 ? (
                   <img
                     src={hero.images[0]}
-                    alt={`Blog ${siteName || 'MotoHouse'}`}
+                    alt={`Blog ${siteName || APP_NAME}`}
                     className="h-full w-full object-cover"
                   />
                 ) : (
@@ -342,7 +343,7 @@ export default function BlogPage() {
                             {(p.author || 'M')[0].toUpperCase()}
                           </span>
                           <div>
-                            <p className="text-xs font-bold text-gray-800">{p.author || 'MotoHouse'}</p>
+                            <p className="text-xs font-bold text-gray-800">{p.author || APP_NAME}</p>
                             <p className="text-[11px] text-gray-400">Equipo de expertos</p>
                           </div>
                         </div>
