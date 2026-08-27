@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use App\Models\LoyaltyPoint;
 use App\Models\Product;
+use App\Models\Setting;
 use App\Models\User;
 use App\Services\NotificationService;
 use App\Support\Settings;
@@ -102,6 +103,17 @@ class StoreController extends Controller
     public function checkout(Request $request): JsonResponse
     {
         $validated = $this->validateCart($request);
+        $validated['checkout_token'] = $request->input('checkout_token');
+
+        // Prevenir doble clic: si ya existe una orden reciente con este token, retornar la existente
+        if ($validated['checkout_token']) {
+            $existingOrder = \App\Models\Invoice::where('checkout_token', $validated['checkout_token'])
+                ->where('created_at', '>', now()->subMinutes(5))
+                ->first();
+            if ($existingOrder) {
+                return response()->json($existingOrder->load('items'), 200);
+            }
+        }
 
         return $this->processCheckout($request->user(), $request, $validated);
     }
@@ -119,6 +131,7 @@ class StoreController extends Controller
             'guest_email' => 'required|email',
             'guest_phone' => 'nullable|string|max:30',
             'shipping_address' => 'nullable',
+            'checkout_token' => 'nullable|string|max:100',
         ]);
 
         $validated['guest_name'] = \App\Support\Input::clean($identity['guest_name']);
@@ -126,6 +139,17 @@ class StoreController extends Controller
         $validated['guest_phone'] = \App\Support\Input::clean($identity['guest_phone'] ?? null);
         $validated['shipping_address'] = $this->normalizeShippingAddress($identity['shipping_address'] ?? null);
         $validated['points_to_use'] = 0;
+        $validated['checkout_token'] = $identity['checkout_token'] ?? null;
+
+        // Prevenir doble clic: si ya existe una orden reciente con este token, retornar la existente
+        if ($validated['checkout_token']) {
+            $existingOrder = \App\Models\Invoice::where('checkout_token', $validated['checkout_token'])
+                ->where('created_at', '>', now()->subMinutes(5))
+                ->first();
+            if ($existingOrder) {
+                return response()->json($existingOrder->load('items'), 200);
+            }
+        }
 
         $user = User::firstOrCreate(
             ['email' => $validated['guest_email']],
@@ -242,6 +266,11 @@ class StoreController extends Controller
             $discount = $pointsToUse * $pointsValue;
             $total = max(0, $subtotal - $discount) + $shippingFee;
 
+            $taxEnabled = Setting::where('key', 'tax_enabled')->value('value') === '1';
+            $taxRate = (float) (Setting::where('key', 'tax_rate')->value('value') ?: 19);
+            $tax = $taxEnabled ? round($subtotal * ($taxRate / 100), 0) : 0;
+            $total += $tax;
+
             $paymentMethod = $validated['payment_method'] ?? 'efectivo';
             // En efectivo (retiro/instalación/contra entrega) el pedido se confirma al crearlo:
             // se prepara y se paga al retirar/recibir. Con transferencia/tarjeta queda a la
@@ -256,7 +285,7 @@ class StoreController extends Controller
                 'customer_phone' => $validated['guest_phone'] ?? $user->phone,
                 'shipping_address' => $validated['shipping_address'] ?? null,
                 'subtotal' => $subtotal,
-                'tax' => 0,
+                'tax' => $tax,
                 'discount' => $discount,
                 'points_used' => $pointsToUse,
                 'total' => $total,
@@ -264,6 +293,7 @@ class StoreController extends Controller
                 'status' => 'unpaid',
                 'order_status' => $orderStatus,
                 'issue_date' => now(),
+                'checkout_token' => $validated['checkout_token'] ?? null,
             ]);
 
             foreach ($lineItems as $line) {
@@ -525,6 +555,35 @@ class StoreController extends Controller
         return response()->json([
             'current' => $this->favoriteMap($product),
             'data' => $alternatives,
+        ]);
+    }
+
+    public function validateCoupon(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|max:50',
+            'subtotal' => 'required|numeric|min:0',
+        ]);
+
+        $coupon = \App\Models\Coupon::where('code', strtoupper(trim($validated['code'])))->first();
+
+        if (!$coupon || !$coupon->isValid()) {
+            return response()->json(['message' => 'Cupón inválido o expirado'], 422);
+        }
+
+        if ($validated['subtotal'] < $coupon->min_order) {
+            return response()->json([
+                'message' => 'El pedido mínimo para este cupón es ' . number_format($coupon->min_order, 0, ',', '.'),
+            ], 422);
+        }
+
+        $discount = $coupon->applyDiscount($validated['subtotal']);
+
+        return response()->json([
+            'code' => $coupon->code,
+            'type' => $coupon->type,
+            'value' => $coupon->value,
+            'discount' => $discount,
         ]);
     }
 

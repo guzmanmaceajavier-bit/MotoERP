@@ -32,6 +32,8 @@ interface CartContextValue {
   setQuantity: (key: string, quantity: number) => void
   remove: (key: string) => void
   clear: () => void
+  drawerOpen: boolean
+  setDrawerOpen: (open: boolean) => void
 }
 
 /** Clave única de línea: producto + color (las variantes conviven como líneas separadas). */
@@ -44,6 +46,15 @@ const CartContext = createContext<CartContextValue | null>(null)
 /** Clave de storage según el estado de sesión: invitado o por usuario. */
 const guestKey = 'motohub_cart'
 const userKey = (uid: number) => `motohub_cart_u${uid}`
+const fulfillmentKey = 'motohub_cart_fulfillment'
+
+function readFulfillment(): Fulfillment {
+  try {
+    const v = localStorage.getItem(fulfillmentKey)
+    if (v === 'shipping' || v === 'pickup' || v === 'installing') return v
+  } catch {}
+  return 'pickup'
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast()
@@ -60,7 +71,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   const [items, setItems] = useState<CartItem[]>(() => readStorage(storageKey))
-  const [fulfillment, setFulfillment] = useState<Fulfillment>('pickup')
+  const [fulfillment, setFulfillmentState] = useState<Fulfillment>(readFulfillment)
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const prevCount = useRef(0)
+
+  const setFulfillment = (f: Fulfillment) => {
+    setFulfillmentState(f)
+    localStorage.setItem(fulfillmentKey, f)
+  }
 
   // Al cambiar el usuario (login/logout) se restaura el carrito de la sesión correspondiente.
   const prevKey = useRef(storageKey)
@@ -108,11 +126,20 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clear = () => setItems([])
 
+  const count = items.reduce((acc, i) => acc + i.quantity, 0)
+
+  // Abrir drawer automáticamente al agregar un producto
+  useEffect(() => {
+    if (count > prevCount.current) {
+      setDrawerOpen(true)
+    }
+    prevCount.current = count
+  }, [count])
+
   const value = useMemo<CartContextValue>(() => {
-    const count = items.reduce((acc, i) => acc + i.quantity, 0)
     const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0)
-    return { items, count, total, fulfillment, setFulfillment, add, setQuantity, remove, clear }
-  }, [items, fulfillment])
+    return { items, count, total, fulfillment, setFulfillment, add, setQuantity, remove, clear, drawerOpen, setDrawerOpen }
+  }, [items, count, fulfillment, drawerOpen])
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>
 }

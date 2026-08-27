@@ -29,6 +29,13 @@ const paymentMethods = [
   { value: 'tarjeta', label: 'Tarjeta', desc: 'Crédito o débito', icon: '💳' },
 ]
 
+const trustBadges = [
+  { icon: '🛡️', label: 'Compra segura' },
+  { icon: '🚚', label: 'Envío gratis +$150k' },
+  { icon: '🔄', label: 'Devolución fácil' },
+  { icon: '🎧', label: 'Soporte experto' },
+]
+
 function ProductImg({ src, name, className = '' }: { src?: string; name: string; className?: string }) {
   if (src) return <img src={src} alt={name} className={`rounded-xl object-cover ${className}`} />
   return <div className={`flex items-center justify-center rounded-xl bg-carbon-100 text-carbon-400 ${className}`}>{name[0]}</div>
@@ -45,8 +52,16 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
   const [done, setDone] = useState<InvoiceDetail | null>(null)
   const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([])
   const [motorcycleId, setMotorcycleId] = useState('')
-  const [trackingNumber, setTrackingNumber] = useState('')
   const [allProducts, setAllProducts] = useState<Product[]>([])
+  const [checkoutToken, setCheckoutToken] = useState('')
+
+  const [couponCode, setCouponCode] = useState('')
+  const [couponDiscount, setCouponDiscount] = useState(0)
+  const [couponLoading, setCouponLoading] = useState(false)
+  const [couponMsg, setCouponMsg] = useState('')
+
+  const [taxEnabled, setTaxEnabled] = useState(false)
+  const [taxRate, setTaxRate] = useState(19)
 
   const [guestName, setGuestName] = useState('')
   const [guestEmail, setGuestEmail] = useState('')
@@ -68,22 +83,52 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
       .catch(() => {})
   }, [])
 
-  const [storeConfig, setStoreConfig] = useState({ shipping_fee: 12000, free_shipping_threshold: 150000 })
+  const [storeConfig, setStoreConfig] = useState({ shipping_fee: 12000, free_shipping_threshold: 150000, delivery_days: 3 })
   useEffect(() => {
-    api<{ shipping_fee?: number; free_shipping_threshold?: number }>('/payment-info')
-      .then((d) => setStoreConfig({
-        shipping_fee: d.shipping_fee ?? 12000,
-        free_shipping_threshold: d.free_shipping_threshold ?? 150000,
-      }))
+    api<{ shipping_fee?: number; free_shipping_threshold?: number; delivery_days?: number; tax_enabled?: boolean; tax_rate?: number }>('/payment-info')
+      .then((d) => {
+        setStoreConfig({
+          shipping_fee: d.shipping_fee ?? 12000,
+          free_shipping_threshold: d.free_shipping_threshold ?? 150000,
+          delivery_days: d.delivery_days ?? 3,
+        })
+        if (d.tax_enabled !== undefined) setTaxEnabled(d.tax_enabled)
+        if (d.tax_rate !== undefined) setTaxRate(d.tax_rate)
+      })
       .catch(() => {})
   }, [])
 
   const pointsValue = 100
   const shippingFee = fulfillment === 'shipping' && total < storeConfig.free_shipping_threshold ? storeConfig.shipping_fee : 0
-  const discount = user ? Math.min(pointsToUse * pointsValue, total) : 0
-  const finalTotal = Math.max(0, total - discount) + shippingFee
+  const loyaltyDiscount = user ? Math.min(pointsToUse * pointsValue, total) : 0
+  const subtotalAfterDiscount = Math.max(0, total - loyaltyDiscount - couponDiscount)
+  const tax = taxEnabled ? Math.round(subtotalAfterDiscount * (taxRate / 100)) : 0
+  const finalTotal = subtotalAfterDiscount + shippingFee + tax
   const freeShippingLeft = Math.max(0, storeConfig.free_shipping_threshold - total)
   const freeShippingPct = Math.min(100, (total / storeConfig.free_shipping_threshold) * 100)
+
+  // Fecha estimada de entrega
+  const deliveryDate = useMemo(() => {
+    const d = new Date()
+    d.setDate(d.getDate() + storeConfig.delivery_days)
+    return d.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' })
+  }, [storeConfig.delivery_days])
+
+  async function applyCoupon() {
+    if (!couponCode.trim()) return
+    setCouponLoading(true); setCouponMsg('')
+    try {
+      const res = await api<{ discount: number; code: string; type: string; value: number }>('/store/validate-coupon', {
+        method: 'POST',
+        body: JSON.stringify({ code: couponCode, subtotal: total }),
+      })
+      setCouponDiscount(res.discount)
+      setCouponMsg(`Cupón "${res.code}" aplicado: −${fmtMoney(res.discount)}`)
+    } catch (err) {
+      setCouponDiscount(0)
+      setCouponMsg(err instanceof Error ? err.message : 'Cupón inválido')
+    } finally { setCouponLoading(false) }
+  }
 
   const suggestionsToShow = useMemo(() => {
     const cartIds = new Set(items.map((i) => i.productId))
@@ -102,9 +147,14 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
     setMsg('')
     if (step === 1 && count === 0) return
     if (step === 2) {
-      if (fulfillment === 'shipping' && (!shipCity.trim() || !shipAddress.trim() || !shipPhone.trim())) {
-        setMsg('Completa ciudad, dirección y teléfono para el envío.')
-        return
+      if (fulfillment === 'shipping') {
+        if (!shipCity.trim()) { setMsg('Ingresa la ciudad de envío.'); return }
+        if (shipCity.trim().length < 3) { setMsg('La ciudad debe tener al menos 3 caracteres.'); return }
+        if (!shipAddress.trim()) { setMsg('Ingresa la dirección de envío.'); return }
+        if (shipAddress.trim().length < 10) { setMsg('La dirección debe tener al menos 10 caracteres.'); return }
+        if (!shipPhone.trim()) { setMsg('Ingresa un teléfono de contacto.'); return }
+        const digits = shipPhone.replace(/\D/g, '')
+        if (digits.length < 10) { setMsg('El teléfono debe tener al menos 10 dígitos.'); return }
       }
       if (fulfillment === 'installing' && user && !motorcycleId) {
         setMsg('Selecciona una moto para la instalación.')
@@ -116,10 +166,15 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
       }
     }
     if (step === 3 && !user) {
-      if (!guestName.trim() || !guestEmail.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(guestEmail)) {
-        setMsg('Completa tu nombre y un email válido.')
+      if (!guestName.trim()) { setMsg('Ingresa tu nombre.'); return }
+      if (guestName.trim().length < 3) { setMsg('El nombre debe tener al menos 3 caracteres.'); return }
+      if (!guestEmail.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(guestEmail)) {
+        setMsg('Ingresa un email válido.')
         return
       }
+    }
+    if (step === 3) {
+      setCheckoutToken(crypto.randomUUID())
     }
     setStep((s) => Math.min(4, s + 1))
   }
@@ -127,6 +182,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
   function prevStep() { setMsg(''); setStep((s) => Math.max(1, s - 1)) }
 
   async function checkout() {
+    if (checkingOut || !checkoutToken) return
     setCheckingOut(true); setMsg('')
     try {
       if (!user) {
@@ -137,7 +193,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
             fulfillment, payment_method: paymentMethod,
             guest_name: guestName, guest_email: guestEmail, guest_phone: guestPhone || null,
             shipping_address: fulfillment === 'shipping' ? { city: shipCity, address: shipAddress, phone: shipPhone, notes: shipNotes || null } : null,
-            tracking_number: trackingNumber || null,
+            checkout_token: checkoutToken,
           }),
         })
         setDone(inv); clear()
@@ -150,7 +206,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
             motorcycle_id: fulfillment === 'installing' && motorcycleId ? Number(motorcycleId) : null,
             payment_method: paymentMethod, points_to_use: pointsToUse,
             shipping_address: fulfillment === 'shipping' ? { city: shipCity, address: shipAddress, phone: shipPhone, notes: shipNotes || null } : null,
-            tracking_number: trackingNumber || null,
+            checkout_token: checkoutToken,
           }),
         })
         setDone(inv); clear()
@@ -267,7 +323,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                 </button>
               </div>
 
-              {/* Free shipping bar */}
               {fulfillment === 'shipping' && (
                 <div className="mt-4 rounded-xl border border-carbon-200 bg-carbon-50 p-4">
                   <div className="flex items-center justify-between text-sm">
@@ -285,7 +340,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                 </div>
               )}
 
-              {/* Product list */}
               <div className="mt-5 space-y-3">
                 {items.map((i) => (
                   <div key={cartKey(i)} className="card flex items-center gap-4 p-4">
@@ -317,7 +371,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                 ))}
               </div>
 
-              {/* Bottom actions */}
               <div className="mt-5 flex flex-col items-stretch justify-between gap-4 border-t border-carbon-100 pt-5 sm:flex-row sm:items-center">
                 <Link to={storePath} className="flex items-center gap-2 text-sm font-semibold text-carbon-600 transition hover:text-brand-600">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full border border-carbon-200 transition group-hover:border-brand-500">←</span>
@@ -329,41 +382,70 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
           )}
 
           {step === 2 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-black text-carbon-900">¿Cómo lo recibes?</h2>
-              <div className="space-y-3">
-                {fulfillmentOptions.map((o) => (
-                  <label key={o.value} className={`card flex cursor-pointer items-center gap-4 p-4 transition ${fulfillment === o.value ? 'ring-2 ring-brand-500 border-brand-300' : ''}`}>
-                    <input type="radio" name="fulfillment" value={o.value} checked={fulfillment === o.value} onChange={() => setFulfillment(o.value)} className="sr-only" />
-                    <span className="text-2xl">{o.icon}</span>
-                    <div className="min-w-0 flex-1"><p className="font-semibold text-carbon-900">{o.label}</p><p className="text-sm text-carbon-500">{o.desc}</p></div>
-                    {fulfillment === o.value && <span className="h-6 w-6 rounded-full bg-brand-500 text-white flex items-center justify-center text-sm">✓</span>}
-                  </label>
-                ))}
+            <div>
+              <h2 className="mb-5 text-xl font-black text-carbon-900">¿Cómo lo recibes?</h2>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-5">
+                {/* Opciones de entrega — columna izquierda */}
+                <div className="space-y-3 sm:col-span-2">
+                  {fulfillmentOptions.map((o) => (
+                    <label key={o.value} className={`card flex cursor-pointer items-center gap-4 p-4 transition ${fulfillment === o.value ? 'ring-2 ring-brand-500 border-brand-300 shadow-md' : 'hover:border-carbon-300'}`}>
+                      <input type="radio" name="fulfillment" value={o.value} checked={fulfillment === o.value} onChange={() => setFulfillment(o.value)} className="sr-only" />
+                      <span className="text-2xl">{o.icon}</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-carbon-900">{o.label}</p>
+                        <p className="text-xs text-carbon-500">{o.desc}</p>
+                      </div>
+                      {fulfillment === o.value && <span className="h-6 w-6 shrink-0 rounded-full bg-brand-500 text-white flex items-center justify-center text-sm">✓</span>}
+                    </label>
+                  ))}
+                </div>
+
+                {/* Formulario contextual — columna derecha */}
+                <div className="sm:col-span-3">
+                  {fulfillment === 'shipping' && (
+                    <div className="card p-5 space-y-3">
+                      <h3 className="text-sm font-bold uppercase tracking-wide text-brand-600">📍 Dirección de envío</h3>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <input value={shipCity} onChange={(e) => setShipCity(e.target.value)} placeholder="Ciudad *" className={inputCls} />
+                        <input value={shipPhone} onChange={(e) => setShipPhone(e.target.value)} placeholder="Teléfono de contacto *" type="tel" className={inputCls} />
+                      </div>
+                      <input value={shipAddress} onChange={(e) => setShipAddress(e.target.value)} placeholder="Dirección completa *" className={inputCls} />
+                      <textarea value={shipNotes} onChange={(e) => setShipNotes(e.target.value)} placeholder="Referencias (barrio, punto conocido, etc.)" rows={2} className={`${inputCls} resize-none`} />
+                    </div>
+                  )}
+
+                  {fulfillment === 'installing' && user && (
+                    <div className="card p-5">
+                      <h3 className="text-sm font-bold uppercase tracking-wide text-brand-600">🔧 Moto para instalación</h3>
+                      <select value={motorcycleId} onChange={(e) => setMotorcycleId(e.target.value)} className="garaje-input mt-3">
+                        <option value="">Selecciona una moto</option>
+                        {motorcycles.map((mt) => <option key={mt.id} value={mt.id}>{mt.nickname || mt.plate || 'Moto'} {mt.model?.name ? `· ${mt.model.name}` : ''}</option>)}
+                      </select>
+                    </div>
+                  )}
+
+                  {fulfillment === 'installing' && !user && (
+                    <div className="card border-amber-200 bg-amber-50 p-5 text-center">
+                      <p className="text-sm text-amber-800">Para instalación debes <Link to="/login" className="font-bold underline">iniciar sesión</Link> y registrar tu moto en Mi Garaje.</p>
+                    </div>
+                  )}
+
+                  {fulfillment === 'pickup' && (
+                    <div className="card border-green-200 bg-green-50 p-5">
+                      <h3 className="text-sm font-bold text-green-800">🏠 Retiro en taller</h3>
+                      <p className="mt-1 text-sm text-green-700">Recoge tu pedido sin costo adicional. Te notificaremos cuando esté listo.</p>
+                    </div>
+                  )}
+
+                  {!fulfillment && (
+                    <div className="card border-dashed border-carbon-200 bg-carbon-50 p-8 text-center">
+                      <p className="text-sm text-carbon-400">Selecciona un método de entrega para continuar</p>
+                    </div>
+                  )}
+                </div>
               </div>
-              {fulfillment === 'shipping' && (
-                <div className="card p-5 space-y-3">
-                  <h3 className="text-sm font-bold uppercase tracking-wide text-carbon-500">Dirección de envío</h3>
-                  <input value={shipCity} onChange={(e) => setShipCity(e.target.value)} placeholder="Ciudad *" className={inputCls} />
-                  <input value={shipAddress} onChange={(e) => setShipAddress(e.target.value)} placeholder="Dirección completa *" className={inputCls} />
-                  <input value={shipPhone} onChange={(e) => setShipPhone(e.target.value)} placeholder="Teléfono de contacto *" type="tel" className={inputCls} />
-                  <textarea value={shipNotes} onChange={(e) => setShipNotes(e.target.value)} placeholder="Referencias (barrio, punto conocido...)" rows={2} className={`${inputCls} resize-none`} />
-                  <div>
-                    <p className="text-xs font-semibold text-carbon-500">Número de guía</p>
-                    <input value={trackingNumber} onChange={(e) => setTrackingNumber(e.target.value)} placeholder="Se asigna después del envío" className={`${inputCls} mt-1`} disabled />
-                  </div>
-                </div>
-              )}
-              {fulfillment === 'installing' && user && (
-                <div className="card p-5">
-                  <h3 className="text-sm font-bold uppercase tracking-wide text-carbon-500">Moto para instalación</h3>
-                  <select value={motorcycleId} onChange={(e) => setMotorcycleId(e.target.value)} className="garaje-input mt-2">
-                    <option value="">Selecciona una moto</option>
-                    {motorcycles.map((mt) => <option key={mt.id} value={mt.id}>{mt.nickname || mt.plate || 'Moto'} {mt.model?.name ? `· ${mt.model.name}` : ''}</option>)}
-                  </select>
-                </div>
-              )}
-              <div className="flex justify-between pt-2">
+
+              <div className="mt-6 flex justify-between border-t border-carbon-100 pt-5">
                 <button onClick={prevStep} className="btn-ghost">← Atrás</button>
                 <button onClick={nextStep} className="btn-primary">Continuar con el pago →</button>
               </div>
@@ -371,35 +453,71 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
           )}
 
           {step === 3 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-black text-carbon-900">Método de pago</h2>
-              <div className="space-y-3">
-                {paymentMethods.map((m) => (
-                  <label key={m.value} className={`card flex cursor-pointer items-center gap-4 p-4 transition ${paymentMethod === m.value ? 'ring-2 ring-brand-500 border-brand-300' : ''}`}>
-                    <input type="radio" name="payment" value={m.value} checked={paymentMethod === m.value} onChange={() => setPaymentMethod(m.value)} className="sr-only" />
-                    <span className="text-2xl">{m.icon}</span>
-                    <div className="min-w-0 flex-1"><p className="font-semibold text-carbon-900">{m.label}</p><p className="text-sm text-carbon-500">{m.desc}</p></div>
-                    {paymentMethod === m.value && <span className="h-6 w-6 rounded-full bg-brand-500 text-white flex items-center justify-center text-sm">✓</span>}
-                  </label>
-                ))}
+            <div>
+              <h2 className="mb-5 text-xl font-black text-carbon-900">Método de pago</h2>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-5">
+                {/* Métodos de pago — columna izquierda */}
+                <div className="space-y-3 sm:col-span-2">
+                  {paymentMethods.map((m) => (
+                    <label key={m.value} className={`card flex cursor-pointer items-center gap-4 p-4 transition ${paymentMethod === m.value ? 'ring-2 ring-brand-500 border-brand-300 shadow-md' : 'hover:border-carbon-300'}`}>
+                      <input type="radio" name="payment" value={m.value} checked={paymentMethod === m.value} onChange={() => setPaymentMethod(m.value)} className="sr-only" />
+                      <span className="text-2xl">{m.icon}</span>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-carbon-900">{m.label}</p>
+                        <p className="text-xs text-carbon-500">{m.desc}</p>
+                      </div>
+                      {paymentMethod === m.value && <span className="h-6 w-6 shrink-0 rounded-full bg-brand-500 text-white flex items-center justify-center text-sm">✓</span>}
+                    </label>
+                  ))}
+                </div>
+
+                {/* Formulario contextual — columna derecha */}
+                <div className="space-y-4 sm:col-span-3">
+                  {paymentMethod === 'transferencia' && (
+                    <div className="card p-5">
+                      <h3 className="text-sm font-bold uppercase tracking-wide text-brand-600">🏦 Datos para transferencia</h3>
+                      <div className="mt-3">
+                        <PaymentInfoBlock />
+                      </div>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'tarjeta' && (
+                    <div className="card border-blue-200 bg-blue-50 p-5 text-center">
+                      <p className="text-sm font-bold text-blue-800">💳 Pago con tarjeta</p>
+                      <p className="mt-1 text-sm text-blue-700">Serás redirigido a la pasarela de pago segura después de confirmar tu pedido.</p>
+                    </div>
+                  )}
+
+                  {paymentMethod === 'efectivo' && (
+                    <div className="card border-green-200 bg-green-50 p-5">
+                      <h3 className="text-sm font-bold text-green-800">💵 Pago en efectivo</h3>
+                      <p className="mt-1 text-sm text-green-700">Paga al retirar tu pedido en el taller o al recibirlo en tu domicilio.</p>
+                    </div>
+                  )}
+
+                  {user && (
+                    <div className="card p-5">
+                      <h3 className="text-sm font-bold uppercase tracking-wide text-carbon-500">Puntos de lealtad</h3>
+                      <input type="number" min={0} value={pointsToUse} onChange={(e) => setPointsToUse(Math.max(0, Number(e.target.value)))} className="garaje-input mt-2" placeholder="0" />
+                      <p className="mt-1 text-xs text-carbon-400">Cada punto vale {fmtMoney(pointsValue)} de descuento.</p>
+                    </div>
+                  )}
+
+                  {!user && (
+                    <div className="card p-5 space-y-3">
+                      <h3 className="text-sm font-bold uppercase tracking-wide text-carbon-500">Tus datos</h3>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        <input value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Nombre completo *" className={inputCls} />
+                        <input value={guestPhone} onChange={(e) => setGuestPhone(e.target.value)} placeholder="Teléfono (opcional)" type="tel" className={inputCls} />
+                      </div>
+                      <input value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} placeholder="Email *" type="email" className={inputCls} />
+                    </div>
+                  )}
+                </div>
               </div>
-              {paymentMethod === 'transferencia' && <PaymentInfoBlock />}
-              {user && (
-                <div className="card p-5">
-                  <h3 className="text-sm font-bold uppercase tracking-wide text-carbon-500">Puntos de lealtad</h3>
-                  <input type="number" min={0} value={pointsToUse} onChange={(e) => setPointsToUse(Math.max(0, Number(e.target.value)))} className="garaje-input mt-2" placeholder="0" />
-                  <p className="mt-1 text-xs text-carbon-400">Cada punto vale {fmtMoney(pointsValue)} de descuento.</p>
-                </div>
-              )}
-              {!user && (
-                <div className="card p-5 space-y-3">
-                  <h3 className="text-sm font-bold uppercase tracking-wide text-carbon-500">Tus datos</h3>
-                  <input value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Nombre completo *" className={inputCls} />
-                  <input value={guestEmail} onChange={(e) => setGuestEmail(e.target.value)} placeholder="Email *" type="email" className={inputCls} />
-                  <input value={guestPhone} onChange={(e) => setGuestPhone(e.target.value)} placeholder="Teléfono (opcional)" type="tel" className={inputCls} />
-                </div>
-              )}
-              <div className="flex justify-between pt-2">
+
+              <div className="mt-6 flex justify-between border-t border-carbon-100 pt-5">
                 <button onClick={prevStep} className="btn-ghost">← Atrás</button>
                 <button onClick={nextStep} className="btn-primary">Continuar con la confirmación →</button>
               </div>
@@ -407,13 +525,15 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
           )}
 
           {step === 4 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-black text-carbon-900">Confirma tu pedido</h2>
+            <div>
+              <h2 className="mb-5 text-xl font-black text-carbon-900">Confirma tu pedido</h2>
+
+              {/* Resumen de artículos */}
               <div className="card p-5">
-                <h3 className="text-xs font-bold uppercase tracking-wide text-carbon-500">Artículos</h3>
-                <div className="mt-3 space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wide text-carbon-500">Artículos ({count})</h3>
+                <div className="mt-3 divide-y divide-carbon-100">
                   {items.map((i) => (
-                    <div key={cartKey(i)} className="flex items-center gap-3">
+                    <div key={cartKey(i)} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
                       <ProductImg src={i.image} name={i.name} className="h-12 w-12 shrink-0" />
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-semibold text-carbon-900">{i.name}</p>
@@ -430,15 +550,33 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                   ))}
                 </div>
               </div>
-              <div className="card p-5 space-y-2 text-sm">
-                <div className="flex justify-between"><span className="text-carbon-500">Entrega</span><span className="font-medium">{fulfillmentOptions.find((o) => o.value === fulfillment)?.label}</span></div>
-                {fulfillment === 'shipping' && <div className="text-carbon-600"><p>{shipCity}, {shipAddress}</p><p>Tel: {shipPhone}</p></div>}
-                <div className="flex justify-between"><span className="text-carbon-500">Pago</span><span className="font-medium">{paymentMethods.find((m) => m.value === paymentMethod)?.label}</span></div>
-                {!user && <div className="text-carbon-600"><p>{guestName} · {guestEmail}</p></div>}
+
+              {/* Resumen de entrega y pago */}
+              <div className="card mt-4 p-5">
+                <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wide text-carbon-500">Entrega</p>
+                    <p className="mt-1 font-medium text-carbon-900">{fulfillmentOptions.find((o) => o.value === fulfillment)?.icon} {fulfillmentOptions.find((o) => o.value === fulfillment)?.label}</p>
+                    {fulfillment === 'shipping' && <p className="text-xs text-carbon-500 mt-0.5">{shipCity}, {shipAddress}</p>}
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wide text-carbon-500">Pago</p>
+                    <p className="mt-1 font-medium text-carbon-900">{paymentMethods.find((m) => m.value === paymentMethod)?.icon} {paymentMethods.find((m) => m.value === paymentMethod)?.label}</p>
+                    {!user && <p className="text-xs text-carbon-500 mt-0.5">{guestName} · {guestEmail}</p>}
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between pt-2">
+
+              <div className="mt-6 flex justify-between border-t border-carbon-100 pt-5">
                 <button onClick={prevStep} className="btn-ghost">← Atrás</button>
-                <button onClick={checkout} disabled={checkingOut} className="btn-primary btn-shine">{checkingOut ? 'Procesando...' : 'Confirmar y pagar'}</button>
+                <button onClick={checkout} disabled={checkingOut} className="btn-primary btn-shine flex items-center gap-2">
+                  {checkingOut ? (
+                    <>
+                      <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+                      Procesando...
+                    </>
+                  ) : 'Confirmar y pagar'}
+                </button>
               </div>
             </div>
           )}
@@ -447,7 +585,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
         {/* ── Sidebar ── */}
         <div className="lg:col-span-1">
           <div className="sticky top-24 space-y-4">
-            {/* Delivery + Payment */}
+            {/* Resumen rápido */}
             {(fulfillment || paymentMethod) && (
               <div className="card p-4 space-y-2">
                 {fulfillment && (
@@ -465,20 +603,50 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
               </div>
             )}
 
-            {/* Totals */}
+            {/* Totales */}
             <div className="card p-5">
-              <div className="space-y-2.5 text-sm">
-                <div className="flex justify-between"><span className="text-carbon-500">Subtotal</span><span className="font-semibold">{fmtMoney(total)}</span></div>
-                {discount > 0 && <div className="flex justify-between text-green-700"><span>Descuento</span><span>−{fmtMoney(discount)}</span></div>}
+              <h3 className="text-xs font-bold uppercase tracking-wide text-carbon-500">Resumen</h3>
+              <div className="mt-3 space-y-2.5 text-sm">
+                <div className="flex justify-between"><span className="text-carbon-500">Subtotal ({count} artículos)</span><span className="font-semibold">{fmtMoney(total)}</span></div>
+                {loyaltyDiscount > 0 && <div className="flex justify-between text-green-700"><span>Descuento (puntos)</span><span>−{fmtMoney(loyaltyDiscount)}</span></div>}
+                {couponDiscount > 0 && <div className="flex justify-between text-green-700"><span>Cupón</span><span>−{fmtMoney(couponDiscount)}</span></div>}
                 <div className="flex justify-between"><span className="text-carbon-500">Envío</span><span className={`font-semibold ${shippingFee > 0 ? 'text-carbon-900' : 'text-green-600'}`}>{shippingFee > 0 ? fmtMoney(shippingFee) : 'Gratis'}</span></div>
+                {taxEnabled && <div className="flex justify-between"><span className="text-carbon-500">IVA ({taxRate}%)</span><span className="font-semibold">{fmtMoney(tax)}</span></div>}
               </div>
               <div className="mt-3 flex items-center justify-between border-t border-carbon-200 pt-3">
                 <span className="text-base font-bold text-carbon-900">Total</span>
                 <span className="text-xl font-black text-brand-600">{fmtMoney(finalTotal)}</span>
               </div>
+              {fulfillment === 'shipping' && (
+                <p className="mt-2 text-xs text-center text-carbon-400">Estimado: {deliveryDate}</p>
+              )}
             </div>
 
+            {/* Cupón */}
+            {step >= 3 && (
+              <div className="card p-4">
+                <p className="text-xs font-bold uppercase tracking-wide text-carbon-500 mb-2">Cupón de descuento</p>
+                <div className="flex gap-2">
+                  <input value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} placeholder="Código" className="flex-1 rounded-lg border border-carbon-200 px-3 py-2 text-sm uppercase" />
+                  <button onClick={applyCoupon} disabled={couponLoading || !couponCode.trim()} className="rounded-lg bg-brand-600 px-3 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50">
+                    {couponLoading ? '...' : 'Aplicar'}
+                  </button>
+                </div>
+                {couponMsg && <p className={`mt-2 text-xs font-medium ${couponDiscount > 0 ? 'text-green-600' : 'text-red-600'}`}>{couponMsg}</p>}
+              </div>
+            )}
+
             {msg && <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{msg}</p>}
+
+            {/* Badges de confianza */}
+            <div className="grid grid-cols-2 gap-2">
+              {trustBadges.map((b) => (
+                <div key={b.label} className="flex items-center gap-2 rounded-xl border border-carbon-100 bg-carbon-50 px-3 py-2">
+                  <span className="text-base">{b.icon}</span>
+                  <span className="text-xs font-medium text-carbon-600">{b.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -507,32 +675,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
           </div>
         </div>
       )}
-
-      {/* ── Confianza ── */}
-      <div className="marquee-mask mt-10 overflow-hidden">
-        <div className="marquee-track items-center gap-3 pr-3">
-          {[
-            { icon: '🛡️', title: 'Compra segura', desc: 'Tus datos están protegidos' },
-            { icon: '⚙️', title: 'Repuestos originales', desc: 'Productos certificados' },
-            { icon: '🎧', title: 'Soporte técnico', desc: 'Asesoría experta' },
-            { icon: '🚚', title: 'Envíos a todo el país', desc: 'Recíbelo donde estés' },
-            { icon: '🔄', title: 'Devoluciones fáciles', desc: 'Hasta 7 días' },
-            { icon: '🛡️', title: 'Compra segura', desc: 'Tus datos están protegidos' },
-            { icon: '⚙️', title: 'Repuestos originales', desc: 'Productos certificados' },
-            { icon: '🎧', title: 'Soporte técnico', desc: 'Asesoría experta' },
-            { icon: '🚚', title: 'Envíos a todo el país', desc: 'Recíbelo donde estés' },
-            { icon: '🔄', title: 'Devoluciones fáciles', desc: 'Hasta 7 días' },
-          ].map((b, i) => (
-            <div key={`${b.title}-${i}`} className="flex shrink-0 items-center gap-3 rounded-2xl border border-carbon-100 bg-white px-5 py-3 shadow-sm">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-xl transition group-hover:scale-110">{b.icon}</span>
-              <div>
-                <p className="whitespace-nowrap text-sm font-semibold text-carbon-900">{b.title}</p>
-                <p className="whitespace-nowrap text-xs text-carbon-500">{b.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* ── WhatsApp ── */}
       <div className="mt-8 rounded-xl border border-carbon-200 bg-carbon-50 py-4 text-center text-sm text-carbon-600">

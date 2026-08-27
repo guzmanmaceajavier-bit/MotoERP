@@ -24,6 +24,7 @@ class PublicController extends Controller
             'payment_instructions' => (string) \App\Support\Settings::get('payment_instructions', ''),
             'shipping_fee' => (float) \App\Support\Settings::get('store_shipping_fee', config('store.shipping_fee', 12000)),
             'free_shipping_threshold' => (float) \App\Support\Settings::get('store_free_shipping_threshold', config('store.free_shipping_threshold', 150000)),
+            'delivery_days' => (int) \App\Support\Settings::get('delivery_days', 3),
         ]);
     }
 

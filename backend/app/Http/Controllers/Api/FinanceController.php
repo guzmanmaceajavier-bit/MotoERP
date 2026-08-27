@@ -1131,6 +1131,7 @@ return response()->json([
             'privacy_content' => 'nullable|string|max:20000',
             'store_shipping_fee' => 'nullable|numeric|min:0',
             'store_free_shipping_threshold' => 'nullable|numeric|min:0',
+            'delivery_days' => 'nullable|integer|min:1|max:30',
         ]);
 
         $map = [
@@ -1216,6 +1217,9 @@ return response()->json([
         }
         if (array_key_exists('store_free_shipping_threshold', $validated)) {
             Settings::set('store_free_shipping_threshold', (string) $validated['store_free_shipping_threshold']);
+        }
+        if (array_key_exists('delivery_days', $validated)) {
+            Settings::set('delivery_days', (string) ($validated['delivery_days'] ?? 3));
         }
 
         return response()->json(['message' => 'Configuración actualizada']);

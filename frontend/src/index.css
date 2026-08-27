@@ -383,6 +383,19 @@
   animation: moto-fade-up 0.4s ease-out both;
 }
 
+.anim-slide-in-right {
+  animation: moto-slide-in-right 0.3s ease-out both;
+}
+
+@keyframes moto-slide-in-right {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.anim-pop {
+  animation: moto-pop 0.25s ease-out both;
+}
+
 .anim-pulse-ring {
   animation: moto-pulse-ring 2s infinite;
 }

@@ -10,6 +10,7 @@ import ChatBot from '../components/ChatBot'
 import SiteFooter from '../components/SiteFooter'
 import { BackToTop } from '../components/BackToTop'
 import CookieConsent from '../components/CookieConsent'
+import CartDrawer from '../components/CartDrawer'
 import { publicBreadcrumbs } from '../lib/pageMeta'
 import { useSiteInfo } from '../lib/useSiteImages'
 import { Logo } from '../components/Logo'
@@ -25,7 +26,7 @@ const links = [
 
 export default function PublicLayout() {
   const { user, loading } = useAuth()
-  const { count } = useCart()
+  const { count, setDrawerOpen } = useCart()
   const { mode, setMode } = useTheme()
   const location = useLocation()
   const navigate = useNavigate()
@@ -105,15 +106,9 @@ export default function PublicLayout() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
-            <NavLink
-              to="/carrito"
-              className={({ isActive }) =>
-                `relative flex h-10 w-10 items-center justify-center rounded-xl border transition ${
-                  isActive
-                    ? 'border-brand-500 bg-brand-50 text-brand-600'
-                    : 'border-carbon-300 text-carbon-700 hover:border-brand-500 hover:bg-brand-50 hover:text-brand-600'
-                }`
-              }
+            <button
+              onClick={() => setDrawerOpen(true)}
+              className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-carbon-300 text-carbon-700 transition hover:border-brand-500 hover:bg-brand-50 hover:text-brand-600"
               title="Carrito"
               aria-label="Carrito"
             >
@@ -125,7 +120,7 @@ export default function PublicLayout() {
                   {count}
                 </span>
               )}
-            </NavLink>
+            </button>
             {loading ? null : user ? (
               isStaffRole(user.role) ? (
                 <NavLink
@@ -251,6 +246,7 @@ export default function PublicLayout() {
           </svg>
         )}
       </button>
+      <CartDrawer />
       <SiteFooter />
     </div>
   )

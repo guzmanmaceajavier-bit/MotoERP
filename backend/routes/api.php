@@ -68,6 +68,7 @@ Route::get('products', [PublicController::class, 'products']);
         Route::get('favorites/{product}/price-history', [StoreController::class, 'priceHistory']);
         Route::get('favorites/{product}/compare', [StoreController::class, 'compare']);
         Route::post('favorites/share', [StoreController::class, 'share']);
+        Route::post('store/validate-coupon', [StoreController::class, 'validateCoupon']);
 
         Route::get('notifications', [NotificationController::class, 'index']);
         Route::get('notifications/unread-count', [NotificationController::class, 'unreadCount']);
