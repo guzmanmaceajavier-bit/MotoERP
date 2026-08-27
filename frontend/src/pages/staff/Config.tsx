@@ -75,7 +75,6 @@ interface Settings {
   social_facebook: string
   social_instagram: string
   social_tiktok: string
-  tax_rate: number
   schedule_open: string
   schedule_close: string
   closed_days: number[]
@@ -287,7 +286,6 @@ export default function Config() {
   const [socialFacebook, setSocialFacebook] = useState('')
   const [socialInstagram, setSocialInstagram] = useState('')
   const [socialTiktok, setSocialTiktok] = useState('')
-  const [taxRate, setTaxRate] = useState('')
 
   // Horarios
   const [scheduleOpen, setScheduleOpen] = useState('09:00')
@@ -357,7 +355,6 @@ export default function Config() {
     setSocialFacebook(s.social_facebook || '')
     setSocialInstagram(s.social_instagram || '')
     setSocialTiktok(s.social_tiktok || '')
-    setTaxRate(String(s.tax_rate))
     setScheduleOpen(s.schedule_open)
     setScheduleClose(s.schedule_close)
     const satEntry = (s.day_hours || []).find((h) => h.day === 6)
@@ -746,9 +743,6 @@ export default function Config() {
                       Se guardará como +{country.dial} {phoneLocal} y se usará para WhatsApp y el botón flotante.
                     </p>
                   </Field>
-                  <Field label="Impuesto % (IVA/IGV)">
-                    <Input type="number" min={0} max={100} value={taxRate} onChange={(e) => setTaxRate(e.target.value)} variant="brand" />
-                  </Field>
                 </div>
               </div>
             </div>
@@ -788,7 +782,6 @@ export default function Config() {
                   social_facebook: socialFacebook,
                   social_instagram: socialInstagram,
                   social_tiktok: socialTiktok,
-                  tax_rate: Number(taxRate) || 0,
                 })}
               >
                 {saving ? 'Guardando...' : 'Guardar identidad'}

@@ -31,7 +31,7 @@ const DEFAULT_PRIVACY = [
   },
   {
     h: '7. Derechos de los titulares',
-    p: (name: string, email: string, phone: string) => `De acuerdo con la normativa aplicable, los titulares de los datos personales podrán:\n\n• Conocer, actualizar y rectificar sus datos personales.\n• Solicitar información sobre el uso de sus datos.\n• Solicitar la supresión de sus datos cuando sea procedente.\n• Solicitar la revocatoria de la autorización cuando corresponda.\n• Presentar consultas y reclamos relacionados con el tratamiento de sus datos.\n• Ejercer los demás derechos reconocidos por la normativa colombiana aplicable.\n\nPara ejercer estos derechos puedes comunicarte mediante:\n\nCorreo: ${email}\nWhatsApp: ${phone}\n\nLas solicitudes serán atendidas de acuerdo con los procedimientos y plazos establecidos por la normativa aplicable.`,
+    p: (_name: string, email: string, phone: string) => `De acuerdo con la normativa aplicable, los titulares de los datos personales podrán:\n\n• Conocer, actualizar y rectificar sus datos personales.\n• Solicitar información sobre el uso de sus datos.\n• Solicitar la supresión de sus datos cuando sea procedente.\n• Solicitar la revocatoria de la autorización cuando corresponda.\n• Presentar consultas y reclamos relacionados con el tratamiento de sus datos.\n• Ejercer los demás derechos reconocidos por la normativa colombiana aplicable.\n\nPara ejercer estos derechos puedes comunicarte mediante:\n\nCorreo: ${email}\nWhatsApp: ${phone}\n\nLas solicitudes serán atendidas de acuerdo con los procedimientos y plazos establecidos por la normativa aplicable.`,
   },
   {
     h: '8. Seguridad',
@@ -118,7 +118,7 @@ const DEFAULT_TERMS = [
   },
   {
     h: '18. Contacto y reclamaciones',
-    p: (name: string, email: string, phone: string, address: string) => `Para consultas, solicitudes, garantías, devoluciones o reclamaciones relacionadas con los productos y servicios, el usuario podrá utilizar los canales oficiales disponibles en la plataforma.\n\nCorreo electrónico: ${email}\nWhatsApp: ${phone}\nDirección: ${address}`,
+    p: (_name: string, email: string, phone: string, address: string) => `Para consultas, solicitudes, garantías, devoluciones o reclamaciones relacionadas con los productos y servicios, el usuario podrá utilizar los canales oficiales disponibles en la plataforma.\n\nCorreo electrónico: ${email}\nWhatsApp: ${phone}\nDirección: ${address}`,
   },
 ]
 

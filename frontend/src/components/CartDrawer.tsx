@@ -8,7 +8,7 @@ function ProductImg({ src, name, className = '' }: { src?: string; name: string;
   return <div className={`flex items-center justify-center rounded-lg bg-carbon-100 text-carbon-400 ${className}`}>{name[0]}</div>
 }
 
-export default function CartDrawer({ storePath = '/tienda' }: { storePath?: string }) {
+export default function CartDrawer({ storePath: _storePath = '/tienda' }: { storePath?: string }) {
   const { items, count, total, drawerOpen, setDrawerOpen, setQuantity, remove } = useCart()
 
   useEffect(() => {
