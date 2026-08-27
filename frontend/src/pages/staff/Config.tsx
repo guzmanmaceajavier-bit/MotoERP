@@ -98,6 +98,13 @@ interface Settings {
   privacy_content: string
   store_shipping_fee: number
   store_free_shipping_threshold: number
+  tax_enabled: string | boolean
+  tax_rate: number
+  delivery_days: number
+  coupon_enabled: string | boolean
+  mercadopago_enabled: string | boolean
+  mercadopago_public_key: string
+  mercadopago_access_token: string
 }
 
 type Holiday = { date: string; mode?: 'closed' | 'saturday' | 'custom'; open?: string; close?: string }
@@ -298,6 +305,13 @@ export default function Config() {
   const [pointsValue, setPointsValue] = useState('')
   const [paymentOptions, setPaymentOptions] = useState<PaymentOption[]>([])
   const [paymentInstructions, setPaymentInstructions] = useState('')
+  const [taxEnabled, setTaxEnabled] = useState(false)
+  const [taxRate, setTaxRate] = useState('19')
+  const [deliveryDays, setDeliveryDays] = useState('3')
+  const [couponEnabled, setCouponEnabled] = useState(true)
+  const [mpEnabled, setMpEnabled] = useState(false)
+  const [mpPublicKey, setMpPublicKey] = useState('')
+  const [mpAccessToken, setMpAccessToken] = useState('')
 
   // Tienda y envíos
   const [storeShippingFee, setStoreShippingFee] = useState('')
@@ -358,6 +372,13 @@ export default function Config() {
     setPointsValue(String(s.points_value))
     setPaymentOptions(s.payment_options || [])
     setPaymentInstructions(s.payment_instructions || '')
+    setTaxEnabled(s.tax_enabled === '1' || s.tax_enabled === true)
+    setTaxRate(String(s.tax_rate ?? '19'))
+    setDeliveryDays(String(s.delivery_days ?? '3'))
+    setCouponEnabled(s.coupon_enabled !== '0' && s.coupon_enabled !== false)
+    setMpEnabled(s.mercadopago_enabled === '1' || s.mercadopago_enabled === true)
+    setMpPublicKey(s.mercadopago_public_key || '')
+    setMpAccessToken(s.mercadopago_access_token || '')
     setStoreShippingFee(s.store_shipping_fee != null ? String(s.store_shipping_fee) : '')
     setStoreFreeShippingThreshold(s.store_free_shipping_threshold != null ? String(s.store_free_shipping_threshold) : '')
     setWaEnabled(s.whatsapp_enabled)
@@ -1118,6 +1139,72 @@ export default function Config() {
               <Textarea rows={3} value={paymentInstructions} onChange={(e) => setPaymentInstructions(e.target.value)} variant="brand" placeholder="Ej: Realiza la transferencia y luego sube el comprobante en Mis Pedidos." />
             </Field>
 
+            {/* ── IVA ── */}
+            <div className="border-t border-carbon-200 pt-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-semibold text-carbon-900">Impuesto / IVA</h3>
+                  <p className="text-xs text-carbon-400">Activa para cobrar impuestos en la tienda.</p>
+                </div>
+                <Toggle checked={taxEnabled} onChange={setTaxEnabled} />
+              </div>
+              {taxEnabled && (
+                <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <Field label="Tasa de impuesto (%)" hint="porcentaje aplicado al subtotal">
+                    <Input type="number" min={0} max={100} value={taxRate} onChange={(e) => setTaxRate(e.target.value)} variant="brand" />
+                  </Field>
+                </div>
+              )}
+            </div>
+
+            {/* ── Entrega ── */}
+            <div className="border-t border-carbon-200 pt-5">
+              <h3 className="text-sm font-semibold text-carbon-900">Estimación de entrega</h3>
+              <p className="text-xs text-carbon-400">Días hábiles estimados para envío a domicilio.</p>
+              <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Field label="Días de entrega" hint="se muestra como fecha estimada al cliente">
+                  <Input type="number" min={1} max={30} value={deliveryDays} onChange={(e) => setDeliveryDays(e.target.value)} variant="brand" />
+                </Field>
+              </div>
+            </div>
+
+            {/* ── Cupones ── */}
+            <div className="border-t border-carbon-200 pt-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-semibold text-carbon-900">Cupones de descuento</h3>
+                  <p className="text-xs text-carbon-400">Permite a los clientes usar códigos de descuento en el carrito.</p>
+                </div>
+                <Toggle checked={couponEnabled} onChange={setCouponEnabled} />
+              </div>
+            </div>
+
+            {/* ── MercadoPago ── */}
+            <div className="border-t border-carbon-200 pt-5">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-sm font-semibold text-carbon-900">MercadoPago (pago con tarjeta)</h3>
+                  <p className="text-xs text-carbon-400">Activa para aceptar pagos con tarjeta de crédito/débito en línea.</p>
+                </div>
+                <Toggle checked={mpEnabled} onChange={setMpEnabled} />
+              </div>
+              {mpEnabled && (
+                <div className="mt-3 space-y-3">
+                  <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                    Obtén tus credenciales en <strong>mercadopago.com.co → Desarrolladores → Tus integraciones → Datos de integración</strong>.
+                  </div>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <Field label="Public Key" hint="clave pública (empieza con APP_USR-)">
+                      <Input value={mpPublicKey} onChange={(e) => setMpPublicKey(e.target.value)} variant="brand" placeholder="APP_USR-..." />
+                    </Field>
+                    <Field label="Access Token" hint="token de acceso (se guarda en .env, no en BD)">
+                      <Input type="password" value={mpAccessToken} onChange={(e) => setMpAccessToken(e.target.value)} variant="brand" placeholder="APP_USR-..." />
+                    </Field>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="flex justify-end">
               <button
                 className={btnCls}
@@ -1126,6 +1213,13 @@ export default function Config() {
                   points_value: Number(pointsValue) || 0,
                   payment_options: paymentOptions,
                   payment_instructions: paymentInstructions,
+                  tax_enabled: taxEnabled ? '1' : '0',
+                  tax_rate: Number(taxRate) || 0,
+                  delivery_days: Number(deliveryDays) || 3,
+                  coupon_enabled: couponEnabled ? '1' : '0',
+                  mercadopago_enabled: mpEnabled ? '1' : '0',
+                  mercadopago_public_key: mpPublicKey,
+                  mercadopago_access_token: mpAccessToken,
                 })}
               >
                 {saving ? 'Guardando...' : 'Guardar pagos'}
