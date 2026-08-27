@@ -42,7 +42,7 @@ export default function SiteFooter() {
   const {
     workshop_phone: phone = '',
     workshop_address: address = '',
-    workshop_name: siteName = 'MotoSystem',
+    workshop_name: siteName = 'MotoHouse',
     workshop_logo: siteLogo = '',
     social_facebook: fb,
     social_instagram: ig,

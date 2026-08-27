@@ -20,3 +20,5 @@ Thumbs.db
 npm-debug.log*
 dump.sql
 schema.sql
+seed_data.sql
+*.bat

@@ -346,7 +346,7 @@ export default function MyFinances() {
             </button>
             <button
               onClick={() => {
-                const text = `${siteName || 'MotoSystem'} · Factura ${detail.invoice_number} · Total ${currency(detail.total)}`
+                const text = `${siteName || 'MotoHouse'} · Factura ${detail.invoice_number} · Total ${currency(detail.total)}`
                 window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
               }}
               className="btn-outline mt-2 w-full"

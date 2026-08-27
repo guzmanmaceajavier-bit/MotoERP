@@ -36,7 +36,7 @@ export default function PublicLayout() {
   const { workshop_name: siteName, workshop_logo: siteLogo } = useSiteInfo()
 
   useEffect(() => {
-    const name = siteName || 'MotoSystem'
+    const name = siteName || 'MotoHouse'
     const label = (publicBreadcrumbs(location.pathname).slice(-1)[0]?.label ?? 'Inicio').trim()
     document.title = location.pathname === '/' ? name : `${label} · ${name}`
   }, [location.pathname, siteName])

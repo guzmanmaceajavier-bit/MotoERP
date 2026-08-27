@@ -9,7 +9,7 @@ export function Logo({
   name?: string
   image?: string
 }) {
-  const label = name.trim() || 'MotoSystem'
+  const label = name.trim() || 'MotoHouse'
   const [first, ...rest] = label.split(/\s+/)
   return (
     <span className={`group flex items-center gap-3 ${light ? 'text-white' : 'text-carbon-900'}`}>

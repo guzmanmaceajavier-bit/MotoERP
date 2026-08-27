@@ -3,35 +3,90 @@ import { api } from '../lib/api'
 
 const DEFAULT_PRIVACY = [
   {
-    h: 'Uso de tus datos',
-    p: 'Recopilamos tu nombre, correo, teléfono y datos de tu motocicleta únicamente para gestionar citas, órdenes de servicio, facturación y comunicaciones del taller.',
+    h: '1. Responsable del tratamiento',
+    p: 'MotoHouse, taller de motocicletas, es responsable del tratamiento de los datos personales recopilados a través de esta plataforma. Para consultas sobre privacidad, contáctanos al correo electrónico informacion@motohouse.com o al número de WhatsApp disponible en la sección de contacto.',
   },
   {
-    h: 'Comunicaciones',
-    p: 'Podemos enviarte avisos por WhatsApp y correo relacionados con tus órdenes, citas y facturas. Dejarás de recibirlos al cerrar tu cuenta.',
+    h: '2. Datos que recopilamos',
+    p: 'Recopilamos los siguientes datos personales cuando creas una cuenta, agendes una cita, realizas una compra o contactas con nosotros: nombre completo, correo electrónico, número de teléfono, marca y modelo de tu motocicleta, placa (si la proporcionas), y dirección de envío (solo para pedidos con domicilio). También recopilamos datos de navegación como dirección IP, tipo de navegador y páginas visitadas, de forma automática.',
   },
   {
-    h: 'Protección',
-    p: 'Tu contraseña se almacena cifrada y no compartimos tu información con terceros fuera del funcionamiento del taller.',
+    h: '3. Finalidad del tratamiento',
+    p: 'Tus datos se utilizan exclusivamente para: gestionar citas de servicio, procesar órdenes de compra y repuestos, enviar notificaciones sobre el estado de tu moto (por WhatsApp o correo), gestionar facturación y garantías, y mejorar la experiencia de uso de la plataforma. No utilizamos tus datos para fines distintos a los aquí descritos.',
+  },
+  {
+    h: '4. Base legal',
+    p: 'El tratamiento de tus datos se realiza bajo tu consentimiento explícito (al crear tu cuenta o agendar una cita), la ejecución de un contrato (prestación de servicios o venta de repuestos), y el cumplimiento de obligaciones legales en materia tributaria y contable.',
+  },
+  {
+    h: '5. Compartición de datos',
+    p: 'No vendemos ni compartimos tus datos personales con terceros para fines de marketing. Únicamente compartimos información con: proveedores de servicios de mensajería (para envíos), plataformas de pago (para procesar transacciones), y autoridades competentes cuando exista una obligación legal.',
+  },
+  {
+    h: '6. Conservación de datos',
+    p: 'Tus datos se conservan mientras tu cuenta esté activa. Si eliminas tu cuenta, tus datos personales se eliminarán o anonimizarán en un plazo máximo de 30 días, excepto aquellos que debamos conservar por obligación legal (facturas, registros contables por 5 años).',
+  },
+  {
+    h: '7. Tus derechos',
+    p: 'Tienes derecho a: acceder a tus datos personales, solicitar su rectificación o eliminación, oponerte al tratamiento, solicitar la portabilidad de tus datos, y retirar tu consentimiento en cualquier momento. Para ejercer estos derechos, contáctanos al correo informacion@motohouse.com.',
+  },
+  {
+    h: '8. Seguridad',
+    p: 'Implementamos medidas de seguridad técnicas y organizativas para proteger tus datos: contraseñas cifradas con bcrypt, conexiones HTTPS, control de acceso por roles, y auditoría de acciones sensibles. Sin embargo, ningún sistema es 100% seguro, por lo que te recomendamos usar contraseñas fuertes y no compartir tu cuenta.',
+  },
+  {
+    h: '9. Cookies',
+    p: 'Utilizamos cookies estrictamente necesarias para el funcionamiento de la plataforma (sesión de usuario, preferencias). No utilizamos cookies de rastreo publicitario. Puedes gestionar las cookies desde la configuración de tu navegador.',
+  },
+  {
+    h: '10. Cambios en esta política',
+    p: 'Nos reservamos el derecho de actualizar esta política de privacidad. Los cambios serán publicados en esta página con la fecha de última actualización. Te recomendamos revisarla periódicamente.',
   },
 ]
 
 const DEFAULT_TERMS = [
   {
-    h: 'Servicios',
-    p: 'Los servicios y repuestos se entregan conforme a la cotización aprobada. El trabajo está garantizado según las condiciones indicadas en tu orden.',
+    h: '1. Aceptación de los términos',
+    p: 'Al acceder y usar esta plataforma, aceptas estos términos y condiciones en su totalidad. Si no estás de acuerdo con alguno de los términos, no debes usar el servicio.',
   },
   {
-    h: 'Pagos',
-    p: 'Los totales incluyen impuestos vigentes. Puedes abonar o pagar en el retiro de tu motocicleta según lo acordado.',
+    h: '2. Descripción del servicio',
+    p: 'MotoHouse ofrece una plataforma para agendar servicios de mantenimiento y reparación de motocicletas, comprar repuestos y accesorios, y gestionar órdenes de servicio. El servicio incluye acceso a un panel personal, seguimiento de órdenes, y sistema de notificaciones.',
   },
   {
-    h: 'Responsabilidades',
-    p: 'El taller no se responsabiliza por accesorios no reportados al ingreso ni por el retiro de la moto sin la revisión final.',
+    h: '3. Cuenta de usuario',
+    p: 'Eres responsable de mantener la confidencialidad de tu contraseña y de todas las actividades que ocurran bajo tu cuenta. Debes notificarnos inmediatamente si detectas uso no autorizado. Nos reservamos el derecho de suspender cuentas que violen estos términos.',
+  },
+  {
+    h: '4. Servicios de taller',
+    p: 'Los servicios se realizan conforme a la cotización aprobada por el cliente. El taller se compromete a ejecutar los trabajos con la calidad y tiempos acordados. Los repuestos instalados tienen garantía según las condiciones del fabricante y lo indicado en la orden de servicio.',
+  },
+  {
+    h: '5. Pagos y facturación',
+    p: 'Los precios incluyen los impuestos vigentes. El pago puede realizarse en efectivo, transferencia bancaria o tarjeta, según las opciones disponibles. Las facturas se emiten electrónicamente y están disponibles en tu panel de usuario.',
+  },
+  {
+    h: '6. Política de envíos',
+    p: 'Los envíos de repuestos se realizan a la dirección indicada en el pedido. Los tiempos de entrega son estimados y pueden variar según la ubicación y disponibilidad del producto. El costo de envío se calcula al momento de la compra.',
+  },
+  {
+    h: '7. Devoluciones y garantías',
+    p: 'Los repuestos en su empaque original pueden devolverse dentro de los 7 días posteriores a la recepción, siempre que no estén dañados ni instalados. Los trabajos de taller tienen garantía según lo indicado en la orden de servicio. Para reclamos, contáctanos a través de los canales oficiales.',
+  },
+  {
+    h: '8. Responsabilidades',
+    p: 'El taller no se responsabiliza por accesorios o pertenencias personales no reportadas al ingreso de la motocicleta. El cliente debe revisar y aprobar el estado de su moto al momento del retiro. La plataforma no se hace responsable por daños derivados del uso indebido de los repuestos adquiridos.',
+  },
+  {
+    h: '9. Propiedad intelectual',
+    p: 'Todo el contenido de la plataforma (diseños, logotipos, textos, código fuente) es propiedad de MotoHouse o sus licenciantes. Queda prohibida su reproducción total o parcial sin autorización escrita.',
+  },
+  {
+    h: '10. Modificaciones',
+    p: 'Nos reservamos el derecho de modificar estos términos en cualquier momento. Las modificaciones serán efectivas desde su publicación en esta página. El uso continuado de la plataforma después de los cambios constituye tu aceptación de los nuevos términos.',
   },
 ]
 
-/** Convierte texto plano con # y líneas en blanco a secciones. */
 function parseContent(raw: string): { h: string; p: string }[] {
   if (!raw.trim()) return []
   const blocks = raw.trim().split(/\n\s*\n/)
@@ -74,10 +129,10 @@ export default function LegalPage({ title }: { title: string }) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-16">
       <h1 className="text-2xl font-extrabold tracking-tight text-carbon-900 dark:text-carbon-700">{title}</h1>
-      <p className="mt-1 text-sm text-carbon-500">Vigente desde el {new Date().getFullYear()}.</p>
+      <p className="mt-1 text-sm text-carbon-500">Última actualización: {new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}.</p>
       {custom === null ? (
         <div className="mt-8 space-y-6">
-          {DEFAULT_PRIVACY.map((s) => (
+          {(isPrivacy ? DEFAULT_PRIVACY : DEFAULT_TERMS).map((s) => (
             <div key={s.h}>
               <h2 className="font-semibold text-carbon-900">{s.h}</h2>
               <p className="mt-1 text-sm leading-relaxed text-carbon-600">{s.p}</p>

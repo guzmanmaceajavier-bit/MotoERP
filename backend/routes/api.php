@@ -22,9 +22,9 @@ Route::name('login')->get('login', fn () => response()->json(['message' => 'No a
 
 Route::prefix('v1')->group(function () {
     Route::post('register', [AuthController::class, 'register'])->middleware('throttle:6,60');
-    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:20,1');
+    Route::post('login', [AuthController::class, 'login'])->middleware('throttle:10,60');
     Route::post('password/forgot', [AuthController::class, 'forgotPassword'])->middleware('throttle:6,60');
-    Route::post('password/reset', [AuthController::class, 'resetPassword'])->middleware('throttle:20,1');
+    Route::post('password/reset', [AuthController::class, 'resetPassword'])->middleware('throttle:6,60');
 
     Route::get('brands', [CatalogController::class, 'brands']);
     Route::get('brands/{brandId}/models', [CatalogController::class, 'models']);
@@ -50,13 +50,13 @@ Route::get('products', [PublicController::class, 'products']);
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('user', [AuthController::class, 'user']);
         Route::patch('user', [AuthController::class, 'updateUser']);
-        Route::post('user/photo', [AuthController::class, 'uploadPhoto']);
+        Route::post('user/photo', [AuthController::class, 'uploadPhoto'])->middleware('throttle:5,60');
         Route::post('logout', [AuthController::class, 'logout']);
 
         Route::get('dashboard', [ClientController::class, 'dashboard']);
         Route::post('request-service', [ClientController::class, 'requestService']);
         Route::get('motorcycles/{motorcycle}/history', [ClientController::class, 'motorcycleHistory']);
-        Route::post('store/checkout', [StoreController::class, 'checkout']);
+        Route::post('store/checkout', [StoreController::class, 'checkout'])->middleware('throttle:5,60');
         Route::get('store/recommended', [StoreController::class, 'recommended']);
         Route::get('favorites', [StoreController::class, 'favorites']);
         Route::post('favorites/toggle', [StoreController::class, 'toggleFavorite']);
@@ -107,7 +107,7 @@ Route::get('orders/{order}/quotation/pdf', [OrderController::class, 'quotationPd
         Route::post('ratings', [ContentController::class, 'storeRating']);
 
         Route::get('chat', [ChatController::class, 'clientThread']);
-        Route::post('chat', [ChatController::class, 'clientSend']);
+        Route::post('chat', [ChatController::class, 'clientSend'])->middleware('throttle:30,60');
         Route::post('chat/read', [ChatController::class, 'clientMarkRead']);
         Route::get('chat/unread-count', [ChatController::class, 'clientUnreadCount']);
     });
@@ -187,15 +187,15 @@ Route::get('suppliers', [FinanceController::class, 'suppliers'])->middleware('ro
             Route::delete('purchases/{purchase}', [FinanceController::class, 'deletePurchase'])->middleware('role:admin');
             Route::get('settings', [FinanceController::class, 'settings'])->middleware('role:admin');
             Route::post('settings', [FinanceController::class, 'updateSettings'])->middleware('role:admin');
-            Route::post('settings/upload', [FinanceController::class, 'uploadSettingImage'])->middleware('role:admin');
+            Route::post('settings/upload', [FinanceController::class, 'uploadSettingImage'])->middleware('role:admin', 'throttle:10,60');
 
             Route::post('maintenance-rules', [FinanceController::class, 'storeMaintenanceRule'])->middleware('role:admin');
             Route::patch('maintenance-rules/{rule}', [FinanceController::class, 'updateMaintenanceRule'])->middleware('role:admin');
             Route::delete('maintenance-rules/{rule}', [FinanceController::class, 'deleteMaintenanceRule'])->middleware('role:admin');
 
             Route::get('backup', [FinanceController::class, 'backupDatabase'])->middleware('role:admin');
-            Route::post('backup/restore', [FinanceController::class, 'restoreBackup'])->middleware('role:admin');
-            Route::post('reset-database', [FinanceController::class, 'resetDatabase'])->middleware('role:admin');
+            Route::post('backup/restore', [FinanceController::class, 'restoreBackup'])->middleware('role:admin', 'throttle:3,60');
+            Route::post('reset-database', [FinanceController::class, 'resetDatabase'])->middleware('role:admin', 'throttle:1,60');
 
             Route::get('posts', [ContentController::class, 'staffPosts'])->middleware('role:admin');
             Route::post('posts', [ContentController::class, 'storePost'])->middleware('role:admin');

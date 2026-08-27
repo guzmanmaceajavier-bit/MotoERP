@@ -56,7 +56,7 @@ export function AuthShell({ title, subtitle, badge, dark = false, children, foot
             <p className="mt-1 text-sm text-carbon-400">{subtitle}</p>
             <div className="mt-7">{children}</div>
             {footer && <div className="mt-6">{footer}</div>}
-            <p className="mt-8 border-t border-carbon-800 pt-4 text-xs text-carbon-500">© {new Date().getFullYear()} {site.workshop_name || 'MotoSystem'} · Acceso restringido al equipo del taller.</p>
+            <p className="mt-8 border-t border-carbon-800 pt-4 text-xs text-carbon-500">© {new Date().getFullYear()} {site.workshop_name || 'MotoHouse'} · Acceso restringido al equipo del taller.</p>
           </div>
         </div>
       </div>

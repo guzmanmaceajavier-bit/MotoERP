@@ -320,7 +320,7 @@ export default function MyOrders() {
             {/* Resumen superior */}
             <div className={`flex items-center gap-4 rounded-xl border border-carbon-200 bg-gradient-to-br ${(ORDER_META[detail.order_status ?? 'pending'] ?? ORDER_META.pending).ring} p-4 text-white`}>
               {detail.thumbnail ? (
-                <img src={detail.thumbnail} alt="" className="h-16 w-16 rounded-xl object-cover shadow-md" />
+                <img src={detail.thumbnail} alt={`Pedido ${detail.id}`} className="h-16 w-16 rounded-xl object-cover shadow-md" />
               ) : (
                 <span className="flex h-16 w-16 items-center justify-center rounded-xl bg-white/20"><Package className="h-7 w-7" /></span>
               )}
@@ -390,7 +390,7 @@ export default function MyOrders() {
                   {detail.items!.map((i, idx) => (
                     <div key={idx} className="flex items-center gap-3 px-4 py-3">
                       {i.image ? (
-                        <img src={i.image} alt="" className="h-12 w-12 shrink-0 rounded-lg border border-carbon-100 object-cover" />
+                        <img src={i.image} alt={i.description || 'Producto'} className="h-12 w-12 shrink-0 rounded-lg border border-carbon-100 object-cover" />
                       ) : (
                         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-carbon-100 text-carbon-400 dark:bg-carbon-200"><Package className="h-5 w-5" /></span>
                       )}

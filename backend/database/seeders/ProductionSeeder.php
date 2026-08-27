@@ -6,12 +6,13 @@ use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class ProductionSeeder extends Seeder
 {
     public function run(): void
     {
-        $password = env('SEED_PASSWORD', 'secret123');
+        $password = env('SEED_PASSWORD', Str::random(16));
 
         $admin = User::where('email', 'admin@motohub.test')->first();
         if ($admin) {

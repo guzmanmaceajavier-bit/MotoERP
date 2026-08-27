@@ -6,6 +6,7 @@ import { usePageMeta } from '../../lib/usePageMeta'
 import { scheduleSummary, type ScheduleInfo } from '../../lib/schedule'
 import { useHero, useSiteInfo } from '../../lib/useSiteImages'
 import { HeroBg } from '../../components/HeroBg'
+import heroImg from '../../assets/hero.png'
 
 interface SiteInfo extends ScheduleInfo {
   workshop_name?: string
@@ -322,7 +323,7 @@ export default function Contact() {
       <section className="mx-auto max-w-6xl px-4 pb-16">
         <div className="relative overflow-hidden rounded-3xl bg-gray-900">
           <div className="absolute inset-0 opacity-20">
-            <img src="/src/assets/hero.png" alt="" className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
+            <img src={heroImg} alt="MotoHouse taller de motos" className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
           </div>
           <div className="relative flex flex-col items-center gap-6 p-8 sm:flex-row sm:justify-between sm:px-12">
             <div className="text-center sm:text-left">

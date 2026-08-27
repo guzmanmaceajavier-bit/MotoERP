@@ -234,7 +234,7 @@ export default function BlogPage() {
                 {hero.images && hero.images.length > 0 ? (
                   <img
                     src={hero.images[0]}
-                    alt="Blog MotoHouse"
+                    alt={`Blog ${siteName || 'MotoHouse'}`}
                     className="h-full w-full object-cover"
                   />
                 ) : (

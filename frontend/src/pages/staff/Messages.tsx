@@ -187,7 +187,7 @@ export default function Messages() {
                   className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition hover:bg-carbon-50 dark:hover:bg-carbon-200/40"
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-sm font-bold text-white">
-                    {c.user.photo ? <img src={c.user.photo} alt="" className="h-full w-full object-cover" /> : (c.user.name || '?')[0]}
+                    {c.user.photo ? <img src={c.user.photo} alt={c.user.name || 'Avatar'} className="h-full w-full object-cover" /> : (c.user.name || '?')[0]}
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center justify-between gap-2">

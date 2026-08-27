@@ -16,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class StaffController extends Controller
 {
@@ -344,7 +345,7 @@ class StaffController extends Controller
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
             'role' => 'customer',
-            'password' => Hash::make($validated['password'] ?? 'motohub123'),
+            'password' => Hash::make($validated['password'] ?? Str::random(12)),
         ]);
 
         foreach ($motorcycles ?: [] as $moto) {
