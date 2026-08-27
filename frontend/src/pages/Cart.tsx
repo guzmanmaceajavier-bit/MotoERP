@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { api } from '../lib/api'
 import { useCart, cartKey } from '../lib/cart'
+import { useSiteInfo } from '../lib/useSiteImages'
 import type { Fulfillment } from '../lib/cart'
 import type { InvoiceDetail, Motorcycle, Product } from '../lib/types'
 import type { Paginated } from '../lib/pagination'
@@ -44,6 +45,7 @@ function ProductImg({ src, name, className = '' }: { src?: string; name: string;
 export default function Cart({ storePath = '/tienda' }: { storePath?: string }) {
   const { user } = useAuth()
   const { items, count, total, fulfillment, setFulfillment, setQuantity, remove, clear, add } = useCart()
+  const { workshop_phone } = useSiteInfo()
   const [step, setStep] = useState(1)
   const [pointsToUse, setPointsToUse] = useState(0)
   const [paymentMethod, setPaymentMethod] = useState('efectivo')
@@ -678,7 +680,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
 
       {/* ── WhatsApp ── */}
       <div className="mt-8 rounded-xl border border-carbon-200 bg-carbon-50 py-4 text-center text-sm text-carbon-600">
-        ¿Tienes dudas con tu pedido? Contáctanos por <a href="https://wa.me/573001234567" target="_blank" rel="noopener noreferrer" className="font-semibold text-green-600 hover:underline">WhatsApp</a>
+        ¿Tienes dudas con tu pedido? Contáctanos por <a href={`https://wa.me/${workshop_phone || '573001234567'}`} target="_blank" rel="noopener noreferrer" className="font-semibold text-green-600 hover:underline">WhatsApp</a>
       </div>
     </div>
   )
