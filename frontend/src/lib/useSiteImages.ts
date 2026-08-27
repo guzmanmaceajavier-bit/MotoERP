@@ -31,22 +31,23 @@ export interface SiteInfo {
   workshop_name: string
   workshop_logo: string
   workshop_phone: string
+  workshop_address: string
 }
 
 let siteCache: SiteInfo | null = null
 let sitePromise: Promise<SiteInfo> | null = null
 
 export function useSiteInfo(): SiteInfo {
-  const [info, setInfo] = useState<SiteInfo>({ workshop_name: '', workshop_logo: '', workshop_phone: '' })
+  const [info, setInfo] = useState<SiteInfo>({ workshop_name: '', workshop_logo: '', workshop_phone: '', workshop_address: '' })
   useEffect(() => {
     if (!sitePromise) {
-      sitePromise = api<{ workshop_name?: string; workshop_logo?: string; workshop_phone?: string }>('/site-info')
+      sitePromise = api<{ workshop_name?: string; workshop_logo?: string; workshop_phone?: string; workshop_address?: string }>('/site-info')
         .then((d) => {
-          siteCache = { workshop_name: d.workshop_name || '', workshop_logo: d.workshop_logo || '', workshop_phone: d.workshop_phone || '' }
+          siteCache = { workshop_name: d.workshop_name || '', workshop_logo: d.workshop_logo || '', workshop_phone: d.workshop_phone || '', workshop_address: d.workshop_address || '' }
           return siteCache
         })
         .catch(() => {
-          siteCache = { workshop_name: '', workshop_logo: '', workshop_phone: '' }
+          siteCache = { workshop_name: '', workshop_logo: '', workshop_phone: '', workshop_address: '' }
           return siteCache
         })
     }

@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react'
+import { useSiteInfo } from '../lib/useSiteImages'
 
 const COOKIE_KEY = 'motohub_cookie_consent'
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false)
+  const { workshop_name: siteName } = useSiteInfo()
+  const name = siteName || 'MotoHouse'
 
   useEffect(() => {
     const consent = localStorage.getItem(COOKIE_KEY)
@@ -12,6 +15,11 @@ export default function CookieConsent() {
 
   function accept() {
     localStorage.setItem(COOKIE_KEY, 'accepted')
+    setVisible(false)
+  }
+
+  function reject() {
+    localStorage.setItem(COOKIE_KEY, 'rejected')
     setVisible(false)
   }
 
@@ -33,31 +41,37 @@ export default function CookieConsent() {
           </div>
           <div className="flex-1">
             <h3 className="text-sm font-bold text-carbon-900 dark:text-carbon-100">
-              Usamos cookies
+              Tu privacidad importa
             </h3>
             <p className="mt-1 text-xs leading-relaxed text-carbon-500 dark:text-carbon-400">
-              Utilizamos cookies para recordar tu carrito, preferencias y mejorar tu experiencia de navegación. 
-              Al continuar navegando, aceptas el uso de cookies. Consulta nuestra{' '}
+              En {name} utilizamos cookies necesarias para que tu cuenta,
+              carrito y reservas funcionen correctamente. También podemos
+              utilizar cookies opcionales para mejorar tu experiencia.{' '}
               <a href="/privacidad" className="font-semibold text-brand-600 hover:underline dark:text-brand-400">
-                política de privacidad
-              </a>{' '}
-              para más información.
+                Política de privacidad
+              </a>
             </p>
           </div>
         </div>
         <div className="mt-4 flex items-center gap-3 sm:justify-end">
+          <button
+            onClick={reject}
+            className="rounded-xl border border-carbon-200 px-4 py-2 text-xs font-semibold text-carbon-600 transition hover:bg-carbon-50 dark:border-carbon-600 dark:text-carbon-400 dark:hover:bg-carbon-800"
+          >
+            Rechazar
+          </button>
+          <a
+            href="/privacidad"
+            className="rounded-xl border border-carbon-200 px-4 py-2 text-xs font-semibold text-carbon-600 transition hover:bg-carbon-50 dark:border-carbon-600 dark:text-carbon-400 dark:hover:bg-carbon-800"
+          >
+            Configurar
+          </a>
           <button
             onClick={accept}
             className="rounded-xl bg-brand-600 px-5 py-2 text-xs font-bold text-white shadow-md transition hover:bg-brand-700 hover:shadow-lg active:scale-[0.97]"
           >
             Aceptar todas
           </button>
-          <a
-            href="/terminos"
-            className="rounded-xl border border-carbon-200 px-4 py-2 text-xs font-semibold text-carbon-600 transition hover:bg-carbon-50 dark:border-carbon-600 dark:text-carbon-400 dark:hover:bg-carbon-800"
-          >
-            Configurar
-          </a>
         </div>
       </div>
     </div>
