@@ -20,7 +20,14 @@ use Illuminate\Support\Facades\Route;
 // (esto causaba 500/502 cuando una sesión expiraba y se consultaba un endpoint protegido).
 Route::name('login')->get('login', fn () => response()->json(['message' => 'No autenticado'], 401));
 
-Route::get('health', fn () => response()->json(['ok' => true, 'time' => now()->toIso8601String()]));
+Route::get('health', function () {
+    try {
+        \Illuminate\Support\Facades\DB::connection()->getPdo();
+        return response()->json(['ok' => true, 'time' => now()->toIso8601String(), 'db' => 'ok']);
+    } catch (\Throwable $e) {
+        return response()->json(['ok' => true, 'time' => now()->toIso8601String(), 'db' => 'error: '.$e->getMessage()], 200);
+    }
+});
 
 Route::prefix('v1')->group(function () {
     Route::post('register', [AuthController::class, 'register'])->middleware('throttle:6,60');

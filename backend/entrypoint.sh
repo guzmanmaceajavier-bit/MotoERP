@@ -50,6 +50,10 @@ done
 echo "=== Running migrations ==="
 php artisan migrate --force 2>&1 || echo "Migration skipped"
 
+echo "=== Clearing config cache ==="
+php artisan config:clear 2>&1 || true
+php artisan optimize:clear 2>&1 || true
+
 echo "=== Creating storage link ==="
 php artisan storage:link --force 2>/dev/null || true
 
