@@ -5,6 +5,7 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: ./backend
+    healthCheckPath: /api/v1/health
     envVars:
       - key: APP_ENV
         value: production
@@ -34,9 +35,21 @@ services:
         sync: false
       - key: CLOUDINARY_API_SECRET
         sync: false
+      - key: WHATSAPP_ENABLED
+        value: "false"
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_ID
+        sync: false
+      - key: WHATSAPP_TEMPLATE
+        value: motohub_notification
       - key: SESSION_DRIVER
         value: database
       - key: CACHE_STORE
         value: database
       - key: QUEUE_CONNECTION
         value: database
+      - key: FILESYSTEM_DISK
+        value: local
+      - key: LOG_LEVEL
+        value: error

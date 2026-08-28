@@ -13,6 +13,7 @@ class Invoice extends Model
         'customer_phone', 'shipping_address', 'subtotal', 'tax', 'tax_rate',
         'discount', 'points_used', 'total', 'paid_amount', 'payment_method', 'status',
         'order_status', 'payment_proof_path', 'invoice_pdf_path', 'issue_date',
+        'checkout_token', 'coupon_code',
     ];
 
     protected $casts = [
