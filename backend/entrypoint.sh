@@ -31,6 +31,22 @@ POINTS_VALUE=${POINTS_VALUE:-100}
 LOG_LEVEL=${LOG_LEVEL:-error}
 EOF
 
+echo "=== Verifying APP_KEY ==="
+if [ -z "$APP_KEY" ]; then
+  echo "WARNING: APP_KEY is empty! Generating one..."
+  php artisan key:generate --force
+fi
+
+echo "=== Waiting for database ==="
+for i in 1 2 3 4 5; do
+  if php artisan db:monitor 2>/dev/null; then
+    echo "Database is ready"
+    break
+  fi
+  echo "Attempt $i: Database not ready, waiting 5s..."
+  sleep 5
+done
+
 echo "=== Running migrations ==="
 php artisan migrate --force 2>&1 || echo "Migration skipped"
 
@@ -48,4 +64,5 @@ php artisan schedule:work &
 
 echo "=== Starting php-fpm + nginx ==="
 php-fpm -D
+sleep 2
 nginx -g 'daemon off;'
