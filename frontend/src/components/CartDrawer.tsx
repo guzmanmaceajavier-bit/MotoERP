@@ -51,7 +51,7 @@ export default function CartDrawer({ storePath: _storePath = '/tienda' }: { stor
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 text-3xl">🛒</div>
               <p className="mt-4 text-sm font-semibold text-gray-800">Tu carrito está vacío</p>
               <p className="mt-1 text-xs text-gray-400">Explora la tienda y agrega productos</p>
-              <button onClick={() => setDrawerOpen(false)} className="btn-primary mt-4 text-sm">Ir a la tienda</button>
+              <Link to="/tienda" onClick={() => setDrawerOpen(false)} className="btn-primary mt-4 text-sm">Ir a la tienda</Link>
             </div>
           ) : (
             <div className="space-y-4">
