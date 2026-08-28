@@ -13,7 +13,7 @@ export function HeroBg({ images }: { images?: string[] }) {
   if (list.length === 0) return null
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-carbon-900 p-3 sm:p-4">
+    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-orange-50 to-white p-3 sm:p-4">
       {list.map((src, i) => (
         <img
           key={src}

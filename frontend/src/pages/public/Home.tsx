@@ -374,9 +374,9 @@ export default function Home() {
 
       {/* ═══════════ MARCAS QUE TRABAJAMOS ═══════════ */}
       {brands.length > 0 && (
-        <section className="border-y border-carbon-100 bg-white py-10">
+        <section className="border-y border-gray-100 bg-white py-10">
           <div className="mx-auto max-w-6xl px-4">
-            <h2 className="text-center text-2xl font-black text-carbon-900">Trabajamos con las marcas <span className="gradient-text">que tú conoces</span></h2>
+            <h2 className="text-center text-2xl font-black text-gray-800">Trabajamos con las marcas <span className="gradient-text">que tú conoces</span></h2>
             <div className="relative mt-8 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]">
               <div className="flex w-max gap-10 anim-marquee">
                 {[...brands, ...brands].map((b, i) => (
@@ -384,11 +384,11 @@ export default function Home() {
                     {b.image ? (
                       <img src={b.image} alt={b.name} className="h-12 w-12 rounded-xl object-contain" />
                     ) : (
-                      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-100 text-brand-600">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100 text-orange-500">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 16l3.5-6.5a2 2 0 011.8-1H16l2 4.5H20a1 1 0 011 1V16H5z" /><circle cx="8.5" cy="16" r="1.5" /><circle cx="16.5" cy="16" r="1.5" /></svg>
                       </span>
                     )}
-                    <span className="text-lg font-extrabold uppercase tracking-wide text-carbon-900">{b.name}</span>
+                    <span className="text-lg font-extrabold uppercase tracking-wide text-gray-800">{b.name}</span>
                   </Link>
                 ))}
               </div>
@@ -399,7 +399,7 @@ export default function Home() {
 
       {/* ═══════════ PRODUCTOS DESTACADOS (DB) ═══════════ */}
       {products.length > 0 && (
-        <section className="bg-carbon-50 py-16">
+        <section className="bg-gray-50 py-16">
           <div className="mx-auto max-w-6xl px-4">
             <Reveal className="flex flex-wrap items-end justify-between gap-4">
               <div>
