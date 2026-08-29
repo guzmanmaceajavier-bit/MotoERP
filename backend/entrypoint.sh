@@ -34,7 +34,7 @@ EOF
 echo "=== Verifying APP_KEY ==="
 if [ -z "$APP_KEY" ]; then
   echo "WARNING: APP_KEY is empty! Generating one..."
-  php artisan key:generate --force
+  php artisan key:generate --force 2>&1 || true
 fi
 
 echo "=== Waiting for database ==="
@@ -53,6 +53,12 @@ php artisan migrate --force 2>&1 || echo "Migration skipped"
 echo "=== Clearing config cache ==="
 php artisan config:clear 2>&1 || true
 php artisan optimize:clear 2>&1 || true
+
+echo "=== Ensuring APP_KEY in .env ==="
+if ! grep -q "^APP_KEY=base64:" .env 2>/dev/null; then
+  echo "APP_KEY missing or invalid, generating..."
+  php artisan key:generate --force 2>&1 || true
+fi
 
 echo "=== Ensuring storage dirs ==="
 mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views bootstrap/cache storage/logs
