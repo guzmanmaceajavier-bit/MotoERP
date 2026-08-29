@@ -22,3 +22,5 @@ dump.sql
 schema.sql
 seed_data.sql
 *.bat
+
+frontend/test-results/
