@@ -14,7 +14,8 @@ WORKDIR /app
 COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
-RUN cp /app/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+RUN mkdir -p /usr/local/etc/php-fpm.d && cp /app/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+RUN mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled /etc/nginx/conf.d
 RUN chmod +x /app/entrypoint.sh
 
 EXPOSE 8000

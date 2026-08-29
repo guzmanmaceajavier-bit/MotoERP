@@ -5,7 +5,7 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: ./backend
-    healthCheckPath: /health
+    healthCheckPath: /api/health
     envVars:
       - key: APP_ENV
         value: production
@@ -44,11 +44,11 @@ services:
       - key: WHATSAPP_TEMPLATE
         value: motohub_notification
       - key: SESSION_DRIVER
-        value: database
+        value: file
       - key: CACHE_STORE
-        value: database
+        value: file
       - key: QUEUE_CONNECTION
-        value: database
+        value: sync
       - key: FILESYSTEM_DISK
         value: local
       - key: LOG_LEVEL

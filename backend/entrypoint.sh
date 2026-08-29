@@ -15,9 +15,9 @@ DB_PORT=${DB_PORT:-5432}
 DB_DATABASE=${DB_DATABASE}
 DB_USERNAME=${DB_USERNAME}
 DB_PASSWORD=${DB_PASSWORD}
-SESSION_DRIVER=database
-CACHE_STORE=database
-QUEUE_CONNECTION=database
+SESSION_DRIVER=${SESSION_DRIVER:-file}
+CACHE_STORE=${CACHE_STORE:-file}
+QUEUE_CONNECTION=${QUEUE_CONNECTION:-sync}
 FILESYSTEM_DISK=local
 FRONTEND_URL=${FRONTEND_URL:-}
 CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME:-}
@@ -54,14 +54,28 @@ echo "=== Clearing config cache ==="
 php artisan config:clear 2>&1 || true
 php artisan optimize:clear 2>&1 || true
 
+echo "=== Ensuring storage dirs ==="
+mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views bootstrap/cache storage/logs
+chmod -R 775 storage bootstrap/cache 2>/dev/null || true
+
 echo "=== Creating storage link ==="
 php artisan storage:link --force 2>/dev/null || true
 
 echo "=== Configuring nginx ==="
-cp /app/nginx.conf /etc/nginx/sites-available/default
+mkdir -p /etc/nginx/sites-available /etc/nginx/sites-enabled 2>/dev/null || true
+cp /app/nginx.conf /etc/nginx/sites-available/default 2>/dev/null || true
+cp /app/nginx.conf /etc/nginx/conf.d/default.conf 2>/dev/null || true
+# Ensure php-fpm config is present (fallback if Dockerfile copy missed cache)
+if [ -f /app/php-fpm.conf ] && [ ! -f /usr/local/etc/php-fpm.d/www.conf ]; then
+  cp /app/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf 2>/dev/null || true
+fi
 
-echo "=== Starting queue worker ==="
-php artisan queue:work --sleep=3 --tries=3 --max-time=3600 &
+echo "=== Starting queue worker (only if queue is database) ==="
+if [ "${QUEUE_CONNECTION:-sync}" = "database" ]; then
+  php artisan queue:work --sleep=3 --tries=3 --max-time=3600 &
+else
+  echo "Queue is ${QUEUE_CONNECTION:-sync}, skipping queue worker"
+fi
 
 echo "=== Starting scheduler ==="
 php artisan schedule:work &
