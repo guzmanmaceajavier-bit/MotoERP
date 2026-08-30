@@ -64,6 +64,7 @@ fi
 
 echo "=== Ensuring storage dirs ==="
 mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views bootstrap/cache storage/logs
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 
 echo "=== Creating storage link ==="
