@@ -59,7 +59,8 @@ export default function NewServiceRequestModal({
 
   useEffect(() => {
     if (!open) return
-    setServiceId(null)
+    setServiceIds([])
+    setIsCustom(false)
     setCustomService('')
     setNotes('')
     setMotoId('none')

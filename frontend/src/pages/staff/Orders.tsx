@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { apiStaff as api, getStaffToken } from '../../lib/api'
 import { useStaffAuth } from '../../auth/StaffAuthContext'
+import { useToast } from '../../lib/toast'
 import type { Paginated } from '../../lib/pagination'
 import type { StaffOrder, StaffUser } from '../../lib/types'
 import { useRefetchOnFocus } from '../../lib/useRefetch'
@@ -66,6 +67,7 @@ const FILTERS = [
 
 export default function Orders() {
   const { user } = useStaffAuth()
+  const { toast } = useToast()
   const isAdmin = user?.role === 'admin'
   const isReception = user?.role === 'receptionist'
   const isMechanic = user?.role === 'mechanic'
