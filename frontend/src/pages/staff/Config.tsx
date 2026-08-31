@@ -987,6 +987,7 @@ export default function Config() {
                           </button>
                         </div>
                       </div>
+                    </div>
                     ))}
                     {heroList(page.key).length === 0 && (
                       <button type="button" onClick={() => addHero(page.key)} className={addCls}>
