@@ -344,6 +344,11 @@ export default function MyOrders() {
                 <p className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-carbon-400">
                   <Truck className="h-3.5 w-3.5" /> Comprobante de pago
                 </p>
+                {detail.payment_method === 'transferencia' && (
+                  <div className="mt-3">
+                    <PaymentInfoBlock />
+                  </div>
+                )}
                 {detail.payment_proof_url ? (
                   <a
                     href={detail.payment_proof_url}
