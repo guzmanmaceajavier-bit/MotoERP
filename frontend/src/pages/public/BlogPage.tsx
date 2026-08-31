@@ -56,7 +56,6 @@ export default function BlogPage() {
   const { workshop_name: siteName } = useSiteInfo()
   const hero = useHero('blog')
   const [activeCat, setActiveCat] = useState<string | null>(null)
-  const [email, setEmail] = useState('')
 
   usePageMeta(
     post ? `${post.title} | ${siteName || APP_NAME}` : `${siteName ? siteName + ' | ' : ''}Blog`,
@@ -361,38 +360,7 @@ export default function BlogPage() {
         )}
       </section>
 
-      {/* ──── NEWSLETTER CTA ──── */}
-      <section className="mx-auto max-w-6xl px-4 pb-16">
-        <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
-          <div className="flex flex-col items-center gap-6 p-8 sm:flex-row sm:justify-between sm:px-12">
-            <div className="flex items-center gap-4 text-center sm:text-left">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-3xl">✉️</div>
-              <div>
-                <h2 className="text-lg font-black text-gray-900">¿Te gustan nuestros consejos?</h2>
-                <p className="text-sm text-gray-500">Suscríbete y recibe los mejores tips y novedades directo en tu correo.</p>
-              </div>
-            </div>
-            <form
-              onSubmit={(e) => { e.preventDefault(); setEmail(''); alert('¡Gracias por suscribirte!') }}
-              className="flex w-full max-w-sm items-center gap-2"
-            >
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Tu correo electrónico"
-                className="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 transition focus:border-orange-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
-              />
-              <button
-                type="submit"
-                className="shrink-0 rounded-xl bg-orange-500 px-6 py-3 text-sm font-bold text-white shadow-md shadow-orange-500/25 transition hover:bg-orange-600 hover:shadow-lg"
-              >
-                Suscribirme
-              </button>
-            </form>
-          </div>
-        </div>
-      </section>
+
     </div>
   )
 }

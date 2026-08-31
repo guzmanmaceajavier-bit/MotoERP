@@ -171,16 +171,24 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* ──── FORM + BENEFITS + MAP ──── */}
+      {/* ──── CONTACTO DIRECTO + MAPA ──── */}
       <section className="mx-auto max-w-6xl px-4 pb-14">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {/* Formulario */}
           <Reveal>
             <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-              <h2 className="text-2xl font-black text-gray-900">Envíanos un mensaje</h2>
-              <p className="mt-1 text-sm text-gray-500">
-                Cuéntanos cómo podemos ayudarte, te responderemos lo más pronto posible.
-              </p>
+              <h2 className="text-2xl font-black text-gray-900">Contáctanos directo</h2>
+              <p className="mt-1 text-sm text-gray-500">Usa WhatsApp o agenda tu cita — respuesta más rápida que el formulario.</p>
+              <div className="mt-6 flex flex-col gap-3">
+                <a href={`https://wa.me/${phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-500 px-6 py-3 text-sm font-bold text-white hover:bg-green-600">WhatsApp <span>→</span></a>
+                <Link to="/agendar" className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-sm font-bold text-white hover:bg-brand-700">Agendar cita <span>→</span></Link>
+              </div>
+              <p className="mt-4 text-xs text-gray-400">Horario: {summary ? `${summary.weekday.open} - ${summary.weekday.close}` : '09:00 - 18:00'} · Dirección editable desde Configuración → Taller</p>
+            </div>
+          </Reveal>
+          <Reveal>
+            <div className="hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm lg:block">
+              <h2 className="hidden text-2xl font-black text-gray-900">Envíanos un mensaje</h2>
+              <p className="hidden mt-1 text-sm text-gray-500">Cuéntanos cómo podemos ayudarte</p>
 
               {sent ? (
                 <div className="flex flex-col items-center py-14 text-center">

@@ -433,10 +433,16 @@ export default function Home() {
       )}
 
       {/* ═══════════ BANNERS ═══════════ */}
-      {banners.length > 0 && (
+      {banners.length > 0 && (() => {
+        const visible = banners.slice(0, 6)
+        return (
         <section className="mx-auto max-w-6xl px-4 py-16">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {banners.map((b, i) => {
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-black text-gray-900">Promociones <span className="gradient-text">destacadas</span></h2>
+            <Link to="/tienda" className="text-sm font-semibold text-brand-600 hover:underline">Ver tienda →</Link>
+          </div>
+          <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {visible.map((b, i) => {
               const inner = (
                 <div className="group relative h-56 overflow-hidden rounded-2xl border border-carbon-200 lift">
                   <img src={b.image} alt={b.title} className="h-full w-full object-cover transition duration-700 group-hover:scale-110" />
@@ -450,13 +456,19 @@ export default function Home() {
               )
               return (
                 <Reveal key={i} delay={i * 100}>
-                  {b.link ? <Link to={b.link}>{inner}</Link> : inner}
+                  <Link to={b.link || '/tienda'}>{inner}</Link>
                 </Reveal>
               )
             })}
           </div>
+          {banners.length > 6 && (
+            <div className="mt-8 text-center">
+              <Link to="/tienda" className="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-6 py-3 text-sm font-bold text-white hover:bg-brand-700">Ver más promociones <span>→</span></Link>
+            </div>
+          )}
         </section>
-      )}
+        )
+      })()}
 
       {/* ═══════════ BLOG ═══════════ */}
       {posts.length > 0 && (
