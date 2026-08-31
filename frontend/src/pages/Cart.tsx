@@ -27,7 +27,6 @@ const fulfillmentOptions: { value: Fulfillment; label: string; desc: string; ico
 const paymentMethods = [
   { value: 'efectivo', label: 'Efectivo', desc: 'Paga al recoger', icon: '💵' },
   { value: 'transferencia', label: 'Transferencia', desc: 'Nequi / Daviplata / Banco', icon: '🏦' },
-  { value: 'tarjeta', label: 'Tarjeta', desc: 'Crédito o débito', icon: '💳' },
 ]
 
 const trustBadges = [
@@ -56,11 +55,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
   const [motorcycleId, setMotorcycleId] = useState('')
   const [allProducts, setAllProducts] = useState<Product[]>([])
   const [checkoutToken, setCheckoutToken] = useState('')
-
-  const [couponCode, setCouponCode] = useState('')
-  const [couponDiscount, setCouponDiscount] = useState(0)
-  const [couponLoading, setCouponLoading] = useState(false)
-  const [couponMsg, setCouponMsg] = useState('')
 
   const [taxEnabled, setTaxEnabled] = useState(false)
   const [taxRate, setTaxRate] = useState(19)
@@ -104,7 +98,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
 
   const shippingFee = fulfillment === 'shipping' && total < storeConfig.free_shipping_threshold ? storeConfig.shipping_fee : 0
   const loyaltyDiscount = user ? Math.min(pointsToUse * pointsValue, total) : 0
-  const subtotalAfterDiscount = Math.max(0, total - loyaltyDiscount - couponDiscount)
+  const subtotalAfterDiscount = Math.max(0, total - loyaltyDiscount)
   const tax = taxEnabled ? Math.round(subtotalAfterDiscount * (taxRate / 100)) : 0
   const finalTotal = subtotalAfterDiscount + shippingFee + tax
   const freeShippingLeft = Math.max(0, storeConfig.free_shipping_threshold - total)
@@ -116,22 +110,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
     d.setDate(d.getDate() + storeConfig.delivery_days)
     return d.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' })
   }, [storeConfig.delivery_days])
-
-  async function applyCoupon() {
-    if (!couponCode.trim()) return
-    setCouponLoading(true); setCouponMsg('')
-    try {
-      const res = await api<{ discount: number; code: string; type: string; value: number }>('/store/validate-coupon', {
-        method: 'POST',
-        body: JSON.stringify({ code: couponCode, subtotal: total }),
-      })
-      setCouponDiscount(res.discount)
-      setCouponMsg(`Cupón "${res.code}" aplicado: −${fmtMoney(res.discount)}`)
-    } catch (err) {
-      setCouponDiscount(0)
-      setCouponMsg(err instanceof Error ? err.message : 'Cupón inválido')
-    } finally { setCouponLoading(false) }
-  }
 
   const suggestionsToShow = useMemo(() => {
     const cartIds = new Set(items.map((i) => i.productId))
@@ -487,13 +465,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                     </div>
                   )}
 
-                  {paymentMethod === 'tarjeta' && (
-                    <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5 text-center">
-                      <p className="text-sm font-bold text-blue-700">💳 Pago con tarjeta</p>
-                      <p className="mt-1 text-sm text-blue-600">Serás redirigido a la pasarela de pago segura después de confirmar tu pedido.</p>
-                    </div>
-                  )}
-
                   {paymentMethod === 'efectivo' && (
                     <div className="rounded-2xl border border-green-200 bg-green-50 p-5">
                       <h3 className="text-sm font-bold text-green-700">💵 Pago en efectivo</h3>
@@ -627,19 +598,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
               )}
             </div>
 
-            {/* Cupón */}
-            {step >= 3 && (
-              <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-                <p className="text-xs font-bold uppercase tracking-wide text-gray-400 mb-2">Cupón de descuento</p>
-                <div className="flex gap-2">
-                  <input value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} placeholder="Código" className="flex-1 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm uppercase text-gray-700 placeholder:text-gray-400 focus:border-orange-400 focus:outline-none" />
-                  <button onClick={applyCoupon} disabled={couponLoading || !couponCode.trim()} className="rounded-xl bg-orange-500 px-3 py-2 text-sm font-semibold text-white transition hover:bg-orange-600 disabled:opacity-50">
-                    {couponLoading ? '...' : 'Aplicar'}
-                  </button>
-                </div>
-                {couponMsg && <p className={`mt-2 text-xs font-medium ${couponDiscount > 0 ? 'text-green-500' : 'text-red-400'}`}>{couponMsg}</p>}
-              </div>
-            )}
+
 
             {msg && <p className="rounded-xl bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-500">{msg}</p>}
 
