@@ -112,10 +112,10 @@ export default function Services() {
 
         <div className="relative mx-auto max-w-4xl px-4 text-center">
           <h1 className="text-4xl font-black leading-[1.08] tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
-            Cuidamos tu moto como si fuera <span className="gradient-text">nuestra</span>
+            {hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Cuidamos tu moto como si fuera <span className="gradient-text">nuestra</span></>}
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-gray-500 md:text-lg">
-            Explora los servicios que tenemos para tu moto.
+            {hero.slides?.[0]?.subtitle || 'Explora los servicios que tenemos para tu moto.'}
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link to="/agendar" className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all duration-300 hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/30">

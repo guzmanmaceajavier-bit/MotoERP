@@ -387,10 +387,10 @@ export default function Store() {
           <div className="flex flex-col items-center gap-8 md:flex-row md:items-center md:justify-between">
             <div className="max-w-xl text-center md:text-left">
               <h1 className="text-3xl font-black leading-[1.08] tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
-                Tienda de repuestos <span className="gradient-text">y accesorios para tu moto</span>
+                {hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Tienda de repuestos <span className="gradient-text">y accesorios para tu moto</span></>}
               </h1>
               <p className="mt-4 max-w-md text-base leading-relaxed text-gray-500">
-                Encuentra repuestos originales y accesorios de alta calidad para mantener tu moto siempre en su mejor versión.
+                {hero.slides?.[0]?.subtitle || 'Encuentra repuestos originales y accesorios de alta calidad para mantener tu moto siempre en su mejor versión.'}
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-4 md:justify-start">
                 <div className="flex items-center gap-2 text-sm text-gray-600">
