@@ -193,11 +193,10 @@ export default function BlogPage() {
           <div className="flex flex-col items-center gap-10 md:flex-row md:items-center md:justify-between">
             <div className="max-w-xl text-center md:text-left">
               <h1 className="mt-2 text-3xl font-black leading-[1.08] tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
-                Consejos y guías <br className="hidden md:block" />
-                <span className="gradient-text">para tu moto</span>
+                {hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Consejos y guías <br className="hidden md:block" /><span className="gradient-text">para tu moto</span></>}
               </h1>
               <p className="mt-4 max-w-md text-base leading-relaxed text-gray-500">
-                Mantenemos tu pasión en movimiento con tips, guías y recomendaciones de expertos.
+                {hero.slides?.[0]?.subtitle || 'Mantenemos tu pasión en movimiento con tips, guías y recomendaciones de expertos.'}
               </p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-5 md:justify-start">
                 <div className="flex items-center gap-2.5 text-sm text-gray-600">

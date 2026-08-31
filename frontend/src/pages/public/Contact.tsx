@@ -94,12 +94,10 @@ export default function Contact() {
           <div className="flex flex-col items-center gap-10 md:flex-row md:items-center md:justify-between">
             <div className="max-w-xl text-center md:text-left">
               <h1 className="mt-2 text-3xl font-black leading-[1.08] tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
-                Estamos aquí para <br className="hidden md:block" />
-                ayudarte y que te sientas <br className="hidden md:block" />
-                <span className="gradient-text">cómodo</span>
+                {hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Estamos aquí para <br className="hidden md:block" />ayudarte y que te sientas <br className="hidden md:block" /><span className="gradient-text">cómodo</span></>}
               </h1>
               <p className="mt-4 max-w-md text-base leading-relaxed text-gray-500">
-                Resuelve tus dudas, agenda un servicio, nuestro equipo está listo para brindarte la mejor atención.
+                {hero.slides?.[0]?.subtitle || 'Resuelve tus dudas, agenda un servicio, nuestro equipo está listo para brindarte la mejor atención.'}
               </p>
             </div>
             <div className="relative shrink-0">
