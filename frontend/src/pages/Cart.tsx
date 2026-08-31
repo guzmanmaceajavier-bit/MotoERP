@@ -220,7 +220,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
               <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-800">
                 <p className="text-sm font-bold">Pago en efectivo — comprobante</p>
                 <p className="mt-1 text-sm text-green-700">
-                  Presenta este comprobante <strong>{done.invoice_number}</strong> en el taller para pagar. Vence en 1 día ({new Date(new Date(done.created_at).getTime() + 24*60*60*1000).toLocaleDateString('es-CO')}).
+                  Presenta este comprobante <strong>{done.invoice_number}</strong> en el taller para pagar. Vence en 1 día ({new Date(Date.now() + 24*60*60*1000).toLocaleDateString('es-CO')}).
                 </p>
                 <p className="mt-1 text-xs text-green-600">Tu pedido está registrado en el sistema del taller. Llévalo impreso o en el celular.</p>
                 {user ? (
@@ -588,7 +588,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
               <div className="mt-3 space-y-2.5 text-sm">
                 <div className="flex justify-between"><span className="text-gray-500">Subtotal ({count} artículos)</span><span className="font-semibold text-gray-800">{fmtMoney(total)}</span></div>
                 {loyaltyDiscount > 0 && <div className="flex justify-between text-green-600"><span>Descuento (puntos)</span><span>−{fmtMoney(loyaltyDiscount)}</span></div>}
-                {couponDiscount > 0 && <div className="flex justify-between text-green-600"><span>Cupón</span><span>−{fmtMoney(couponDiscount)}</span></div>}
                 <div className="flex justify-between"><span className="text-gray-500">Envío</span><span className={`font-semibold ${shippingFee > 0 ? 'text-gray-800' : 'text-green-500'}`}>{shippingFee > 0 ? fmtMoney(shippingFee) : 'Gratis'}</span></div>
                 {taxEnabled && <div className="flex justify-between"><span className="text-gray-500">IVA ({taxRate}%)</span><span className="font-semibold text-gray-800">{fmtMoney(tax)}</span></div>}
               </div>
