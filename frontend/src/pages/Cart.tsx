@@ -264,7 +264,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                     </p>
                     {workshop_phone && (
                       <a
-                        href={`https://wa.me/${workshop_phone}?text=${encodeURIComponent(`Hola, soy ${done.customer_name}. Realicé una transferencia por el pedido ${done.invoice_number} por un valor de $${done.total.toLocaleString('es-CO')}. Adjunto el comprobante de pago.`)}`}`}
+                        href={`https://wa.me/${workshop_phone}?text=${encodeURIComponent(`Hola, soy ${done.customer_name}. Realicé una transferencia por el pedido ${done.invoice_number} por un valor de $${done.total.toLocaleString('es-CO')}. Adjunto el comprobante de pago.`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-green-500 px-4 py-3 text-sm font-bold text-white hover:bg-green-600 transition"
