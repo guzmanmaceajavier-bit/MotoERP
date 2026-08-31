@@ -218,14 +218,17 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
 
             {isCash ? (
               <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-green-800">
-                <p className="text-sm font-bold">Pago en efectivo</p>
+                <p className="text-sm font-bold">Pago en efectivo — comprobante</p>
                 <p className="mt-1 text-sm text-green-700">
-                  Tu pedido ya está en preparación. Paga en efectivo al retirarlo o recibirlo. Te avisaremos cuando esté listo.
+                  Presenta este comprobante <strong>{done.invoice_number}</strong> en el taller para pagar. Vence en 1 día ({new Date(new Date(done.created_at).getTime() + 24*60*60*1000).toLocaleDateString('es-CO')}).
                 </p>
-                {user && (
+                <p className="mt-1 text-xs text-green-600">Tu pedido está registrado en el sistema del taller. Llévalo impreso o en el celular.</p>
+                {user ? (
                   <div className="mt-3">
                     <Link to="/panel/pedidos" className="btn-primary btn-shine w-full">Ver mis pedidos</Link>
                   </div>
+                ) : (
+                  <p className="mt-2 text-xs text-green-600">Guarda este número: lo necesitarás para consultar y pagar.</p>
                 )}
               </div>
             ) : (
@@ -237,15 +240,15 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                 {done.payment_method === 'transferencia' && (
                   <div className="mt-3">
                     <PaymentInfoBlock />
+                    <p className="mt-2 text-xs text-amber-700">Envía el comprobante por WhatsApp a los números del taller y te confirmamos por chat.</p>
                   </div>
                 )}
-                {user && (
+                {user ? (
                   <div className="mt-3">
                     <Link to="/panel/pedidos" className="btn-primary btn-shine w-full">Subir comprobante ahora</Link>
                   </div>
-                )}
-                {!user && (
-                  <p className="mt-2 text-xs text-amber-600">Si creas una cuenta con tu email, podrás seguir y pagar este pedido desde Mis Pedidos.</p>
+                ) : (
+                  <p className="mt-2 text-xs text-amber-600">Guarda este número y envía el comprobante por WhatsApp. Si creas cuenta con tu email podrás seguir el pedido.</p>
                 )}
               </div>
             )}
