@@ -151,17 +151,22 @@ class StoreController extends Controller
             }
         }
 
-        $user = User::firstOrCreate(
-            ['email' => $validated['guest_email']],
-            [
-                'name' => $validated['guest_name'],
-                'phone' => $validated['guest_phone'],
-                'role' => 'customer',
-                'password' => Hash::make(Str::random(40)),
-            ]
-        );
+        try {
+            $user = User::firstOrCreate(
+                ['email' => $validated['guest_email']],
+                [
+                    'name' => $validated['guest_name'],
+                    'phone' => $validated['guest_phone'],
+                    'role' => 'customer',
+                    'password' => Hash::make(Str::random(40)),
+                ]
+            );
 
-        return $this->processCheckout($user, $request, $validated);
+            return $this->processCheckout($user, $request, $validated);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('checkoutGuest failed: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json(['message' => 'Error al procesar pedido: '.$e->getMessage()], 422);
+        }
     }
 
     private function validateCart(Request $request): array
