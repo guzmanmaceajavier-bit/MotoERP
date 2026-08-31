@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+export APP_DEBUG=true
+
 echo "=== Building .env from environment ==="
 
 cat > .env << EOF
