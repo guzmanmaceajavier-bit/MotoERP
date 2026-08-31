@@ -86,21 +86,22 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
   }, [])
 
   const [storeConfig, setStoreConfig] = useState({ shipping_fee: 12000, free_shipping_threshold: 150000, delivery_days: 3 })
+  const [pointsValue, setPointsValue] = useState(100)
   useEffect(() => {
-    api<{ shipping_fee?: number; free_shipping_threshold?: number; delivery_days?: number; tax_enabled?: boolean; tax_rate?: number }>('/payment-info')
+    api<{ shipping_fee?: number; free_shipping_threshold?: number; delivery_days?: number; tax_enabled?: boolean; tax_rate?: number; points_value?: number }>('/payment-info')
       .then((d) => {
         setStoreConfig({
           shipping_fee: d.shipping_fee ?? 12000,
           free_shipping_threshold: d.free_shipping_threshold ?? 150000,
           delivery_days: d.delivery_days ?? 3,
         })
+        if (d.points_value !== undefined) setPointsValue(d.points_value)
         if (d.tax_enabled !== undefined) setTaxEnabled(d.tax_enabled)
         if (d.tax_rate !== undefined) setTaxRate(d.tax_rate)
       })
       .catch(() => {})
   }, [])
 
-  const pointsValue = 100
   const shippingFee = fulfillment === 'shipping' && total < storeConfig.free_shipping_threshold ? storeConfig.shipping_fee : 0
   const loyaltyDiscount = user ? Math.min(pointsToUse * pointsValue, total) : 0
   const subtotalAfterDiscount = Math.max(0, total - loyaltyDiscount - couponDiscount)

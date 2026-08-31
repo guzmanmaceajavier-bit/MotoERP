@@ -380,15 +380,17 @@ export default function Home() {
             <div className="relative mt-8 overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]">
               <div className="flex w-max gap-10 anim-marquee">
                 {[...brands, ...brands].map((b, i) => (
-                  <Link key={`${b.id}-${i}`} to={`/tienda?brand=${b.id}`} className="flex items-center gap-3 whitespace-nowrap transition hover:opacity-70">
+                  <Link key={`${b.id}-${i}`} to={`/tienda?brand=${b.id}`} className="flex items-center justify-center whitespace-nowrap transition hover:opacity-70" title={b.name}>
                     {b.image ? (
-                      <img src={b.image} alt={b.name} className="h-12 w-12 rounded-xl object-contain" />
+                      <img src={b.image} alt={b.name} className="h-12 max-w-[120px] object-contain" />
                     ) : (
-                      <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100 text-orange-500">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 16l3.5-6.5a2 2 0 011.8-1H16l2 4.5H20a1 1 0 011 1V16H5z" /><circle cx="8.5" cy="16" r="1.5" /><circle cx="16.5" cy="16" r="1.5" /></svg>
+                      <span className="flex items-center gap-2 text-lg font-extrabold uppercase tracking-wide text-gray-800">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-500">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 16l3.5-6.5a2 2 0 011.8-1H16l2 4.5H20a1 1 0 011 1V16H5z" /><circle cx="8.5" cy="16" r="1.5" /><circle cx="16.5" cy="16" r="1.5" /></svg>
+                        </span>
+                        {b.name}
                       </span>
                     )}
-                    <span className="text-lg font-extrabold uppercase tracking-wide text-gray-800">{b.name}</span>
                   </Link>
                 ))}
               </div>

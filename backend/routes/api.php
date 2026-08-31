@@ -93,6 +93,7 @@ Route::get('products', [PublicController::class, 'products']);
         Route::get('orders/{order}', [OrderController::class, 'show']);
         Route::get('orders/{order}/photos', [StaffController::class, 'listPhotos']);
         Route::post('orders/{order}/respond', [OrderController::class, 'respondQuotation']);
+        Route::get('orders/{order}/quotations', [OrderController::class, 'quotationHistory']);
         Route::delete('orders/{order}', [OrderController::class, 'cancelOwnOrder']);
 Route::get('orders/{order}/quotation/pdf', [OrderController::class, 'quotationPdf']);
 

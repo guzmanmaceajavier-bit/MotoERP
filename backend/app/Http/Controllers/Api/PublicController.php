@@ -25,6 +25,8 @@ class PublicController extends Controller
             'shipping_fee' => (float) \App\Support\Settings::get('store_shipping_fee', config('store.shipping_fee', 12000)),
             'free_shipping_threshold' => (float) \App\Support\Settings::get('store_free_shipping_threshold', config('store.free_shipping_threshold', 150000)),
             'delivery_days' => (int) \App\Support\Settings::get('delivery_days', 3),
+            'points_value' => (float) (\App\Support\Settings::get('points_value', config('points.value', 100))),
+            'points_earning_threshold' => (float) (\App\Support\Settings::get('points_earning_threshold', 50000)),
         ]);
     }
 
@@ -282,6 +284,8 @@ class PublicController extends Controller
             'hero_texts' => json_decode((string) \App\Support\Settings::get('hero_texts', '{}'), true) ?: [],
             'day_hours' => json_decode((string) \App\Support\Settings::get('day_hours', '[]'), true) ?: [],
             'holidays' => json_decode((string) \App\Support\Settings::get('holidays', '[]'), true) ?: [],
+            'points_value' => (float) (\App\Support\Settings::get('points_value', config('points.value', 100))),
+            'points_earning_threshold' => (float) (\App\Support\Settings::get('points_earning_threshold', 50000)),
             'terms_content' => (string) \App\Support\Settings::get('terms_content', ''),
             'privacy_content' => (string) \App\Support\Settings::get('privacy_content', ''),
         ]);

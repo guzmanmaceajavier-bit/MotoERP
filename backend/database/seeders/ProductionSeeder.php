@@ -39,7 +39,7 @@ class ProductionSeeder extends Seeder
         );
         Setting::firstOrCreate(
             ['key' => 'workshop_phone'],
-            ['value' => '573016838490']
+            ['value' => '3000000000']
         );
         Setting::firstOrCreate(
             ['key' => 'workshop_logo'],

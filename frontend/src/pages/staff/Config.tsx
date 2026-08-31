@@ -84,6 +84,7 @@ interface Settings {
   hero_images: Record<string, string[]>
   hero_texts: Record<string, HeroText>
   points_value: number
+  points_earning_threshold: number
   payment_options: PaymentOption[]
   payment_instructions: string
   whatsapp_enabled: boolean
@@ -302,6 +303,7 @@ export default function Config() {
 
   // Pagos
   const [pointsValue, setPointsValue] = useState('')
+  const [pointsThreshold, setPointsThreshold] = useState('50000')
   const [paymentOptions, setPaymentOptions] = useState<PaymentOption[]>([])
   const [paymentInstructions, setPaymentInstructions] = useState('')
   const [taxEnabled, setTaxEnabled] = useState(false)
@@ -367,6 +369,7 @@ export default function Config() {
     setHeroImages(s.hero_images || {})
     setHeroTexts(s.hero_texts || {})
     setPointsValue(String(s.points_value))
+    setPointsThreshold(String(s.points_earning_threshold ?? 50000))
     setPaymentOptions(s.payment_options || [])
     setPaymentInstructions(s.payment_instructions || '')
     setTaxEnabled(s.tax_enabled === '1' || s.tax_enabled === true)
@@ -1084,6 +1087,9 @@ export default function Config() {
               <Field label="Valor de puntos" hint="cada punto equivale a este valor al canjear (moneda local)">
                 <Input type="number" min={1} value={pointsValue} onChange={(e) => setPointsValue(e.target.value)} variant="brand" />
               </Field>
+              <Field label="Monto mínimo para ganar puntos" hint="compra mínima para que el cliente gane puntos">
+                <Input type="number" min={0} value={pointsThreshold} onChange={(e) => setPointsThreshold(e.target.value)} variant="brand" />
+              </Field>
             </div>
             <p className="text-xs text-carbon-400">
               Se usa en: <strong>carrito y checkout</strong> (canjeo de puntos) y en el <strong>portal del cliente</strong> (saldo y canje).
@@ -1183,6 +1189,7 @@ export default function Config() {
                 disabled={saving}
                 onClick={() => save({
                   points_value: Number(pointsValue) || 0,
+                  points_earning_threshold: Number(pointsThreshold) || 0,
                   payment_options: paymentOptions,
                   payment_instructions: paymentInstructions,
                   tax_enabled: taxEnabled ? '1' : '0',

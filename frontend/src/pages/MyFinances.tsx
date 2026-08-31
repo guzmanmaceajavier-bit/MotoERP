@@ -82,11 +82,13 @@ export default function MyFinances() {
   const [redeemPoints, setRedeemPoints] = useState('')
   const [redeemMsg, setRedeemMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const [redeeming, setRedeeming] = useState(false)
+  const [pointsValue, setPointsValue] = useState(100)
 
   useEffect(() => {
     loadInvoices()
     api<LoyaltyInfo>('/my-points').then(setPoints).catch(() => {})
     api<Paginated<Warranty> | Warranty[]>('/my-warranties').then((res) => setWarranties(unwrapList(res))).catch(() => {})
+    api<{ points_value?: number }>('/payment-info').then((d) => { if (d.points_value !== undefined) setPointsValue(d.points_value) }).catch(() => {})
   }, [])
 
   async function loadInvoices(page = 1) {
@@ -367,16 +369,16 @@ export default function MyFinances() {
                 {StarIcon} Puntos de fidelización
               </div>
               <div className="mt-2 text-5xl font-black text-white">{points?.balance ?? 0}</div>
-              <p className="mt-3 text-xs text-brand-100">Acumulas 1 punto por cada $1.000 en compras y servicios.</p>
+              <p className="mt-3 text-xs text-brand-100">Acumulas 1 punto por cada ${pointsValue.toLocaleString('es-CO')} en compras y servicios.</p>
               <div className="mt-4 flex items-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-sm">
                 <span className="text-brand-100">Equivalencia</span>
-                <span className="ml-auto font-semibold">1 punto = $1.000</span>
+                <span className="ml-auto font-semibold">1 punto = ${pointsValue.toLocaleString('es-CO')}</span>
               </div>
             </div>
 
             <div className="mt-5 rounded-2xl border border-carbon-200 bg-white p-5 dark:bg-carbon-100 dark:border-carbon-200">
               <h3 className="font-bold text-carbon-900 dark:text-carbon-700">Canjear por descuento</h3>
-              <p className="mt-1 text-sm text-carbon-500">Cada punto vale $1.000. Al canjear recibes un cupón para presentar en el mostrador.</p>
+              <p className="mt-1 text-sm text-carbon-500">Cada punto vale ${pointsValue.toLocaleString('es-CO')}. Al canjear recibes un cupón para presentar en el mostrador.</p>
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 <input
                   type="number"

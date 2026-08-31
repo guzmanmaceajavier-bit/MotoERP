@@ -1068,6 +1068,7 @@ return response()->json([
             'hero_texts' => json_decode((string) Settings::get('hero_texts', '{}'), true) ?: [],
             'workshop_country' => Settings::get('workshop_country', 'CO'),
             'points_value' => (float) (Settings::get('points_value') ?? config('points.value', 100)),
+            'points_earning_threshold' => (float) (Settings::get('points_earning_threshold', 50000)),
             'payment_options' => json_decode((string) Settings::get('payment_options', '[]'), true) ?: [],
             'payment_instructions' => (string) Settings::get('payment_instructions', ''),
             'whatsapp_enabled' => app(NotificationService::class)->whatsappEnabled(),
@@ -1117,6 +1118,7 @@ return response()->json([
             'hero_texts' => 'nullable|array',
             'workshop_country' => 'nullable|string|max:2',
             'points_value' => 'nullable|numeric|min:1',
+            'points_earning_threshold' => 'nullable|numeric|min:0',
             'payment_options' => 'nullable|array',
             'payment_options.*.method' => 'required|string|max:40',
             'payment_options.*.label' => 'nullable|string|max:120',
@@ -1194,6 +1196,9 @@ return response()->json([
                     : $contents."\nPOINTS_VALUE=".$validated['points_value']."\n";
                 file_put_contents($envFile, $contents);
             }
+        }
+        if (array_key_exists('points_earning_threshold', $validated)) {
+            Settings::set('points_earning_threshold', (string) $validated['points_earning_threshold']);
         }
         if (array_key_exists('whatsapp_enabled', $validated)) {
             Settings::set('whatsapp_enabled', (bool) $validated['whatsapp_enabled']);

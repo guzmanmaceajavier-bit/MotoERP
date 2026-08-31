@@ -223,6 +223,11 @@ export default function Store() {
   const navigate = useNavigate()
   const toast = useToast().toast
   const hero = useHero('store')
+  const [workshopPhone, setWorkshopPhone] = useState('')
+
+  useEffect(() => {
+    api<{ workshop_phone: string }>('/site-info').then((d) => setWorkshopPhone(d.workshop_phone || '')).catch(() => {})
+  }, [])
 
   /* data */
   const [categories, setCategories] = useState<Category[]>([])
@@ -716,7 +721,7 @@ export default function Store() {
             </div>
           </div>
           <a
-            href="https://wa.me/573016838490"
+            href={`https://wa.me/${workshopPhone || '3000000000'}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-orange-500 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all duration-300 hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/30"

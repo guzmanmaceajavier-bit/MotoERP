@@ -198,6 +198,16 @@ class OrderController extends Controller
         if ($validated['decision'] === 'approved') {
             app(NotificationService::class)->quotationApproved($order);
         }
+        // Notificar a staff sobre la decisión del cliente
+        foreach (\App\Models\User::whereIn('role', ['admin', 'receptionist', 'mechanic'])->get() as $staff) {
+            app(NotificationService::class)->notify(
+                $staff,
+                $validated['decision'] === 'approved' ? 'Cotización aprobada' : ($validated['decision'] === 'rejected' ? 'Cotización rechazada' : 'Cotización en revisión'),
+                "Cliente respondió \"{$validated['decision']}\" a {$order->order_number} ({$order->service_type})",
+                $validated['decision'] === 'approved' ? 'success' : 'warning',
+                ['channel' => 'order']
+            );
+        }
 
         $order->load(['items', 'labors']);
 

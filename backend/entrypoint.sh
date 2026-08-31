@@ -1,15 +1,13 @@
 #!/bin/sh
 set -e
 
-export APP_DEBUG=true
-
 echo "=== Building .env from environment ==="
 
 cat > .env << EOF
 APP_KEY=${APP_KEY:-}
 APP_NAME=${APP_NAME:-MotoERP}
 APP_ENV=production
-APP_DEBUG=true
+APP_DEBUG=\${APP_DEBUG:-false}
 APP_URL=${APP_URL:-https://motoerp-api.onrender.com}
 DB_CONNECTION=${DB_CONNECTION:-pgsql}
 DB_HOST=${DB_HOST}

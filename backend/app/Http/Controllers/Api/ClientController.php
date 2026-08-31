@@ -171,6 +171,17 @@ class ClientController extends Controller
             ['channel' => 'order']
         );
 
+        // Notificar a staff (admin/recepción)
+        foreach (\App\Models\User::whereIn('role', ['admin', 'receptionist'])->get() as $staff) {
+            app(\App\Services\NotificationService::class)->notify(
+                $staff,
+                'Nueva solicitud de servicio',
+                "Cliente {$request->user()->name} solicitó \"{$order->service_type}\" ({$order->order_number})",
+                'info',
+                ['channel' => 'order']
+            );
+        }
+
         return response()->json([
             'id' => $order->id,
             'order_number' => $order->order_number,

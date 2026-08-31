@@ -110,8 +110,14 @@ class StaffCatalogController extends Controller
 
     public function deleteBrand(Request $request, Brand $brand): JsonResponse
     {
+        if ($brand->models()->exists()) {
+            return response()->json(['message' => 'La marca tiene modelos asociados. Elimínalos primero.'], 422);
+        }
         if ($brand->motorcycles()->exists()) {
             return response()->json(['message' => 'La marca tiene motos asociadas'], 422);
+        }
+        if ($brand->products()->exists()) {
+            return response()->json(['message' => 'La marca tiene productos asociados'], 422);
         }
         $brand->delete();
 

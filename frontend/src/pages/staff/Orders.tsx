@@ -254,8 +254,9 @@ export default function Orders() {
       const data = await api<Paginated<StaffOrder>>('/staff/orders?per_page=50&page=1')
       const fresh = data.data.find((o) => o.id === detail?.id)
       if (fresh) setDetail(fresh)
+      toast.success('Datos actualizados')
     } catch {
-      /* conserva el detalle actual si falla */
+      toast.error('No se pudo actualizar')
     }
     await load(page)
   }
@@ -724,7 +725,7 @@ function OrderDetail(props: {
   const st = STATUS_META[o.status] ?? STATUS_META.pending
   const q = QUOTATION_META[o.quotation_status] ?? QUOTATION_META.draft
   const canAssign = isAdmin && (!o.mechanic || o.status === 'pending')
-  const canQuote = isMechanic && o.mechanic?.id === user?.id && o.status === 'in_progress' && o.quotation_status === 'pending'
+  const canQuote = (isAdmin || (isMechanic && o.mechanic?.id === user?.id)) && o.status === 'in_progress' && o.quotation_status === 'pending'
 
   return (
     <div className="space-y-4">
