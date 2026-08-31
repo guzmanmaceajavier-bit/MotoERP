@@ -183,7 +183,7 @@ export default function Home() {
     api<Brand[]>('/brands').then((b) => setBrands(b.slice(0, 12))).catch(() => {})
   }, [])
 
-  const heroImages = hero.images.length > 0 ? hero.images : [heroImg]
+  const heroImages = hero.slides && hero.slides.length > 0 ? hero.slides.map((s) => s.image).filter(Boolean) : hero.images.length > 0 ? hero.images : [heroImg]
   const [imgSlide, setImgSlide] = useState(0)
 
   useEffect(() => {
@@ -192,14 +192,10 @@ export default function Home() {
     return () => clearInterval(t)
   }, [heroImages.length])
 
-  const heroSlides = [
+  const defaultSlides = [
     {
-      title: hero.title || (
-        <>Tu taller de motos, <span className="gradient-text">digital y transparente</span></>
-      ),
-      subtitle:
-        hero.subtitle ||
-        'Gestiona el mantenimiento de tu motocicleta, compra repuestos y haz seguimiento de cada servicio, todo desde tu teléfono.',
+      title: <>Tu taller de motos, <span className="gradient-text">digital y transparente</span></>,
+      subtitle: 'Gestiona el mantenimiento de tu motocicleta, compra repuestos y haz seguimiento de cada servicio, todo desde tu teléfono.',
     },
     {
       title: <>Repuestos y accesorios con <span className="gradient-text">stock en vivo</span></>,
@@ -210,13 +206,26 @@ export default function Home() {
       subtitle: 'Agenda el servicio en menos de un minuto, aprueba cotizaciones desde tu teléfono y recibe notificaciones de cada etapa.',
     },
   ]
+  const heroSlides = hero.slides && hero.slides.length > 0
+    ? hero.slides.map((s, idx) => ({
+        title: s.title ? <>{s.title}</> : defaultSlides[idx % defaultSlides.length].title,
+        subtitle: s.subtitle || defaultSlides[idx % defaultSlides.length].subtitle,
+      }))
+    : [
+        {
+          title: hero.title || defaultSlides[0].title,
+          subtitle: hero.subtitle || defaultSlides[0].subtitle,
+        },
+        defaultSlides[1],
+        defaultSlides[2],
+      ]
 
   const [slide, setSlide] = useState(0)
   useEffect(() => {
     const t = setInterval(() => setSlide((i) => (i + 1) % heroSlides.length), 5000)
     return () => clearInterval(t)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hero.title, hero.subtitle])
+  }, [hero.slides, hero.title, hero.subtitle])
 
   const stats = useMemo(
     () => [

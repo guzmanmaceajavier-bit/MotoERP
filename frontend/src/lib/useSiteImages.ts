@@ -5,17 +5,25 @@ export interface HeroInfo {
   images: string[]
   title?: string
   subtitle?: string
+  slides?: { image: string; title?: string; subtitle?: string }[]
 }
 
 export function useHero(page: string): HeroInfo {
   const [hero, setHero] = useState<HeroInfo>({ images: [] })
   useEffect(() => {
-    api<{ hero_images?: Record<string, string[]>; hero_texts?: Record<string, { title?: string; subtitle?: string }> }>('/site-info')
+    api<{ hero_images?: Record<string, string[]>; hero_texts?: Record<string, { title?: string; subtitle?: string } | { title?: string; subtitle?: string }[]> }>('/site-info')
       .then((d) => {
+        const images = (d.hero_images?.[page] ?? []).filter((u) => u)
+        const raw = d.hero_texts?.[page]
+        const slides = images.map((img, i) => {
+          const txt = Array.isArray(raw) ? (raw[i] as { title?: string; subtitle?: string } | undefined) : (i === 0 ? (raw as { title?: string; subtitle?: string } | undefined) : undefined)
+          return { image: img, title: txt?.title, subtitle: txt?.subtitle }
+        })
         setHero({
-          images: (d.hero_images?.[page] ?? []).filter((u) => u),
-          title: d.hero_texts?.[page]?.title,
-          subtitle: d.hero_texts?.[page]?.subtitle,
+          images,
+          title: Array.isArray(raw) ? (raw[0] as { title?: string } | undefined)?.title : (raw as { title?: string } | undefined)?.title,
+          subtitle: Array.isArray(raw) ? (raw[0] as { subtitle?: string } | undefined)?.subtitle : (raw as { subtitle?: string } | undefined)?.subtitle,
+          slides,
         })
       })
       .catch(() => {})

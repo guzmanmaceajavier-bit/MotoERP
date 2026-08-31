@@ -6,7 +6,6 @@ import { useCart } from '../lib/cart'
 import { isStaffRole } from '../lib/roles'
 import { useTheme } from '../lib/theme'
 import WhatsAppFloat from '../components/WhatsAppFloat'
-import ChatBot from '../components/ChatBot'
 import SiteFooter from '../components/SiteFooter'
 import { BackToTop } from '../components/BackToTop'
 import CookieConsent from '../components/CookieConsent'
@@ -227,7 +226,6 @@ export default function PublicLayout() {
       </main>
       <BackToTop />
       <WhatsAppFloat />
-      <ChatBot />
       <CookieConsent />
       <button
         type="button"

@@ -82,7 +82,7 @@ interface Settings {
   holidays: Holiday[]
   banners: Banner[]
   hero_images: Record<string, string[]>
-  hero_texts: Record<string, HeroText>
+  hero_texts: Record<string, HeroText[]>
   points_value: number
   points_earning_threshold: number
   payment_options: PaymentOption[]
@@ -299,7 +299,7 @@ export default function Config() {
   // Página web
   const [banners, setBanners] = useState<Banner[]>([])
   const [heroImages, setHeroImages] = useState<Record<string, string[]>>({})
-  const [heroTexts, setHeroTexts] = useState<Record<string, HeroText>>({})
+  const [heroTexts, setHeroTexts] = useState<Record<string, HeroText[]>>({})
 
   // Pagos
   const [pointsValue, setPointsValue] = useState('')
@@ -367,7 +367,15 @@ export default function Config() {
     setHolidays(s.holidays || [])
     setBanners(s.banners)
     setHeroImages(s.hero_images || {})
-    setHeroTexts(s.hero_texts || {})
+    // Normalizar hero_texts: soporta viejo formato {title,subtitle} y nuevo [{title,subtitle}...]
+    const rawTexts = s.hero_texts || {}
+    const normalized: Record<string, HeroText[]> = {}
+    for (const [k, v] of Object.entries(rawTexts as Record<string, unknown>)) {
+      if (Array.isArray(v)) normalized[k] = v as HeroText[]
+      else if (v && typeof v === 'object' && ('title' in (v as Record<string, unknown>) || 'subtitle' in (v as Record<string, unknown>))) normalized[k] = [v as HeroText]
+      else normalized[k] = []
+    }
+    setHeroTexts(normalized)
     setPointsValue(String(s.points_value))
     setPointsThreshold(String(s.points_earning_threshold ?? 50000))
     setPaymentOptions(s.payment_options || [])
@@ -462,6 +470,7 @@ export default function Config() {
 
   function addHero(key: string) {
     setHeroImages((prev) => ({ ...prev, [key]: [...(prev[key] ?? []), ''] }))
+    setHeroTexts((prev) => ({ ...prev, [key]: [...(prev[key] ?? []), {}] }))
   }
 
   function removeHero(key: string, index: number) {
@@ -472,10 +481,24 @@ export default function Config() {
       else delete next[key]
       return next
     })
+    setHeroTexts((prev) => {
+      const list = (prev[key] ?? []).filter((_, i) => i !== index)
+      const next = { ...prev }
+      if (list.length) next[key] = list
+      else delete next[key]
+      return next
+    })
   }
 
   function moveHero(key: string, index: number, dir: -1 | 1) {
     setHeroImages((prev) => {
+      const list = [...(prev[key] ?? [])]
+      const target = index + dir
+      if (target < 0 || target >= list.length) return prev
+      ;[list[index], list[target]] = [list[target], list[index]]
+      return { ...prev, [key]: list }
+    })
+    setHeroTexts((prev) => {
       const list = [...(prev[key] ?? [])]
       const target = index + dir
       if (target < 0 || target >= list.length) return prev
@@ -494,8 +517,13 @@ export default function Config() {
     })
   }
 
-  function setHeroText(key: string, field: 'title' | 'subtitle', value: string) {
-    setHeroTexts((prev) => ({ ...prev, [key]: { ...(prev[key] || {}), [field]: value } }))
+  function setHeroTextAt(key: string, index: number, field: 'title' | 'subtitle', value: string) {
+    setHeroTexts((prev) => {
+      const list = [...(prev[key] ?? [])]
+      while (list.length <= index) list.push({})
+      list[index] = { ...(list[index] || {}), [field]: value }
+      return { ...prev, [key]: list }
+    })
   }
 
   function buildPhone(): string {
@@ -918,25 +946,26 @@ export default function Config() {
                       </button>
                     )}
                   </div>
-                  <div className="mb-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <Field label="Título del hero" hint="ej: Tu taller de motos, digital y transparente">
-                      <Input value={heroTexts[page.key]?.title ?? ''} onChange={(e) => setHeroText(page.key, 'title', e.target.value)} variant="brand" />
-                    </Field>
-                    <Field label="Descripción del hero" hint="ej: Gestiona el mantenimiento de tu moto...">
-                      <Input value={heroTexts[page.key]?.subtitle ?? ''} onChange={(e) => setHeroText(page.key, 'subtitle', e.target.value)} variant="brand" />
-                    </Field>
-                  </div>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {heroList(page.key).map((url, i) => (
-                      <div key={i} className="flex items-start gap-2">
-                        <div className="min-w-0 flex-1">
-                          <UploadImage
-                            value={url}
-                            onChange={(u) => setHeroAt(page.key, i, u)}
-                            uploading={uploadingKey === `${page.key}-${i}`}
-                            onUpload={(f) => uploadImage(`${page.key}-${i}`, f, (u) => setHeroAt(page.key, i, u))}
-                          />
-                        </div>
+                      <div key={i} className="rounded-xl border border-carbon-200 p-3">
+                        <div className="flex items-start gap-2">
+                          <div className="min-w-0 flex-1 space-y-3">
+                            <UploadImage
+                              value={url}
+                              onChange={(u) => setHeroAt(page.key, i, u)}
+                              uploading={uploadingKey === `${page.key}-${i}`}
+                              onUpload={(f) => uploadImage(`${page.key}-${i}`, f, (u) => setHeroAt(page.key, i, u))}
+                            />
+                            <div className="grid grid-cols-1 gap-3">
+                              <Field label={`Título slide ${i + 1}`} hint="ej: Tu taller de motos, digital y transparente">
+                                <Input value={heroTexts[page.key]?.[i]?.title ?? ''} onChange={(e) => setHeroTextAt(page.key, i, 'title', e.target.value)} variant="brand" placeholder="Título para esta imagen" />
+                              </Field>
+                              <Field label="Descripción" hint="ej: Gestiona el mantenimiento...">
+                                <Input value={heroTexts[page.key]?.[i]?.subtitle ?? ''} onChange={(e) => setHeroTextAt(page.key, i, 'subtitle', e.target.value)} variant="brand" placeholder="Descripción para esta imagen" />
+                              </Field>
+                            </div>
+                          </div>
                         <div className="mt-16 flex shrink-0 flex-col gap-1">
                           {page.multi && (
                             <>
