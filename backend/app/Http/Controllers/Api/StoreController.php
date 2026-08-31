@@ -162,6 +162,15 @@ class StoreController extends Controller
                 ]
             );
 
+            // Guest: crear pedido simple sin tocar stock (el taller confirma al pagar)
+            $expirationDays = (int) (\App\Support\Settings::get('order_expiration_days', 1));
+            $expirationDays = $expirationDays > 0 ? $expirationDays : 1;
+
+            $request->merge(['user' => $user]);
+            // Reusar processCheckout pero sin reserva de stock para guest
+            $validated['skip_stock'] = true;
+            $validated['due_date'] = now()->addDays($expirationDays)->toDateString();
+
             return $this->processCheckout($user, $request, $validated);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('checkoutGuest failed: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
@@ -232,8 +241,10 @@ class StoreController extends Controller
             $stock = app(\App\Services\InventoryService::class);
             foreach ($validated['items'] as $line) {
                 $product = Product::with('inventory')->where('is_active', true)->findOrFail($line['product_id']);
-                // Validación de disponibilidad; la baja real se hace con bloqueo al facturar.
-                $stock->assertAvailable($line['product_id'], $line['quantity']);
+                // Validación de disponibilidad; la baja real se hace con bloqueo al facturar. Guest skip_stock no valida stock.
+                if (!($validated['skip_stock'] ?? false)) {
+                    $stock->assertAvailable($line['product_id'], $line['quantity']);
+                }
                 // Usa el precio final (respeta promociones)
                 $price = $product->final_price;
                 $total = round($price * $line['quantity'], 2);
