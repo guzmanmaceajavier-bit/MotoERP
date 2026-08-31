@@ -19,14 +19,13 @@ const links = [
   { to: '/panel/pedidos', label: 'Mis Pedidos', section: 'Compras', icon: 'M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0' },
   { to: '/panel/favoritos', label: 'Favoritos', section: 'Compras', icon: 'M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z' },
   { to: '/panel/mi-cuenta', label: 'Mis Finanzas', section: 'Mi cuenta', icon: 'M4 6h16M4 12h16M4 18h16' },
-  { to: '/panel/chat', label: 'Chat con el taller', section: 'Mi cuenta', icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z' },
   { to: '/panel/configuracion', label: 'Configuración', section: 'Mi cuenta', icon: 'M10.3 4.3a1 1 0 011.4 0l.7.7a1 1 0 001.4 0l.7-.7a1 1 0 011.4 0l1.2 1.2a1 1 0 010 1.4l-.7.7a1 1 0 000 1.4l.7.7a1 1 0 010 1.4l-1.2 1.2a1 1 0 01-1.4 0l-.7-.7a1 1 0 00-1.4 0l-.7.7a1 1 0 01-1.4 0l-1.2-1.2a1 1 0 010-1.4l.7-.7a1 1 0 000-1.4l-.7-.7a1 1 0 010-1.4zM9 12a3 3 0 106 0 3 3 0 00-6 0z' },
 ]
 
 const sections = [
   { key: 'vehiculos', label: 'Mis vehículos', paths: ['/panel/garaje', '/panel/servicios', '/panel/historial'] },
   { key: 'compras', label: 'Compras', paths: ['/panel/tienda', '/panel/pedidos', '/panel/favoritos'] },
-  { key: 'cuenta', label: 'Mi cuenta', paths: ['/panel/configuracion', '/panel/mi-cuenta', '/panel/chat'] },
+  { key: 'cuenta', label: 'Mi cuenta', paths: ['/panel/configuracion', '/panel/mi-cuenta'] },
 ]
 
 const EXTRA_PAGE_LABELS: Record<string, string> = {
@@ -44,7 +43,6 @@ export default function UserLayout() {
   const { user, logout } = useAuth()
   const { count, setDrawerOpen } = useCart()
   const [unread, setUnread] = useState(0)
-  const [chatUnread, setChatUnread] = useState(0)
   const [open, setOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
@@ -75,20 +73,10 @@ export default function UserLayout() {
         /* ignore */
       }
     }
-    const tickChat = async () => {
-      if (document.visibilityState !== 'visible' || !getToken() || loggingOutRef.current) return
-      try {
-        const r = await api<{ count: number }>('/chat/unread-count')
-        if (alive) setChatUnread(r.count)
-      } catch {
-        /* ignore */
-      }
-    }
-    ;(async () => { await tickChat() })()
     tick()
-    const id = setInterval(() => { tick(); tickChat() }, 15000)
+    const id = setInterval(tick, 15000)
     function onVisible() {
-      if (document.visibilityState === 'visible') { tick(); tickChat() }
+      if (document.visibilityState === 'visible') tick()
     }
     document.addEventListener('visibilitychange', onVisible)
     return () => {
@@ -284,14 +272,7 @@ export default function UserLayout() {
                 <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">{unread}</span>
               )}
             </NavLink>
-            <NavLink to="/panel/chat" className="relative p-2 text-carbon-600 hover:text-brand-600" title="Chat con el taller">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-              </svg>
-              {chatUnread > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-bold text-white">{chatUnread}</span>
-              )}
-            </NavLink>
+
           </div>
         </header>
         <main className="flex-1 p-4 md:p-6">

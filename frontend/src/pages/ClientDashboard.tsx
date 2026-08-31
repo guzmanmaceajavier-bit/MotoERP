@@ -452,7 +452,6 @@ function QuickActions() {
     { to: '/panel/servicios', title: 'Mis Servicios', desc: 'Estado de órdenes', icon: <WrenchIcon />, tone: 'amber' },
     { to: '/panel/tienda', title: 'Tienda', desc: 'Compra repuestos', icon: <CartIcon />, tone: 'green' },
     { to: '/panel/historial', title: 'Historial', desc: 'Compras y facturas', icon: <HistoryIcon />, tone: 'purple' },
-    { to: '/panel/chat', title: 'Chat', desc: 'Habla con el taller', icon: <ChatIcon />, tone: 'dark' },
   ]
 
   return (
