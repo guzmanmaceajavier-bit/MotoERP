@@ -224,9 +224,13 @@ export default function Store() {
   const toast = useToast().toast
   const hero = useHero('store')
   const [workshopPhone, setWorkshopPhone] = useState('')
+  const [banners, setBanners] = useState<{ image: string; title: string; subtitle?: string; link?: string }[]>([])
 
   useEffect(() => {
-    api<{ workshop_phone: string }>('/site-info').then((d) => setWorkshopPhone(d.workshop_phone || '')).catch(() => {})
+    api<{ workshop_phone: string; banners?: { image: string; title: string; subtitle?: string; link?: string }[] }>('/site-info').then((d) => {
+      setWorkshopPhone(d.workshop_phone || '')
+      if (d.banners) setBanners(d.banners.filter((b) => b.image))
+    }).catch(() => {})
   }, [])
 
   /* data */
@@ -431,6 +435,27 @@ export default function Store() {
           </div>
         </div>
       </section>
+
+      {banners.length > 0 && (
+        <section className="mx-auto max-w-6xl px-4 py-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black text-gray-900">Promociones</h2>
+            <span className="text-xs text-gray-400">{banners.length} activas</span>
+          </div>
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {banners.slice(0, 6).map((b, i) => (
+              <a key={i} href={b.link || '#'} target={b.link?.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" className="group relative h-48 overflow-hidden rounded-2xl border border-gray-200">
+                <img src={b.image} alt={b.title} className="h-full w-full object-cover transition group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="absolute bottom-0 p-4">
+                  <h3 className="font-bold text-white">{b.title}</h3>
+                  {b.subtitle && <p className="text-sm text-white/80">{b.subtitle}</p>}
+                </div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="mx-auto max-w-6xl px-4 py-8">
         {/* ──── CATEGORY TILES (collapsible) ──── */}
