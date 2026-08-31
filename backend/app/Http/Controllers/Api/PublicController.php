@@ -282,6 +282,7 @@ class PublicController extends Controller
             'banners' => json_decode((string) \App\Support\Settings::get('banners', '[]'), true) ?: [],
             'hero_images' => json_decode((string) \App\Support\Settings::get('hero_images', '{}'), true) ?: [],
             'hero_texts' => json_decode((string) \App\Support\Settings::get('hero_texts', '{}'), true) ?: [],
+            'trabajos_gallery' => json_decode((string) \App\Support\Settings::get('trabajos_gallery', '[]'), true) ?: [],
             'day_hours' => json_decode((string) \App\Support\Settings::get('day_hours', '[]'), true) ?: [],
             'holidays' => json_decode((string) \App\Support\Settings::get('holidays', '[]'), true) ?: [],
             'points_value' => (float) (\App\Support\Settings::get('points_value', config('points.value', 100))),

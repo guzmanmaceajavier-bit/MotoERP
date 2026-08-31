@@ -19,6 +19,7 @@ interface TeamMember {
 interface SiteGallery {
   banners?: { image?: string | null }[]
   hero_images?: Record<string, string[]>
+  trabajos_gallery?: { image: string; title: string; description?: string }[]
 }
 
 const roleLabel: Record<string, string> = {
@@ -29,8 +30,8 @@ const roleLabel: Record<string, string> = {
 
 export default function About() {
   const [team, setTeam] = useState<TeamMember[]>([])
-  const [gallery, setGallery] = useState<string[]>([])
-  const [lightbox, setLightbox] = useState<string | null>(null)
+  const [gallery, setGallery] = useState<{ image: string; title: string; description?: string }[]>([])
+  const [lightbox, setLightbox] = useState<{ image: string; title: string } | null>(null)
   const hero = useHero('about')
   const { workshop_name: siteName } = useSiteInfo()
 
@@ -46,12 +47,16 @@ export default function About() {
   useEffect(() => {
     api<SiteGallery>('/site-info')
       .then((d) => {
-        const imgs: string[] = []
-        for (const b of d.banners ?? []) if (b.image) imgs.push(b.image)
-        for (const page of ['home', 'about', 'services', 'contact']) {
-          for (const u of d.hero_images?.[page] ?? []) if (u) imgs.push(u)
+        if (d.trabajos_gallery && d.trabajos_gallery.length > 0) {
+          setGallery(d.trabajos_gallery.filter((g) => g.image))
+        } else {
+          const imgs: string[] = []
+          for (const b of d.banners ?? []) if (b.image) imgs.push(b.image)
+          for (const page of ['home', 'about', 'services', 'contact']) {
+            for (const u of d.hero_images?.[page] ?? []) if (u) imgs.push(u)
+          }
+          setGallery([...new Set(imgs)].slice(0, 8).map((image) => ({ image, title: '' })))
         }
-        setGallery([...new Set(imgs)].slice(0, 8))
       })
       .catch(() => {})
   }, [])
@@ -125,24 +130,28 @@ export default function About() {
         </Reveal>
         <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
           {gallery.length > 0 ? (
-            gallery.map((img, i) => (
-              <Reveal key={img + i} delay={i * 60}>
+            gallery.map((g, i) => (
+              <Reveal key={g.image + i} delay={i * 60}>
                 <button
-                  onClick={() => setLightbox(img)}
+                  onClick={() => setLightbox({ image: g.image, title: g.title })}
                   className="group relative aspect-square w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100"
                   aria-label="Ver imagen de trabajo"
                 >
                   <img
-                    src={img}
-                    alt={`Trabajo ${i + 1}`}
+                    src={g.image}
+                    alt={g.title || `Trabajo ${i + 1}`}
                     loading="lazy"
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   />
-                  <span className="absolute inset-0 flex items-end bg-gradient-to-t from-black/40 to-transparent opacity-0 transition group-hover:opacity-100">
-                    <span className="flex items-center gap-1.5 p-3 text-xs font-semibold text-white">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
-                      Ver
-                    </span>
+                  <span className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-black/60 to-transparent opacity-0 transition group-hover:opacity-100">
+                    {g.title && <span className="px-3 pb-1 text-sm font-bold text-white">{g.title}</span>}
+                    {g.description && <span className="px-3 pb-3 text-xs text-white/80">{g.description}</span>}
+                    {!g.title && !g.description && (
+                      <span className="flex items-center gap-1.5 p-3 text-xs font-semibold text-white">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
+                        Ver
+                      </span>
+                    )}
                   </span>
                 </button>
               </Reveal>
@@ -156,8 +165,9 @@ export default function About() {
       </section>
 
       {lightbox && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4" onClick={() => setLightbox(null)}>
-          <img src={lightbox} alt="Trabajo realizado" className="max-h-[85vh] max-w-full rounded-2xl object-contain shadow-2xl" />
+        <div className="fixed inset-0 z-[70] flex flex-col items-center justify-center bg-black/80 p-4" onClick={() => setLightbox(null)}>
+          <img src={lightbox.image} alt={lightbox.title || 'Trabajo realizado'} className="max-h-[75vh] max-w-full rounded-2xl object-contain shadow-2xl" />
+          {lightbox.title && <p className="mt-4 text-lg font-bold text-white">{lightbox.title}</p>}
           <button onClick={() => setLightbox(null)} className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20" aria-label="Cerrar">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
           </button>

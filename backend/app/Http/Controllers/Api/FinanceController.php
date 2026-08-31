@@ -1066,6 +1066,7 @@ return response()->json([
             'banners' => json_decode((string) Settings::get('banners', '[]'), true) ?: [],
             'hero_images' => json_decode((string) Settings::get('hero_images', '{}'), true) ?: [],
             'hero_texts' => json_decode((string) Settings::get('hero_texts', '{}'), true) ?: [],
+            'trabajos_gallery' => json_decode((string) Settings::get('trabajos_gallery', '[]'), true) ?: [],
             'workshop_country' => Settings::get('workshop_country', 'CO'),
             'points_value' => (float) (Settings::get('points_value') ?? config('points.value', 100)),
             'points_earning_threshold' => (float) (Settings::get('points_earning_threshold', 50000)),
@@ -1116,6 +1117,7 @@ return response()->json([
             'banners' => 'nullable|array',
             'hero_images' => 'nullable|array',
             'hero_texts' => 'nullable|array',
+            'trabajos_gallery' => 'nullable|array',
             'workshop_country' => 'nullable|string|max:2',
             'points_value' => 'nullable|numeric|min:1',
             'points_earning_threshold' => 'nullable|numeric|min:0',
@@ -1175,6 +1177,9 @@ return response()->json([
         }
         if (array_key_exists('hero_texts', $validated)) {
             Settings::set('hero_texts', json_encode($validated['hero_texts']));
+        }
+        if (array_key_exists('trabajos_gallery', $validated)) {
+            Settings::set('trabajos_gallery', json_encode($validated['trabajos_gallery']));
         }
         if (array_key_exists('workshop_country', $validated)) {
             Settings::set('workshop_country', (string) $validated['workshop_country']);

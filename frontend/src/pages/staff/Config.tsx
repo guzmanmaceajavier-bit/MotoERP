@@ -63,6 +63,12 @@ interface HeroText {
   subtitle?: string
 }
 
+interface GalleryItem {
+  image: string
+  title: string
+  description?: string
+}
+
 interface Settings {
   workshop_name: string
   workshop_phone: string
@@ -83,6 +89,7 @@ interface Settings {
   banners: Banner[]
   hero_images: Record<string, string[]>
   hero_texts: Record<string, HeroText[]>
+  trabajos_gallery: GalleryItem[]
   points_value: number
   points_earning_threshold: number
   payment_options: PaymentOption[]
@@ -300,6 +307,7 @@ export default function Config() {
   const [banners, setBanners] = useState<Banner[]>([])
   const [heroImages, setHeroImages] = useState<Record<string, string[]>>({})
   const [heroTexts, setHeroTexts] = useState<Record<string, HeroText[]>>({})
+  const [trabajosGallery, setTrabajosGallery] = useState<GalleryItem[]>([])
 
   // Pagos
   const [pointsValue, setPointsValue] = useState('')
@@ -376,6 +384,7 @@ export default function Config() {
       else normalized[k] = []
     }
     setHeroTexts(normalized)
+    setTrabajosGallery(s.trabajos_gallery || [])
     setPointsValue(String(s.points_value))
     setPointsThreshold(String(s.points_earning_threshold ?? 50000))
     setPaymentOptions(s.payment_options || [])
@@ -1047,11 +1056,36 @@ export default function Config() {
               </div>
             </div>
 
+            <div className={`${cardCls} space-y-4`}>
+              <h2 className="font-semibold text-carbon-900">Galería Nuestros Trabajos</h2>
+              <p className="-mt-2 text-xs text-carbon-400">Imágenes de trabajos realizados. Aparecen en la página Nosotros.</p>
+              <div className="space-y-3">
+                {trabajosGallery.map((g, i) => (
+                  <div key={i} className="rounded-xl border border-carbon-200 p-4">
+                    <div className="mb-3 flex items-center justify-end gap-1">
+                      <button type="button" onClick={() => setTrabajosGallery((prev) => { const n=[...prev]; const t=i-1; if(t<0) return prev; [n[i], n[t]]=[n[t], n[i]]; return n })} disabled={i===0} className="rounded-md p-1 text-carbon-500 hover:bg-brand-50 disabled:opacity-30"><ArrowUp className="h-4 w-4" /></button>
+                      <button type="button" onClick={() => setTrabajosGallery((prev) => { const n=[...prev]; const t=i+1; if(t>=prev.length) return prev; [n[i], n[t]]=[n[t], n[i]]; return n })} disabled={i===trabajosGallery.length-1} className="rounded-md p-1 text-carbon-500 hover:bg-brand-50 disabled:opacity-30"><ArrowDown className="h-4 w-4" /></button>
+                      <button type="button" onClick={() => setTrabajosGallery((prev) => prev.filter((_, idx) => idx !== i))} className="rounded-md p-1 text-red-500 hover:bg-red-50"><Trash2 className="h-4 w-4" /></button>
+                    </div>
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                      <UploadImage label="Imagen" value={g.image} onChange={(u) => setTrabajosGallery((prev) => prev.map((x, idx) => idx===i ? {...x, image: u} : x))} uploading={uploadingKey===`trabajos-${i}`} onUpload={(f) => uploadImage(`trabajos-${i}`, f, (u) => setTrabajosGallery((prev) => prev.map((x, idx) => idx===i ? {...x, image: u} : x)))} />
+                      <div className="space-y-4">
+                        <Field label="Título"><Input value={g.title} onChange={(e) => setTrabajosGallery((prev) => prev.map((x, idx) => idx===i ? {...x, title: e.target.value} : x))} variant="brand" /></Field>
+                        <Field label="Descripción"><Input value={g.description ?? ''} onChange={(e) => setTrabajosGallery((prev) => prev.map((x, idx) => idx===i ? {...x, description: e.target.value} : x))} variant="brand" /></Field>
+                      </div>
+                      <div className="pt-6 text-xs text-carbon-400">Se muestra en Nosotros como galería.</div>
+                    </div>
+                  </div>
+                ))}
+                <button type="button" onClick={() => setTrabajosGallery((prev) => [...prev, { image: '', title: '', description: '' }])} className={addCls}><Plus className="h-4 w-4" /> Agregar trabajo</button>
+              </div>
+            </div>
+
             <div className="flex justify-end">
               <button
                 className={btnCls}
                 disabled={saving}
-                onClick={() => save({ banners, hero_images: heroImages, hero_texts: heroTexts })}
+                onClick={() => save({ banners, hero_images: heroImages, hero_texts: heroTexts, trabajos_gallery: trabajosGallery })}
               >
                 {saving ? 'Guardando...' : 'Guardar página web'}
               </button>
