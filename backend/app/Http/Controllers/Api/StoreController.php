@@ -107,11 +107,15 @@ class StoreController extends Controller
 
         // Prevenir doble clic: si ya existe una orden reciente con este token, retornar la existente
         if ($validated['checkout_token']) {
-            $existingOrder = \App\Models\Invoice::where('checkout_token', $validated['checkout_token'])
-                ->where('created_at', '>', now()->subMinutes(5))
-                ->first();
-            if ($existingOrder) {
-                return response()->json($existingOrder->load('items'), 200);
+            try {
+                $existingOrder = \App\Models\Invoice::where('checkout_token', $validated['checkout_token'])
+                    ->where('created_at', '>', now()->subMinutes(5))
+                    ->first();
+                if ($existingOrder) {
+                    return response()->json($existingOrder->load('items'), 200);
+                }
+            } catch (\Throwable $e) {
+                // Columna checkout_token puede no existir aún
             }
         }
 
@@ -143,11 +147,15 @@ class StoreController extends Controller
 
         // Prevenir doble clic: si ya existe una orden reciente con este token, retornar la existente
         if ($validated['checkout_token']) {
-            $existingOrder = \App\Models\Invoice::where('checkout_token', $validated['checkout_token'])
-                ->where('created_at', '>', now()->subMinutes(5))
-                ->first();
-            if ($existingOrder) {
-                return response()->json($existingOrder->load('items'), 200);
+            try {
+                $existingOrder = \App\Models\Invoice::where('checkout_token', $validated['checkout_token'])
+                    ->where('created_at', '>', now()->subMinutes(5))
+                    ->first();
+                if ($existingOrder) {
+                    return response()->json($existingOrder->load('items'), 200);
+                }
+            } catch (\Throwable $e) {
+                // Columna checkout_token puede no existir aún
             }
         }
 
