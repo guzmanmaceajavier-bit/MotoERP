@@ -319,18 +319,6 @@ class StoreController extends Controller
                 'issue_date' => now(),
             ]);
 
-            // Set checkout_token and due_date if columns exist (may be missing on some DBs)
-            try {
-                $update = [];
-                if (!empty($validated['checkout_token'])) $update['checkout_token'] = $validated['checkout_token'];
-                if (!empty($validated['due_date'])) $update['due_date'] = $validated['due_date'];
-                if ($update) {
-                    $invoice->update($update);
-                }
-            } catch (\Throwable $e) {
-                // Columns don't exist yet — migration pending
-            }
-
             foreach ($lineItems as $line) {
                 $invoice->items()->create([
                     'product_id' => $line['product']->id,
@@ -342,7 +330,7 @@ class StoreController extends Controller
                 ]);
 
                 // Reservar stock del pedido (se confirma la venta al verificar el pago)
-                if ($line['product']->id) {
+                if ($line['product']->id && !($validated['skip_stock'] ?? false)) {
                     $stock->reserve($line['product']->id, $line['quantity'], [
                         'invoice_id' => $invoice->id,
                         'reference' => $invoice->invoice_number,
@@ -375,7 +363,7 @@ class StoreController extends Controller
 
             // Efectivo: el pedido queda confirmado de inmediato → consumir el stock reservado
             // y cobrar los puntos canjeados por el descuento.
-            if ($orderStatus === 'confirmed') {
+            if ($orderStatus === 'confirmed' && !($validated['skip_stock'] ?? false)) {
                 foreach (\App\Models\StockMovement::where('type', 'reserve')->where('invoice_id', $invoice->id)->get() as $m) {
                     $stock->consumeReserved($m->product_id, $m->quantity, [
                         'invoice_id' => $invoice->id,
@@ -399,6 +387,18 @@ class StoreController extends Controller
             });
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        // Set checkout_token/due_date AFTER transaction (columns may not exist yet)
+        try {
+            $update = [];
+            if (!empty($validated['checkout_token'])) $update['checkout_token'] = $validated['checkout_token'];
+            if (!empty($validated['due_date'])) $update['due_date'] = $validated['due_date'];
+            if ($update) {
+                $result->update($update);
+            }
+        } catch (\Throwable $e) {
+            // Columns don't exist yet — migration pending, ignore
         }
 
         app(NotificationService::class)->notify(
