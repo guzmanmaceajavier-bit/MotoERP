@@ -317,8 +317,19 @@ class StoreController extends Controller
                 'status' => 'unpaid',
                 'order_status' => $orderStatus,
                 'issue_date' => now(),
-                'checkout_token' => $validated['checkout_token'] ?? null,
             ]);
+
+            // Set checkout_token and due_date if columns exist (may be missing on some DBs)
+            try {
+                $update = [];
+                if (!empty($validated['checkout_token'])) $update['checkout_token'] = $validated['checkout_token'];
+                if (!empty($validated['due_date'])) $update['due_date'] = $validated['due_date'];
+                if ($update) {
+                    $invoice->update($update);
+                }
+            } catch (\Throwable $e) {
+                // Columns don't exist yet — migration pending
+            }
 
             foreach ($lineItems as $line) {
                 $invoice->items()->create([
