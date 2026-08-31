@@ -45,8 +45,9 @@ export default function NewServiceRequestModal({
   const [loading, setLoading] = useState(false)
   const [fetchError, setFetchError] = useState('')
 
-  const [serviceId, setServiceId] = useState<number | 'custom' | null>(null)
+  const [serviceIds, setServiceIds] = useState<number[]>([])
   const [customService, setCustomService] = useState('')
+  const [isCustom, setIsCustom] = useState(false)
   const [motoId, setMotoId] = useState<string>('none')
   const [notes, setNotes] = useState('')
   const [error, setError] = useState('')
@@ -83,8 +84,8 @@ export default function NewServiceRequestModal({
       .finally(() => setLoading(false))
   }, [open])
 
-  const selectedService = serviceId === 'custom' ? null : services.find((s) => s.id === serviceId) ?? null
-  const serviceName = selectedService?.name ?? (serviceId === 'custom' ? customService.trim() : '')
+  const selectedServices = services.filter((s) => serviceIds.includes(s.id))
+  const serviceName = [...selectedServices.map((s) => s.name), ...(isCustom && customService.trim() ? [customService.trim()] : [])].join(', ')
   const selectedMoto = motos.find((m) => String(m.id) === motoId)
 
   // Agrupar servicios por categoría para el desplegable
@@ -235,7 +236,7 @@ export default function NewServiceRequestModal({
                 <div className="flex flex-wrap gap-1.5">
                   <button
                     type="button"
-                    onClick={() => { setCategory('all'); setServiceId(null); setCustomService('') }}
+                    onClick={() => setCategory('all')}
                     className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
                       category === 'all'
                         ? 'bg-brand-600 text-white shadow'
@@ -248,7 +249,7 @@ export default function NewServiceRequestModal({
                     <button
                       key={c}
                       type="button"
-                      onClick={() => { setCategory(c); setServiceId(null); setCustomService('') }}
+                      onClick={() => setCategory(c)}
                       className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
                         category === c
                           ? 'bg-brand-600 text-white shadow'
@@ -276,12 +277,14 @@ export default function NewServiceRequestModal({
                 {visibleServices.length > 0 ? (
                   <div className="grid max-h-56 grid-cols-1 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
                     {visibleServices.map((s) => {
-                      const isSel = serviceId === s.id
+                      const isSel = serviceIds.includes(s.id)
                       return (
                         <button
                           key={s.id}
                           type="button"
-                          onClick={() => { setServiceId(s.id); setCustomService('') }}
+                          onClick={() => {
+                            setServiceIds((prev) => (prev.includes(s.id) ? prev.filter((id) => id !== s.id) : [...prev, s.id]))
+                          }}
                           className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-sm transition ${
                             isSel
                               ? 'border-brand-500 bg-brand-50/60 ring-2 ring-brand-500/30 dark:bg-brand-500/10'
@@ -307,9 +310,9 @@ export default function NewServiceRequestModal({
 
                 <button
                   type="button"
-                  onClick={() => setServiceId('custom')}
+                  onClick={() => setIsCustom((v) => !v)}
                   className={`w-full rounded-xl border px-3 py-2.5 text-sm font-semibold transition ${
-                    serviceId === 'custom'
+                    isCustom
                       ? 'border-brand-500 bg-brand-50/60 text-brand-700 ring-2 ring-brand-500/30 dark:bg-brand-500/10 dark:text-brand-300'
                       : 'border-carbon-200 text-carbon-600 hover:border-brand-300 hover:bg-brand-50/40 dark:border-carbon-200 dark:text-carbon-400'
                   }`}
@@ -317,14 +320,13 @@ export default function NewServiceRequestModal({
                   + Otro servicio (lo describo)
                 </button>
 
-                {selectedService && (
-                  <p className="flex items-center gap-2 text-xs text-carbon-500">
-                    {selectedService.category && <span className="font-semibold text-brand-600">{selectedService.category}</span>}
-                    {selectedService.estimated_minutes ? <span>· ~ {selectedService.estimated_minutes} min</span> : null}
+                {selectedServices.length > 0 && (
+                  <p className="flex flex-wrap items-center gap-2 text-xs text-carbon-500">
+                    Seleccionados: {selectedServices.map((s) => s.name).join(', ')} {selectedServices.length > 0 && selectedServices[0].estimated_minutes ? <span>· ~ {selectedServices.reduce((a, s) => a + (s.estimated_minutes || 0), 0)} min total</span> : null}
                   </p>
                 )}
 
-                {serviceId === 'custom' && (
+                {isCustom && (
                   <div className="rounded-xl border border-brand-200 bg-brand-50/40 p-3 dark:border-brand-500/30 dark:bg-brand-500/10">
                     <textarea
                       value={customService}
