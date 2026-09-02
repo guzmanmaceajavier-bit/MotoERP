@@ -4,32 +4,78 @@ Plataforma SaaS full-stack para la gestión integral de talleres mecánicos de m
 
 ## Demo en vivo
 
-| Componente | URL |
-|-----------|-----|
-| Sitio público | [moto-erp-ckx7.vercel.app](https://moto-erp-ckx7.vercel.app) |
-| API REST | [motoerp-api.onrender.com/api/v1](https://motoerp-api.onrender.com/api/v1) |
-| Repositorio | [github.com/guzmanmaceajavier-bit/MotoERP](https://github.com/guzmanmaceajavier-bit/MotoERP) |
+### Sitio público
+| Sección | URL |
+|---------|-----|
+| Inicio | [moto-erp-ckx7.vercel.app](https://moto-erp-ckx7.vercel.app) |
+| Tienda | [moto-erp-ckx7.vercel.app/tienda](https://moto-erp-ckx7.vercel.app/tienda) |
+| Servicios | [moto-erp-ckx7.vercel.app/servicios](https://moto-erp-ckx7.vercel.app/servicios) |
+| Blog | [moto-erp-ckx7.vercel.app/blog](https://moto-erp-ckx7.vercel.app/blog) |
+| Agendar cita | [moto-erp-ckx7.vercel.app/agendar](https://moto-erp-ckx7.vercel.app/agendar) |
+| Nosotros | [moto-erp-ckx7.vercel.app/nosotros](https://moto-erp-ckx7.vercel.app/nosotros) |
+| Contacto | [moto-erp-ckx7.vercel.app/contacto](https://moto-erp-ckx7.vercel.app/contacto) |
+
+### Panel de administración
+| Sección | URL |
+|---------|-----|
+| Login admin | [moto-erp-ckx7.vercel.app/admin/login](https://moto-erp-ckx7.vercel.app/admin/login) |
+| Dashboard | [moto-erp-ckx7.vercel.app/admin/dashboard](https://moto-erp-ckx7.vercel.app/admin/dashboard) |
+| Ventas / Pedidos | [moto-erp-ckx7.vercel.app/admin/orders](https://moto-erp-ckx7.vercel.app/admin/orders) |
+| Inventario | [moto-erp-ckx7.vercel.app/admin/inventory](https://moto-erp-ckx7.vercel.app/admin/inventory) |
+| Catálogo productos | [moto-erp-ckx7.vercel.app/admin/products](https://moto-erp-ckx7.vercel.app/admin/products) |
+| Marcas | [moto-erp-ckx7.vercel.app/admin/brands](https://moto-erp-ckx7.vercel.app/admin/brands) |
+| Clientes | [moto-erp-ckx7.vercel.app/admin/clients](https://moto-erp-ckx7.vercel.app/admin/clients) |
+| Órdenes de servicio | [moto-erp-ckx7.vercel.app/admin/work-orders](https://moto-erp-ckx7.vercel.app/admin/work-orders) |
+| Agenda | [moto-erp-ckx7.vercel.app/admin/appointments](https://moto-erp-ckx7.vercel.app/admin/appointments) |
+| Blog | [moto-erp-ckx7.vercel.app/admin/blog](https://moto-erp-ckx7.vercel.app/admin/blog) |
+| Compras | [moto-erp-ckx7.vercel.app/admin/purchases](https://moto-erp-ckx7.vercel.app/admin/purchases) |
+| Garantías | [moto-erp-ckx7.vercel.app/admin/warranties](https://moto-erp-ckx7.vercel.app/admin/warranties) |
+| Calificaciones | [moto-erp-ckx7.vercel.app/admin/ratings](https://moto-erp-ckx7.vercel.app/admin/ratings) |
+| Notificaciones | [moto-erp-ckx7.vercel.app/admin/notifications](https://moto-erp-ckx7.vercel.app/admin/notifications) |
+| Configuración | [moto-erp-ckx7.vercel.app/admin/config](https://moto-erp-ckx7.vercel.app/admin/config) |
+
+### Portal de clientes
+| Sección | URL |
+|---------|-----|
+| Login cliente | [moto-erp-ckx7.vercel.app/login](https://moto-erp-ckx7.vercel.app/login) |
+| Registro | [moto-erp-ckx7.vercel.app/registro](https://moto-erp-ckx7.vercel.app/registro) |
+| Panel cliente | [moto-erp-ckx7.vercel.app/panel](https://moto-erp-ckx7.vercel.app/panel) |
+| Mis pedidos | [moto-erp-ckx7.vercel.app/panel/pedidos](https://moto-erp-ckx7.vercel.app/panel/pedidos) |
+| Mi garaje | [moto-erp-ckx7.vercel.app/panel/garaje](https://moto-erp-ckx7.vercel.app/panel/garaje) |
+| Mis finanzas | [moto-erp-ckx7.vercel.app/panel/mi-cuenta](https://moto-erp-ckx7.vercel.app/panel/mi-cuenta) |
+| Servicios | [moto-erp-ckx7.vercel.app/panel/servicios](https://moto-erp-ckx7.vercel.app/panel/servicios) |
+| Tienda (logueado) | [moto-erp-ckx7.vercel.app/panel/tienda](https://moto-erp-ckx7.vercel.app/panel/tienda) |
 
 ### Credenciales de prueba
 
 | Rol | Email | Contraseña |
 |-----|-------|-----------|
 | Administrador | `admin@motohub.test` | `secret123` |
+| Cliente | Crear desde `/registro` | — |
 
-> Admin tiene acceso total: dashboard, ventas, inventario, órdenes, configuración.
+> **Admin** tiene acceso total: dashboard, ventas, inventario, órdenes, configuración.
+> **Cliente** puede comprar, subir comprobantes, agendar citas, gestionar motos.
+
+### APIs
+
+| Endpoint | URL |
+|----------|-----|
+| Base URL | [motoerp-api.onrender.com/api/v1](https://motoerp-api.onrender.com/api/v1) |
+| Health check | [motoerp-api.onrender.com/health](https://motoerp-api.onrender.com/health) |
+| Documentación | Ver `routes/api.php` en el repositorio |
 
 ---
 
 ## Stack tecnológico
 
-```
-Frontend:  React 19 · TypeScript · Tailwind CSS · Vite 8
-Backend:   Laravel 12 · PHP 8.3 · Sanctum Auth
-Database:  PostgreSQL 16 (Supabase)
-Deploy:    Vercel (frontend) · Render Docker (backend)
-Storage:   Cloudinary (imágenes)
-Testing:   Playwright (42 tests E2E)
-```
+| Capa | Tecnologías |
+|------|------------|
+| Frontend | React 19, TypeScript, Tailwind CSS, Vite 8 |
+| Backend | Laravel 12, PHP 8.3, Sanctum Auth |
+| Base de datos | PostgreSQL 16 (Supabase) + PgBouncer |
+| Deploy | Vercel (frontend) · Render Docker (backend) |
+| Almacenamiento | Cloudinary (imágenes) |
+| Testing | Playwright (42 tests E2E) |
 
 ### Arquitectura
 
@@ -53,14 +99,25 @@ Testing:   Playwright (42 tests E2E)
 - Agendamiento de citas en línea
 - Seguimiento de órdenes por número
 
+### Carrito de compras
+- Layout responsive de 2 columnas con mini carrito (drawer)
+- 4 pasos: Carrito → Entrega → Pago → Confirmación
+- Retiro en taller, envío a domicilio o instalación en servicio
+- Métodos de pago: efectivo y transferencia (Nequi, Bancolombia, Daviplata)
+- Datos de pago configurables desde el panel admin
+- Botón WhatsApp para enviar comprobante de pago
+- Checkout de invitado sin registro
+- Sistema de puntos de fidelización (configurable)
+- IVA configurable, estimación de entrega, protección contra doble clic
+
 ### Portal de cliente (8 módulos)
 - Dashboard personalizado con resumen y puntos de fidelización
 - Mis pedidos con subida de comprobantes de pago
-- Finanzas: saldo, pagos, facturas y historial
+- Finanzas: saldo, pagos, facturas e historial
 - Mi garaje: registro de motos con placa, modelo, año
 - Historial de servicios por moto
-- Chat en tiempo real con el taller
 - Listas de productos compartidas
+- Notificaciones en tiempo real
 - Registro e inicio de sesión con roles
 
 ### Panel de administración (20+ módulos)
@@ -75,23 +132,10 @@ Testing:   Playwright (42 tests E2E)
 - Garantías
 - Blog (crear/editar/publicar)
 - Calificaciones y reseñas
-- Chat con clientes
 - Notificaciones internas
 - Reportes de ventas e inventario
 - Log de auditoría
-- Backup y restore de base de datos
-- Configuración completa del taller
-
-### Carrito de compras
-- Layout responsive de 2 columnas con mini carrito (drawer)
-- 4 pasos: Carrito → Entrega → Pago → Confirmación
-- Retiro en taller, envío a domicilio o instalación en servicio
-- Métodos de pago flexibles (Nequi, Bancolombia, Daviplata, efectivo)
-- Cupones de descuento con validación
-- Sistema de puntos de fidelización
-- IVA configurable
-- Estimación de entrega
-- Protección contra doble clic
+- Configuración completa del taller (datos, redes, pagos, hero, banners)
 
 ---
 
