@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-export APP_DEBUG=true
+export APP_DEBUG=${APP_DEBUG:-false}
 
 echo "=== Building .env from environment ==="
 
