@@ -157,9 +157,9 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col items-center justify-center gap-3 border-t border-carbon-800 pt-6 text-center text-sm text-carbon-500">
+        <div className="mt-10 flex flex-col items-center justify-center gap-3 border-t border-carbon-800 pt-6 text-center text-xs text-carbon-500 sm:text-sm">
           <p>&copy; {new Date().getFullYear()} {siteName} · Todos los derechos reservados</p>
-          <div className="flex items-center justify-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 sm:gap-x-6">
             <Link to="/privacidad" className="transition hover:text-brand-500">Política de privacidad</Link>
             <Link to="/terminos" className="transition hover:text-brand-500">Términos y condiciones</Link>
           </div>
