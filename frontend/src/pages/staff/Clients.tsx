@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Users, Pencil, Trash2, Plus, Download, Bike, Phone, Mail, Star, CalendarDays, UserPlus, FileText, ChevronDown, KeyRound, Send } from 'lucide-react'
-import { waLink } from '../../lib/wa'
 import { apiStaff as api } from '../../lib/api'
 import type { Paginated } from '../../lib/pagination'
 import { useToast } from '../../lib/toast'
