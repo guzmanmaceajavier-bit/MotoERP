@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Users, Pencil, Trash2, Plus, Download, Bike, Phone, Mail, Star, CalendarDays, UserPlus, FileText, ChevronDown, KeyRound } from 'lucide-react'
+import { Users, Pencil, Trash2, Plus, Download, Bike, Phone, Mail, Star, CalendarDays, UserPlus, FileText, ChevronDown, KeyRound, Send } from 'lucide-react'
+import { waLink } from '../../lib/wa'
 import { apiStaff as api } from '../../lib/api'
 import type { Paginated } from '../../lib/pagination'
 import { useToast } from '../../lib/toast'
@@ -103,6 +104,9 @@ export default function Clients() {
   const [detail, setDetail] = useState<ClientDetail | null>(null)
   const [detailLoading, setDetailLoading] = useState(false)
   const [showDetail, setShowDetail] = useState(false)
+  const [sendCreds, setSendCreds] = useState<ClientRow | null>(null)
+  const [sendPassword, setSendPassword] = useState('')
+  const [sending, setSending] = useState(false)
 
   const fmt = (n: number) => '$' + Number(n).toLocaleString('es-CO')
 
@@ -263,6 +267,24 @@ export default function Clients() {
     }
   }
 
+  async function sendCredentials() {
+    if (!sendCreds || !sendPassword || sendPassword.length < 8) return
+    setSending(true)
+    try {
+      await api(`/staff/clients/${sendCreds.id}/send-credentials`, {
+        method: 'POST',
+        body: JSON.stringify({ password: sendPassword }),
+      })
+      toast.success('Credenciales enviadas por WhatsApp')
+      setSendCreds(null)
+      setSendPassword('')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Error al enviar credenciales')
+    } finally {
+      setSending(false)
+    }
+  }
+
   function startEdit(c: ClientRow) {
     setEditing(c)
     setForm({ name: c.name, email: c.email, phone: c.phone ?? '', points_balance: String(c.points_balance ?? 0), password: '' })
@@ -404,6 +426,9 @@ export default function Clients() {
         <div className="flex items-center justify-end gap-1.5">
           <IconButton title="Ver garaje y motos" onClick={() => view(c)}>
             <Bike className="h-[15px] w-[15px]" />
+          </IconButton>
+          <IconButton title="Enviar credenciales por WhatsApp" onClick={() => { setSendCreds(c); setSendPassword('') }}>
+            <Send className="h-[15px] w-[15px]" />
           </IconButton>
           <IconButton title="Editar cliente" onClick={() => startEdit(c)}>
             <Pencil className="h-[15px] w-[15px]" />
@@ -610,6 +635,50 @@ export default function Clients() {
         message={`¿Seguro que quieres eliminar a "${toDelete?.name}"? Se conservará el historial.`}
         loading={deleting}
       />
+
+      <Modal
+        open={!!sendCreds}
+        onClose={() => { setSendCreds(null); setSendPassword('') }}
+        title="Enviar credenciales por WhatsApp"
+        subtitle={sendCreds ? `A ${sendCreds.name} (${sendCreds.phone || 'sin teléfono'})` : undefined}
+        size="sm"
+        variant="brand"
+        footer={
+          <>
+            <button onClick={() => { setSendCreds(null); setSendPassword('') }} className="rounded-xl border border-brand-300 px-4 py-2.5 text-sm font-semibold text-carbon-700 transition hover:bg-brand-50">
+              Cancelar
+            </button>
+            <button
+              onClick={sendCredentials}
+              disabled={sending || !sendPassword || sendPassword.length < 8 || !sendCreds?.phone}
+              className="inline-flex items-center gap-2 rounded-xl bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700 active:scale-[0.97] disabled:opacity-50"
+            >
+              <Send className="h-4 w-4" />
+              {sending ? 'Enviando…' : 'Enviar por WhatsApp'}
+            </button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          {!sendCreds?.phone && (
+            <div className="rounded-lg bg-amber-50 px-3 py-2 text-sm font-medium text-amber-700">
+              Este cliente no tiene teléfono registrado. Agrega un teléfono primero.
+            </div>
+          )}
+          <Field label="Contraseña a enviar" variant="brand">
+            <Input
+              type="password"
+              value={sendPassword}
+              onChange={(e) => setSendPassword(e.target.value)}
+              placeholder="••••••••"
+              variant="brand"
+            />
+          </Field>
+          <p className="text-xs text-carbon-400">
+            Se enviará un mensaje de WhatsApp con el correo y la contraseña del cliente.
+          </p>
+        </div>
+      </Modal>
 
       <Modal
         open={showDetail}

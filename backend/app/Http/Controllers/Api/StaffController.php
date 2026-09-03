@@ -392,15 +392,55 @@ class StaffController extends Controller
             'password' => 'sometimes|nullable|string|min:8',
         ]);
 
+        $passwordChanged = ! empty($validated['password']);
+
         $data = $validated;
         unset($data['password']);
-        if (! empty($validated['password'])) {
+        if ($passwordChanged) {
             $data['password'] = Hash::make($validated['password']);
         }
 
         $user->update($data);
 
+        // Cerrar todas las sesiones del cliente cuando el admin cambia su contraseña
+        if ($passwordChanged) {
+            $user->tokens()->delete();
+        }
+
         return response()->json($user->setHidden(['password']));
+    }
+
+    /**
+     * Envía las credenciales de acceso al cliente por WhatsApp.
+     */
+    public function sendClientCredentials(Request $request, User $user): JsonResponse
+    {
+        if ($user->role !== 'customer') {
+            abort(403, 'Solo clientes');
+        }
+
+        $validated = $request->validate([
+            'password' => 'required|string|min:8',
+        ]);
+
+        if (! $user->phone) {
+            return response()->json(['message' => 'El cliente no tiene número de teléfono registrado'], 422);
+        }
+
+        $message = "Hola {$user->name}!\n\n"
+            . "Tus credenciales para acceder a tu panel de {$user->email} son:\n\n"
+            . "Correo: {$user->email}\n"
+            . "Contraseña: {$validated['password']}\n\n"
+            . "Puedes iniciar sesión aquí: " . config('app.url', 'https://motoerp.vercel.app') . "/login\n\n"
+            . "Si no solicitaste este cambio, contacta al taller.";
+
+        $sent = app(\App\Services\NotificationService::class)->sendWhatsApp($user->phone, $message);
+
+        if ($sent) {
+            return response()->json(['message' => 'Credenciales enviadas por WhatsApp']);
+        }
+
+        return response()->json(['message' => 'No se pudo enviar el mensaje. Verifica que WhatsApp esté configurado.'], 500);
     }
 
     /**

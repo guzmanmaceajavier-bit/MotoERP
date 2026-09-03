@@ -137,6 +137,7 @@ Route::get('orders/{order}/quotation/pdf', [OrderController::class, 'quotationPd
             Route::get('clients/{client}', [StaffController::class, 'clientDetail'])->middleware('role:admin,receptionist');
             Route::post('clients', [StaffController::class, 'storeClient'])->middleware('role:admin,receptionist');
             Route::patch('clients/{user}', [StaffController::class, 'updateClient'])->middleware('role:admin,receptionist');
+            Route::post('clients/{user}/send-credentials', [StaffController::class, 'sendClientCredentials'])->middleware('role:admin,receptionist');
             Route::delete('clients/{user}', [StaffController::class, 'deleteClient'])->middleware('role:admin,receptionist');
             Route::get('motorcycles', [StaffController::class, 'listMotorcycles'])->middleware('role:admin,receptionist');
             Route::get('appointments', [StaffController::class, 'appointments'])->middleware('role:admin,receptionist');

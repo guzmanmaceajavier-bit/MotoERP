@@ -161,7 +161,7 @@ class AuthController extends Controller
 
     private function lockKey(string $email): string
     {
-        return 'login_lock:'.request()->ip().'|'.\strtolower($email);
+        return 'login_lock:'.\strtolower($email);
     }
 
     private function resetKey(string $email): string
