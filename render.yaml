@@ -20,7 +20,8 @@ services:
       - key: DB_HOST
         sync: false
       - key: DB_PORT
-        value: "5432"
+        value: "6543"
+        # Supabase Pooler (transaction mode) usa 6543. Para conexión directa usar 5432.
       - key: DB_DATABASE
         sync: false
       - key: DB_USERNAME
@@ -53,3 +54,5 @@ services:
         value: local
       - key: LOG_LEVEL
         value: error
+      - key: POINTS_VALUE
+        value: "100"

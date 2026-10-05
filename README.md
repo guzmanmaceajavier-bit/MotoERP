@@ -20,19 +20,25 @@ Plataforma SaaS full-stack para la gestión integral de talleres mecánicos de m
 |---------|-----|
 | Login admin | [moto-erp-ckx7.vercel.app/admin/login](https://moto-erp-ckx7.vercel.app/admin/login) |
 | Dashboard | [moto-erp-ckx7.vercel.app/admin/dashboard](https://moto-erp-ckx7.vercel.app/admin/dashboard) |
-| Ventas / Pedidos | [moto-erp-ckx7.vercel.app/admin/orders](https://moto-erp-ckx7.vercel.app/admin/orders) |
-| Inventario | [moto-erp-ckx7.vercel.app/admin/inventory](https://moto-erp-ckx7.vercel.app/admin/inventory) |
-| Catálogo productos | [moto-erp-ckx7.vercel.app/admin/products](https://moto-erp-ckx7.vercel.app/admin/products) |
-| Marcas | [moto-erp-ckx7.vercel.app/admin/brands](https://moto-erp-ckx7.vercel.app/admin/brands) |
-| Clientes | [moto-erp-ckx7.vercel.app/admin/clients](https://moto-erp-ckx7.vercel.app/admin/clients) |
-| Órdenes de servicio | [moto-erp-ckx7.vercel.app/admin/work-orders](https://moto-erp-ckx7.vercel.app/admin/work-orders) |
-| Agenda | [moto-erp-ckx7.vercel.app/admin/appointments](https://moto-erp-ckx7.vercel.app/admin/appointments) |
-| Blog | [moto-erp-ckx7.vercel.app/admin/blog](https://moto-erp-ckx7.vercel.app/admin/blog) |
-| Compras | [moto-erp-ckx7.vercel.app/admin/purchases](https://moto-erp-ckx7.vercel.app/admin/purchases) |
-| Garantías | [moto-erp-ckx7.vercel.app/admin/warranties](https://moto-erp-ckx7.vercel.app/admin/warranties) |
-| Calificaciones | [moto-erp-ckx7.vercel.app/admin/ratings](https://moto-erp-ckx7.vercel.app/admin/ratings) |
-| Notificaciones | [moto-erp-ckx7.vercel.app/admin/notifications](https://moto-erp-ckx7.vercel.app/admin/notifications) |
-| Configuración | [moto-erp-ckx7.vercel.app/admin/config](https://moto-erp-ckx7.vercel.app/admin/config) |
+| Agenda taller | [moto-erp-ckx7.vercel.app/admin/agenda](https://moto-erp-ckx7.vercel.app/admin/agenda) |
+| Órdenes de trabajo | [moto-erp-ckx7.vercel.app/admin/ordenes](https://moto-erp-ckx7.vercel.app/admin/ordenes) |
+| Inventario | [moto-erp-ckx7.vercel.app/admin/inventario](https://moto-erp-ckx7.vercel.app/admin/inventario) |
+| Catálogo | [moto-erp-ckx7.vercel.app/admin/catalogo](https://moto-erp-ckx7.vercel.app/admin/catalogo) |
+| Categorías | [moto-erp-ckx7.vercel.app/admin/categorias](https://moto-erp-ckx7.vercel.app/admin/categorias) |
+| Marcas y modelos | [moto-erp-ckx7.vercel.app/admin/marcas](https://moto-erp-ckx7.vercel.app/admin/marcas) |
+| Servicios | [moto-erp-ckx7.vercel.app/admin/servicios](https://moto-erp-ckx7.vercel.app/admin/servicios) |
+| Clientes | [moto-erp-ckx7.vercel.app/admin/clientes](https://moto-erp-ckx7.vercel.app/admin/clientes) |
+| Citas | [moto-erp-ckx7.vercel.app/admin/citas](https://moto-erp-ckx7.vercel.app/admin/citas) |
+| Equipo | [moto-erp-ckx7.vercel.app/admin/equipo](https://moto-erp-ckx7.vercel.app/admin/equipo) |
+| Ventas | [moto-erp-ckx7.vercel.app/admin/ventas](https://moto-erp-ckx7.vercel.app/admin/ventas) |
+| Reportes | [moto-erp-ckx7.vercel.app/admin/reportes](https://moto-erp-ckx7.vercel.app/admin/reportes) |
+| Caja | [moto-erp-ckx7.vercel.app/admin/caja](https://moto-erp-ckx7.vercel.app/admin/caja) |
+| Compras | [moto-erp-ckx7.vercel.app/admin/compras](https://moto-erp-ckx7.vercel.app/admin/compras) |
+| Garantías | [moto-erp-ckx7.vercel.app/admin/garantias](https://moto-erp-ckx7.vercel.app/admin/garantias) |
+| Auditoría | [moto-erp-ckx7.vercel.app/admin/auditoria](https://moto-erp-ckx7.vercel.app/admin/auditoria) |
+| Notificaciones | [moto-erp-ckx7.vercel.app/admin/notificaciones](https://moto-erp-ckx7.vercel.app/admin/notificaciones) |
+| Configuración | [moto-erp-ckx7.vercel.app/admin/configuracion](https://moto-erp-ckx7.vercel.app/admin/configuracion) |
+| Mi cuenta | [moto-erp-ckx7.vercel.app/admin/cuenta](https://moto-erp-ckx7.vercel.app/admin/cuenta) |
 
 ### Portal de clientes
 | Sección | URL |
@@ -70,12 +76,12 @@ Plataforma SaaS full-stack para la gestión integral de talleres mecánicos de m
 
 | Capa | Tecnologías |
 |------|------------|
-| Frontend | React 19, TypeScript, Tailwind CSS, Vite 8 |
-| Backend | Laravel 12, PHP 8.3, Sanctum Auth |
-| Base de datos | PostgreSQL 16 (Supabase) + PgBouncer |
-| Deploy | Vercel (frontend) · Render Docker (backend) |
+| Frontend | React 19, TypeScript, Tailwind CSS 4, Vite 8 |
+| Backend | Laravel 13, PHP 8.3, Sanctum Auth |
+| Base de datos | PostgreSQL 16 (Supabase) + PgBouncer (puerto pooler 6543) |
+| Deploy | Vercel (frontend, `frontend/vercel.json`) · Render Docker (backend) |
 | Almacenamiento | Cloudinary (imágenes) |
-| Testing | Playwright (42 tests E2E) |
+| Testing | Playwright (5 specs E2E) + PHPUnit (Feature/Unit) |
 
 ### Arquitectura
 
@@ -156,19 +162,19 @@ Plataforma SaaS full-stack para la gestión integral de talleres mecánicos de m
 
 ```
 motoERP/
-├── backend/                    # API REST (Laravel 12)
+├── backend/                    # API REST (Laravel 13)
 │   ├── app/
 │   │   ├── Console/Commands/   # 3 comandos programados
-│   │   ├── Http/Controllers/   # 14 controladores API
+│   │   ├── Http/Controllers/   # 15 controladores API
 │   │   ├── Http/Middleware/     # CheckRole
 │   │   ├── Jobs/               # Trabajos en cola (WhatsApp)
 │   │   ├── Models/             # 39 modelos Eloquent
 │   │   ├── Providers/          # AppServiceProvider
-│   │   ├── Services/           # 8 servicios (Cloudinary, Notifications, etc.)
+│   │   ├── Services/           # 25 servicios (Invoice, Payment, Timeline, Dashboard, Agenda, Cash, Sale, etc.)
 │   │   └── Support/            # Helpers (Settings, Input)
 │   ├── config/                 # Configuración de Laravel
 │   ├── database/
-│   │   ├── migrations/         # 20+ migraciones
+│   │   ├── migrations/         # 56 migraciones
 │   │   └── seeders/            # ProductionSeeder
 │   ├── Dockerfile              # php:8.3-fpm + nginx
 │   ├── entrypoint.sh           # Startup script
@@ -184,11 +190,11 @@ motoERP/
 │   │       ├── public/         # Home, Store, Blog, Contact, About
 │   │       ├── staff/          # Dashboard, Orders, Inventory, Config
 │   │       └── client/         # Portal del cliente
-│   ├── tests/                  # 42 tests E2E (Playwright)
+│   ├── tests/                  # 5 specs E2E (Playwright)
 │   ├── vite.config.ts
-│   └── playwright.config.ts
+│   ├── playwright.config.ts    # baseURL por env PLAYWRIGHT_BASE_URL (default: prod)
 ├── render.yaml                 # Render auto-deploy config
-└── vercel.json                 # Vercel rewrites + API proxy
+└── frontend/vercel.json        # Vercel rewrites + API proxy + CSP (canónico; Root Directory: frontend)
 ```
 
 ---
@@ -220,6 +226,8 @@ npm run dev
 ```bash
 cd frontend
 npx playwright install
+# Por defecto corre contra producción. Para local:
+# PLAYWRIGHT_BASE_URL=http://127.0.0.1:5173 npx playwright test
 npx playwright test
 ```
 
@@ -235,13 +243,14 @@ npx playwright test
 | `APP_URL` | URL del backend |
 | `DB_CONNECTION` | `pgsql` |
 | `DB_HOST` | Host de Supabase Pooler |
-| `DB_PORT` | `6543` (pooler) |
+| `DB_PORT` | `6543` (pooler transaction mode) / `5432` (directa) |
 | `DB_DATABASE` | `postgres` |
 | `DB_USERNAME` | Usuario de Supabase |
 | `DB_PASSWORD` | Contraseña de Supabase |
-| `FRONTEND_URL` | URL del frontend para CORS |
-| `SESSION_DRIVER` | `file` |
-| `CACHE_STORE` | `file` |
+| `FRONTEND_URL` | Orígenes CORS separados por comas (ej. `http://localhost:5173,https://moto-erp-ckx7.vercel.app`) |
+| `POINTS_VALUE` | Valor en COP de cada punto de fidelización (`100`) |
+| `SESSION_DRIVER` | `file` en Render (sin Redis en plan free) / `database` en local |
+| `CACHE_STORE` | `file` en Render (sin Redis en plan free) / `database` en local |
 
 ### Frontend
 
@@ -262,15 +271,15 @@ No requiere variables de entorno. La API se conecta vía proxy de Vercel (`/api/
 2. Framework: **Vite**
 3. Root directory: `frontend`
 4. Build: `npm run build` → Output: `dist`
-5. Los rewrites de `vercel.json` manejan SPA routing y proxy a la API
+5. Los rewrites de `frontend/vercel.json` manejan SPA routing y proxy a la API (`/api/*` → Render), más headers CSP/security
 
 ---
 
 ## Arquitectura de datos
 
 - **39 modelos Eloquent** con relaciones completas
-- **20+ migraciones** de PostgreSQL
-- **Supabase PgBouncer** para connection pooling (transaction mode)
+- **56 migraciones** de PostgreSQL
+- **Supabase PgBouncer** para connection pooling (transaction mode, puerto 6543)
 - **Emulación de prepared statements** para compatibilidad con PgBouncer
 
 ---
