@@ -7,8 +7,9 @@ import { usePageMeta } from '../../lib/usePageMeta'
 import { scheduleSummary, type ScheduleInfo } from '../../lib/schedule'
 import { useHero, useSiteInfo } from '../../lib/useSiteImages'
 import { APP_NAME } from '../../lib/config'
-import { HeroBg } from '../../components/HeroBg'
+import PageHero from '../../components/PageHero'
 import heroImg from '../../assets/hero.png'
+import { BadgeCheck, MessageCircle, ShieldCheck, Wrench } from 'lucide-react'
 
 interface SiteInfo extends ScheduleInfo {
   workshop_name?: string
@@ -82,38 +83,11 @@ export default function Contact() {
 
   return (
     <div className="bg-gray-50">
-      {/* ──── HERO ──── */}
-      <section className="relative overflow-hidden bg-white pb-10 pt-14 md:pt-20">
-        <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-orange-400/20 blur-3xl" />
-        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-orange-500/15 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-1/3 h-48 w-48 rounded-full bg-amber-400/10 blur-3xl" />
-        <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-400 via-orange-500 to-orange-300" />
-        <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-orange-300 via-orange-500 to-orange-400" />
-
-        <div className="relative mx-auto max-w-6xl px-4">
-          <div className="flex flex-col items-center gap-10 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-xl text-center md:text-left">
-              <h1 className="mt-2 text-3xl font-black leading-[1.08] tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
-                {hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Estamos aquí para <br className="hidden md:block" />ayudarte y que te sientas <br className="hidden md:block" /><span className="gradient-text">cómodo</span></>}
-              </h1>
-              <p className="mt-4 max-w-md text-base leading-relaxed text-gray-500">
-                {hero.slides?.[0]?.subtitle || 'Resuelve tus dudas, agenda un servicio, nuestro equipo está listo para brindarte la mejor atención.'}
-              </p>
-            </div>
-            <div className="relative shrink-0">
-              <div className="relative h-[220px] w-[320px] overflow-hidden rounded-2xl border border-gray-200 shadow-xl shadow-gray-200/50 sm:h-[280px] sm:w-[400px] md:h-[320px] md:w-[460px]">
-                {hero.images && hero.images.length > 0 ? (
-                  <HeroBg images={hero.images} />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-400 to-orange-600">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="M21 15l-4.6-4.6a2 2 0 00-2.8 0L6 18" /></svg>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Contacto"
+        title={hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Estamos aquí para ayudarte y que te sientas <span className="gradient-text">cómodo</span></>}
+        subtitle={hero.slides?.[0]?.subtitle || 'Resuelve tus dudas, agenda un servicio, nuestro equipo está listo para brindarte la mejor atención.'}
+      />
 
       {/* ──── INFO CARDS ──── */}
       <section className="mx-auto max-w-6xl px-4 py-10">
@@ -190,7 +164,7 @@ export default function Contact() {
 
               {sent ? (
                 <div className="flex flex-col items-center py-14 text-center">
-                  <span className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100 text-3xl">✅</span>
+                  <span className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100"><BadgeCheck className="h-8 w-8 text-green-500" /></span>
                   <h3 className="mt-4 text-xl font-black text-gray-900">¡Mensaje enviado!</h3>
                   <p className="mt-2 max-w-sm text-gray-500">
                     Gracias {form.name.split(' ')[0] || 'amigo'}. Te contactaremos pronto.
@@ -265,12 +239,12 @@ export default function Contact() {
             <Reveal delay={100}>
               <div className="space-y-4">
                 {[
-                  { icon: '💬', t: 'Respuesta rápida', d: 'Atendemos tus consultas de forma ágil y efectiva.' },
-                  { icon: '🔧', t: 'Atención personalizada', d: 'Te ayudamos a encontrar la mejor solución.' },
-                  { icon: '🛡️', t: 'Confianza y calidad', d: 'Servicio profesional con repuestos de calidad.' },
+                  { icon: MessageCircle, t: 'Respuesta rápida', d: 'Atendemos tus consultas de forma ágil y efectiva.' },
+                  { icon: Wrench, t: 'Atención personalizada', d: 'Te ayudamos a encontrar la mejor solución.' },
+                  { icon: ShieldCheck, t: 'Confianza y calidad', d: 'Servicio profesional con repuestos de calidad.' },
                 ].map((b) => (
                   <div key={b.t} className="flex items-start gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-50 text-lg">{b.icon}</span>
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-orange-50"><b.icon className="h-5 w-5 text-orange-500" /></span>
                     <div>
                       <h4 className="font-bold text-gray-900">{b.t}</h4>
                       <p className="text-sm text-gray-500">{b.d}</p>

@@ -6,6 +6,8 @@ import type { ReactNode } from 'react'
 import { Reveal } from '../../components/Reveal'
 import { useHero, useSiteInfo } from '../../lib/useSiteImages'
 import { APP_NAME } from '../../lib/config'
+import PageHero from '../../components/PageHero'
+import { Clock, FileText, Zap } from 'lucide-react'
 
 interface PostCard {
   id: number
@@ -43,7 +45,7 @@ const CATEGORY_META: Record<string, { icon: ReactNode; color: string }> = {
   },
   Novedades: {
     icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>,
-    color: 'bg-pink-500',
+    color: 'bg-teal-500',
   },
 }
 
@@ -92,10 +94,7 @@ export default function BlogPage() {
       <div className="bg-gray-50">
         {/* Detail hero */}
         <section className="relative overflow-hidden bg-white pb-10 pt-14 md:pt-20">
-          <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-orange-400/20 blur-3xl" />
-          <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-orange-500/15 blur-3xl" />
-          <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-400 via-orange-500 to-orange-300" />
-          <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-orange-300 via-orange-500 to-orange-400" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(40rem_18rem_at_50%_-5rem,#ffedd5,transparent)]" />
           <div className="relative mx-auto max-w-4xl px-4">
             <Link to="/blog" className="inline-flex items-center gap-1 text-sm font-semibold text-orange-600 hover:underline">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
@@ -182,70 +181,16 @@ export default function BlogPage() {
   return (
     <div className="bg-gray-50">
       {/* ──── HERO ──── */}
-      <section className="relative overflow-hidden bg-white pb-10 pt-14 md:pt-20">
-        <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-orange-400/20 blur-3xl" />
-        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-orange-500/15 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-1/3 h-48 w-48 rounded-full bg-amber-400/10 blur-3xl" />
-        <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-400 via-orange-500 to-orange-300" />
-        <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-orange-300 via-orange-500 to-orange-400" />
-
-        <div className="relative mx-auto max-w-6xl px-4">
-          <div className="flex flex-col items-center gap-10 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-xl text-center md:text-left">
-              <h1 className="mt-2 text-3xl font-black leading-[1.08] tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
-                {hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Consejos y guías <br className="hidden md:block" /><span className="gradient-text">para tu moto</span></>}
-              </h1>
-              <p className="mt-4 max-w-md text-base leading-relaxed text-gray-500">
-                {hero.slides?.[0]?.subtitle || 'Mantenemos tu pasión en movimiento con tips, guías y recomendaciones de expertos.'}
-              </p>
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-5 md:justify-start">
-                <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M9 9h6M9 13h6M9 17h4" /></svg>
-                  </span>
-                  <div className="text-left">
-                    <p className="font-bold text-gray-900">Contenido práctico</p>
-                    <p className="text-xs text-gray-400">Consejos útiles para el cuidado de tu moto.</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>
-                  </span>
-                  <div className="text-left">
-                    <p className="font-bold text-gray-900">Expertos en motos</p>
-                    <p className="text-xs text-gray-400">Información respaldada por mecánicos profesionales.</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
-                  </span>
-                  <div className="text-left">
-                    <p className="font-bold text-gray-900">Actualizado constantemente</p>
-                    <p className="text-xs text-gray-400">Nuevos artículos cada semana para ti.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="relative shrink-0">
-              <div className="relative h-[220px] w-[320px] overflow-hidden rounded-2xl border border-gray-200 shadow-xl shadow-gray-200/50 sm:h-[280px] sm:w-[400px] md:h-[320px] md:w-[460px]">
-                {hero.images && hero.images.length > 0 ? (
-                  <img
-                    src={hero.images[0]}
-                    alt={`Blog ${siteName || APP_NAME}`}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-400 to-orange-600">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="M21 15l-4.6-4.6a2 2 0 00-2.8 0L6 18" /></svg>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Blog"
+        title={hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Consejos y guías <span className="gradient-text">para tu moto</span></>}
+        subtitle={hero.slides?.[0]?.subtitle || 'Mantenemos tu pasión en movimiento con tips, guías y recomendaciones de expertos.'}
+        points={[
+          { icon: FileText, title: 'Contenido práctico', desc: 'Consejos útiles para el cuidado de tu moto.' },
+          { icon: Zap, title: 'Expertos en motos', desc: 'Información respaldada por mecánicos profesionales.' },
+          { icon: Clock, title: 'Actualizado constantemente', desc: 'Nuevos artículos cada semana para ti.' },
+        ]}
+      />
 
       {/* ──── CATEGORIES FILTER ──── */}
       <section className="border-b border-gray-100 bg-white py-4">
@@ -308,8 +253,8 @@ export default function BlogPage() {
                       {p.cover ? (
                         <img src={p.cover} alt={p.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-400 to-orange-600">
-                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="M21 15l-4.6-4.6a2 2 0 00-2.8 0L6 18" /></svg>
+                        <div className="flex h-full w-full items-center justify-center bg-gray-100">
+                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="M21 15l-4.6-4.6a2 2 0 00-2.8 0L6 18" /></svg>
                         </div>
                       )}
                       {cat && (

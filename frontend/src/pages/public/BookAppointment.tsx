@@ -6,7 +6,8 @@ import { usePageMeta } from '../../lib/usePageMeta'
 import { useAuth } from '../../auth/AuthContext'
 import { Reveal } from '../../components/Reveal'
 import { useHero, useSiteInfo } from '../../lib/useSiteImages'
-import { HeroBg } from '../../components/HeroBg'
+import PageHero from '../../components/PageHero'
+import { ClipboardList, Clock, Headphones, Phone, ShieldCheck, Wrench } from 'lucide-react'
 
 interface Motorcycle {
   id: number
@@ -146,62 +147,29 @@ export default function BookAppointment() {
 
   return (
     <div className="bg-gray-50">
-      {/* ──── HERO ──── */}
-      <section className="relative overflow-hidden bg-white pb-10 pt-14 md:pt-20">
-        <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-orange-400/20 blur-3xl" />
-        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-orange-500/15 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-1/3 h-48 w-48 rounded-full bg-amber-400/10 blur-3xl" />
-        <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-400 via-orange-500 to-orange-300" />
-        <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-orange-300 via-orange-500 to-orange-400" />
-
-        <div className="relative mx-auto max-w-6xl px-4">
-          <div className="flex flex-col items-center gap-10 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-xl text-center md:text-left">
-              <p className="text-sm font-bold uppercase tracking-widest text-orange-500">Agenda tu revisión</p>
-              <h1 className="mt-2 text-3xl font-black leading-[1.08] tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
-                {hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>¿Listo para revisar <br className="hidden md:block" /><span className="gradient-text">tu moto?</span></>}
-              </h1>
-              <p className="mt-4 max-w-md text-base leading-relaxed text-gray-500">
-                {hero.slides?.[0]?.subtitle || 'Completa el formulario y agenda tu cita con nuestros expertos. Tu moto estará en las mejores manos.'}
-              </p>
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-5 md:justify-start">
-                <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-500">🔧</span>
-                  <div className="text-left">
-                    <p className="font-bold text-gray-900">Atención profesional</p>
-                    <p className="text-xs text-gray-400">Técnicos certificados y con experiencia.</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-500">🕐</span>
-                  <div className="text-left">
-                    <p className="font-bold text-gray-900">Agenda flexible</p>
-                    <p className="text-xs text-gray-400">Elige el día y la hora que mejor te convengan.</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-500">🛡️</span>
-                  <div className="text-left">
-                    <p className="font-bold text-gray-900">Confianza y calidad</p>
-                    <p className="text-xs text-gray-400">Repuestos originales y servicio garantizado.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="relative shrink-0">
-              <div className="relative h-[220px] w-[320px] overflow-hidden rounded-2xl border border-gray-200 shadow-xl shadow-gray-200/50 sm:h-[280px] sm:w-[400px] md:h-[320px] md:w-[460px]">
-                {hero.images && hero.images.length > 0 ? (
-                  <HeroBg images={hero.images} />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-400 to-orange-600">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="M21 15l-4.6-4.6a2 2 0 00-2.8 0L6 18" /></svg>
-                  </div>
-                )}
-              </div>
+      <PageHero
+        eyebrow="Agenda tu revisión"
+        title={hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>¿Listo para revisar <span className="gradient-text">tu moto?</span></>}
+        subtitle={hero.slides?.[0]?.subtitle || 'Completa el formulario y agenda tu cita con nuestros expertos. Tu moto estará en las mejores manos.'}
+        visual={
+          <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Horario del taller</p>
+            <p className="mt-2 text-sm font-semibold text-gray-800">Lunes a viernes · 8:00 am – 6:00 pm</p>
+            <p className="text-sm text-gray-500">Sábados · 8:00 am – 12:00 pm</p>
+            <div className="mt-4 border-t border-gray-100 pt-4">
+              <p className="text-xs font-bold uppercase tracking-widest text-gray-400">¿Prefieres escribirnos?</p>
+              <a
+                href={waLink(phoneDisplay, 'Hola! Quiero agendar una cita para mi moto.')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-2 rounded-xl bg-green-500 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-green-600"
+              >
+                <Phone className="h-4 w-4" /> {phoneDisplay}
+              </a>
             </div>
           </div>
-        </div>
-      </section>
+        }
+      />
 
       {/* ──── FORM + SIDEBAR ──── */}
       <section className="mx-auto max-w-6xl px-4 py-12">
@@ -318,12 +286,12 @@ export default function BookAppointment() {
                 <h3 className="text-lg font-black text-gray-900">¿Qué puedes esperar?</h3>
                 <div className="mt-4 space-y-4">
                   {[
-                    { icon: '🔧', t: 'Revisión profesional', d: 'Diagnóstico completo de tu moto.' },
-                    { icon: '🕐', t: 'Agenda sin demoras', d: 'Te asignamos el horario ideal para ti.' },
-                    { icon: '📋', t: 'Hoja de vida digital', d: 'Registramos el historial de tu moto para tu tranquilidad.' },
+                    { icon: Wrench, t: 'Revisión profesional', d: 'Diagnóstico completo de tu moto.' },
+                    { icon: Clock, t: 'Agenda sin demoras', d: 'Te asignamos el horario ideal para ti.' },
+                    { icon: ClipboardList, t: 'Hoja de vida digital', d: 'Registramos el historial de tu moto para tu tranquilidad.' },
                   ].map((b) => (
                     <div key={b.t} className="flex items-start gap-3">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-50 text-base">{b.icon}</span>
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-50"><b.icon className="h-4 w-4 text-orange-500" /></span>
                       <div>
                         <p className="text-sm font-bold text-gray-900">{b.t}</p>
                         <p className="text-xs text-gray-500">{b.d}</p>
@@ -338,7 +306,7 @@ export default function BookAppointment() {
             <Reveal delay={150}>
               <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 p-5 text-white shadow-xl shadow-orange-500/25">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15 text-xl">🛡️</span>
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15"><ShieldCheck className="h-5 w-5" /></span>
                   <div>
                     <h3 className="font-black">Servicio con garantía</h3>
                     <p className="text-sm text-white/85">Respaldamos nuestro trabajo y los repuestos instalados.</p>
@@ -383,7 +351,7 @@ export default function BookAppointment() {
         <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
           <div className="flex flex-col items-center gap-6 p-8 sm:flex-row sm:justify-between sm:px-12">
             <div className="flex items-center gap-4 text-center sm:text-left">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-3xl">🎧</div>
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-orange-50"><Headphones className="h-7 w-7 text-orange-500" /></div>
               <div>
                 <h2 className="text-lg font-black text-gray-900">¿Prefieres hablar con alguien?</h2>
                 <p className="text-sm text-gray-500">Escríbenos o llámanos y te ayudamos a agendar tu cita.</p>

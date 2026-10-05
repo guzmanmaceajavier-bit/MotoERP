@@ -24,7 +24,7 @@ test.describe('Carrito y Checkout', () => {
   test('Drawer del carrito se abre y cierra', async ({ page }) => {
     await page.goto(`${BASE}/tienda`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(2000)
-    const cartBtn = page.locator('button:has-text("🛒")').first()
+    const cartBtn = page.locator('button:has-text("Agregar al carrito")').first()
     if (await cartBtn.isVisible().catch(() => false)) {
       await cartBtn.click()
       await page.waitForTimeout(1000)
@@ -39,7 +39,7 @@ test.describe('Carrito y Checkout', () => {
   test('Botón ir a la tienda en drawer funciona', async ({ page }) => {
     await page.goto(`${BASE}/tienda`, { waitUntil: 'networkidle' })
     await page.waitForTimeout(2000)
-    const cartBtn = page.locator('button:has-text("🛒")').first()
+    const cartBtn = page.locator('button:has-text("Agregar al carrito")').first()
     if (await cartBtn.isVisible().catch(() => false)) {
       await cartBtn.click()
       await page.waitForTimeout(1000)

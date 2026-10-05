@@ -123,21 +123,21 @@ export default function Dashboard() {
         </p>
         <div className="relative mt-5 flex flex-wrap items-center gap-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-lg">📋</div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15"><ClipboardList className="h-6 w-6" /></div>
             <div>
               <p className="text-xs text-white/70">Órdenes activas</p>
               <p className="text-xl font-black">{activeOrders}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-lg">📅</div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15"><CalendarDays className="h-6 w-6" /></div>
             <div>
               <p className="text-xs text-white/70">Citas pendientes</p>
               <p className="text-xl font-black">{stats.appointments_pending}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-lg">💰</div>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15"><Wallet className="h-6 w-6" /></div>
             <div>
               <p className="text-xs text-white/70">Facturado (mes)</p>
               <p className="text-xl font-black">{fmt(stats.invoices_this_month ?? 0)}</p>

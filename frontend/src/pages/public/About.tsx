@@ -5,6 +5,8 @@ import { usePageMeta } from '../../lib/usePageMeta'
 import { Reveal } from '../../components/Reveal'
 import { useHero, useSiteInfo } from '../../lib/useSiteImages'
 import { HeroBg } from '../../components/HeroBg'
+import PageHero from '../../components/PageHero'
+import { Eye, ShieldCheck, Wrench } from 'lucide-react'
 
 interface TeamMember {
   id: number
@@ -63,63 +65,23 @@ export default function About() {
 
   return (
     <div className="bg-gray-50">
-      {/* ──── HERO ──── */}
-      <section className="relative overflow-hidden bg-white pb-10 pt-14 md:pt-20">
-        <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-orange-400/20 blur-3xl" />
-        <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-orange-500/15 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-1/3 h-48 w-48 rounded-full bg-amber-400/10 blur-3xl" />
-        <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-orange-400 via-orange-500 to-orange-300" />
-        <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-orange-300 via-orange-500 to-orange-400" />
-
-        <div className="relative mx-auto max-w-6xl px-4">
-          <div className="flex flex-col items-center gap-10 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-xl text-center md:text-left">
-              <h1 className="mt-2 text-3xl font-black leading-[1.08] tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
-                {hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Las personas que <br className="hidden md:block" /><span className="gradient-text">cuidan tu moto</span></>}
-              </h1>
-              <p className="mt-4 max-w-md text-base leading-relaxed text-gray-500">
-                {hero.slides?.[0]?.subtitle || 'Mecánicos certificados, trato cercano y un servicio que puedes seguir desde tu teléfono.'}
-              </p>
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-5 md:justify-start">
-                <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-500">🔧</span>
-                  <div className="text-left">
-                    <p className="font-bold text-gray-900">Equipo certificado</p>
-                    <p className="text-xs text-gray-400">Mecánicos especializados en todas las marcas.</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-500">👁️</span>
-                  <div className="text-left">
-                    <p className="font-bold text-gray-900">Servicio transparente</p>
-                    <p className="text-xs text-gray-400">Sigue cada paso del proceso en tiempo real.</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-500">🛡️</span>
-                  <div className="text-left">
-                    <p className="font-bold text-gray-900">Garantía incluida</p>
-                    <p className="text-xs text-gray-400">Todos nuestros trabajos cuentan con garantía.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="relative shrink-0">
-              <div className="relative h-[220px] w-[320px] overflow-hidden rounded-2xl border border-gray-200 shadow-xl shadow-gray-200/50 sm:h-[280px] sm:w-[400px] md:h-[320px] md:w-[460px]">
-                {hero.images && hero.images.length > 0 ? (
-                  <HeroBg images={hero.images} />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-orange-400 to-orange-600">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="9" cy="9" r="2" /><path d="M21 15l-4.6-4.6a2 2 0 00-2.8 0L6 18" /></svg>
-                  </div>
-                )}
-              </div>
-            </div>
+      <PageHero
+        eyebrow="Nosotros"
+        title={hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Las personas que <span className="gradient-text">cuidan tu moto</span></>}
+        subtitle={hero.slides?.[0]?.subtitle || 'Mecánicos certificados, trato cercano y un servicio que puedes seguir desde tu teléfono.'}
+        points={[
+          { icon: Wrench, title: 'Equipo certificado', desc: 'Mecánicos especializados en todas las marcas.' },
+          { icon: Eye, title: 'Servicio transparente', desc: 'Sigue cada paso del proceso en tiempo real.' },
+          { icon: ShieldCheck, title: 'Garantía incluida', desc: 'Todos nuestros trabajos cuentan con garantía.' },
+        ]}
+        visual={
+          <div className="relative h-[220px] w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 shadow-xl shadow-gray-200/50 sm:h-[280px] md:h-[320px]">
+            {hero.images && hero.images.length > 0 && <HeroBg images={hero.images} />}
           </div>
-        </div>
-      </section>
+        }
+      />
 
-      {/* ═══════════ GALERÍA DE TRABAJOS ═══════════ */}
+      {/* galeria */}
       <section className="mx-auto max-w-6xl px-4 py-14">
         <Reveal className="text-center">
           <h2 className="text-3xl font-black text-gray-900">Nuestros <span className="gradient-text">trabajos</span></h2>
@@ -173,7 +135,7 @@ export default function About() {
         </div>
       )}
 
-      {/* ═══════════ EQUIPO ═══════════ */}
+      {/* equipo */}
       <section className="mx-auto max-w-6xl px-4 py-14">
         <Reveal className="text-center">
           <h2 className="mt-1 text-3xl font-black text-gray-900">Las personas que <span className="gradient-text">cuidan tu moto</span></h2>
@@ -195,7 +157,7 @@ export default function About() {
                 )}
                 <h3 className="mt-4 text-lg font-bold text-gray-900">{m.name}</h3>
                 <p className="text-sm font-medium text-orange-600">{roleLabel[m.role] || m.role}</p>
-                {m.specialty && <p className="mt-1 text-xs text-gray-500">🔧 {m.specialty}</p>}
+                {m.specialty && <p className="mt-1 flex items-center justify-center gap-1 text-xs text-gray-500"><Wrench className="h-3 w-3" /> {m.specialty}</p>}
                 {m.bio && <p className="mt-3 text-sm leading-relaxed text-gray-600">{m.bio}</p>}
               </div>
             </Reveal>
@@ -206,12 +168,12 @@ export default function About() {
         </div>
       </section>
 
-      {/* ═══════════ CTA FINAL ═══════════ */}
+      {/* cta final */}
       <section className="mx-auto max-w-6xl px-4 pb-16">
         <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
           <div className="flex flex-col items-center gap-6 p-8 sm:flex-row sm:justify-between sm:px-12">
             <div className="flex items-center gap-4 text-center sm:text-left">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-orange-50 text-3xl">🔧</div>
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-orange-50"><Wrench className="h-7 w-7 text-orange-500" /></div>
               <div>
                 <h2 className="text-lg font-black text-gray-900">¿Necesitas servicio técnico?</h2>
                 <p className="text-sm text-gray-500">Agenda tu cita y déjalo en manos de nuestros expertos.</p>

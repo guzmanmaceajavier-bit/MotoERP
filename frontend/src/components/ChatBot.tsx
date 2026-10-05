@@ -5,8 +5,9 @@ import { waLink } from '../lib/wa'
 import type { Paginated } from '../lib/pagination'
 import { unwrapList } from '../lib/pagination'
 import type { Product } from '../lib/types'
-import { useSiteInfo } from '../lib/useSiteImages'
 import { APP_NAME } from '../lib/config'
+import { Bot } from 'lucide-react'
+import { useSiteInfo } from '../lib/useSiteImages'
 
 interface Msg {
   from: 'bot' | 'user'
@@ -16,51 +17,51 @@ interface Msg {
 }
 
 const quickActions = [
-  { key: 'servicios', label: '🛠 Servicios' },
-  { key: 'cita', label: '📅 Agendar cita' },
-  { key: 'orden', label: '🧾 Consultar orden' },
-  { key: 'envios', label: '🚚 Envíos' },
-  { key: 'puntos', label: '⭐ Puntos' },
-  { key: 'repuesto', label: '🔍 Buscar repuesto' },
-  { key: 'asesor', label: '👤 Asesor' },
+  { key: 'servicios', label: 'Servicios' },
+  { key: 'cita', label: 'Agendar cita' },
+  { key: 'orden', label: 'Consultar orden' },
+  { key: 'envios', label: 'Envíos' },
+  { key: 'puntos', label: 'Puntos' },
+  { key: 'repuesto', label: 'Buscar repuesto' },
+  { key: 'asesor', label: 'Asesor' },
 ]
 
 const answers: Record<string, { text: string; links?: { to?: string; href?: string; label: string }[] }> = {
   saludo: {
-    text: '👋 ¡Hola! Bienvenido a nuestro taller. Soy tu asistente virtual y conozco la tienda, los servicios y el taller.\n\nPuedes preguntarme por repuestos (por ejemplo: "¿una cadena de Bajaj le sirve a una MT-09?"), servicios, citas, órdenes, envíos o puntos. ¿Qué necesitas?',
+    text: '¡Hola! Bienvenido a nuestro taller. Soy tu asistente virtual y conozco la tienda, los servicios y el taller.\n\nPuedes preguntarme por repuestos (por ejemplo: "¿una cadena de Bajaj le sirve a una MT-09?"), servicios, citas, órdenes, envíos o puntos. ¿Qué necesitas?',
   },
   servicios: {
-    text: '🛠 Ofrecemos diagnóstico, mantenimiento preventivo y correctivo, cambio de aceite, llantas, frenos, repuestos y acompañamiento con la hoja de vida digital de tu moto.',
+    text: 'Ofrecemos diagnóstico, mantenimiento preventivo y correctivo, cambio de aceite, llantas, frenos, repuestos y acompañamiento con la hoja de vida digital de tu moto.',
     links: [{ to: '/servicios', label: 'Ver todos los servicios' }],
   },
   cita: {
-    text: '📅 Puedes agendar tu cita en línea en menos de un minuto eligiendo el día y la hora que prefieras.',
+    text: 'Puedes agendar tu cita en línea en menos de un minuto eligiendo el día y la hora que prefieras.',
     links: [{ to: '/agendar', label: 'Agendar ahora' }],
   },
   orden: {
-    text: '🧾 Para conocer el estado de tu reparación solo necesitas el número de orden. Consulta aquí:',
+    text: 'Para conocer el estado de tu reparación solo necesitas el número de orden. Consulta aquí:',
     links: [{ to: '/consultar', label: 'Consultar orden' }],
   },
   reparacion: {
-    text: '⚙️ La mayoría de reparaciones se entregan entre 1 y 3 días hábiles, según la disponibilidad de repuestos. En el diagnóstico te damos el tiempo exacto.',
+    text: 'La mayoría de reparaciones se entregan entre 1 y 3 días hábiles, según la disponibilidad de repuestos. En el diagnóstico te damos el tiempo exacto.',
   },
   horarios: {
-    text: '🕗 Estamos abiertos de lunes a viernes de 8:00 am a 6:00 pm y sábados de 8:00 am a 12:00 pm. Domingos y festivos cerrado.',
+    text: 'Estamos abiertos de lunes a viernes de 8:00 am a 6:00 pm y sábados de 8:00 am a 12:00 pm. Domingos y festivos cerrado.',
   },
   envios: {
-    text: '🚚 Hacemos envíos a todo el país. Compras superiores a $150.000 tienen envío gratis y la entrega tarda de 2 a 5 días hábiles según tu ciudad.',
+    text: 'Hacemos envíos a todo el país. Compras superiores a $150.000 tienen envío gratis y la entrega tarda de 2 a 5 días hábiles según tu ciudad.',
     links: [{ to: '/tienda', label: 'Ir a la tienda' }],
   },
   puntos: {
-    text: '⭐ Con tu cuenta acumulas puntos con compras y servicios. Cada punto equivale a $100 de descuento en tu próxima compra.',
+    text: 'Con tu cuenta acumulas puntos con compras y servicios. Cada punto equivale a $100 de descuento en tu próxima compra.',
     links: [{ to: '/registro', label: 'Crear cuenta' }],
   },
   asesor: {
-    text: '👤 Con gusto te atiende una persona por WhatsApp. Escríbenos y responderemos lo antes posible.',
+    text: 'Con gusto te atiende una persona por WhatsApp. Escríbenos y responderemos lo antes posible.',
     links: [{ to: '/contacto', label: 'Ir a contacto' }],
   },
   default: {
-    text: '🤔 No encontré una respuesta exacta. Puedo ayudarte con repuestos, servicios, citas, órdenes, envíos o puntos. Prueba con alguna de las opciones rápidas o escribe tu pregunta.',
+    text: 'No encontré una respuesta exacta. Puedo ayudarte con repuestos, servicios, citas, órdenes, envíos o puntos. Prueba con alguna de las opciones rápidas o escribe tu pregunta.',
   },
 }
 
@@ -146,7 +147,7 @@ export default function ChatBot() {
   const [phone, setPhone] = useState('')
   const { workshop_name: siteName } = useSiteInfo()
   const [msgs, setMsgs] = useState<Msg[]>([
-    { from: 'bot', text: '👋 ¡Hola! Soy el asistente virtual de nuestro taller. Conozco la tienda y los servicios: puedes preguntarme por repuestos, compatibilidad (¿una cadena de Bajaj le sirve a una MT-09?), servicios, citas o envíos. ¿En qué te ayudo?' },
+    { from: 'bot', text: '¡Hola! Soy el asistente virtual de nuestro taller. Conozco la tienda y los servicios: puedes preguntarme por repuestos, compatibilidad (¿una cadena de Bajaj le sirve a una MT-09?), servicios, citas o envíos. ¿En qué te ayudo?' },
   ])
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -186,7 +187,7 @@ export default function ChatBot() {
           {
             from: 'bot',
             text:
-              `🔍 Encontré estos repuestos${brand ? ` para <b>${brand}</b>` : ''}. Recuerda que la compatibilidad depende del modelo, año y cilindraje exacto de tu moto.\n\n` +
+              `Encontré estos repuestos${brand ? ` para <b>${brand}</b>` : ''}. Recuerda que la compatibilidad depende del modelo, año y cilindraje exacto de tu moto.\n\n` +
               `Repuestos encontrados:\n${r.html}`,
             html: r.html,
             links: r.links,
@@ -198,7 +199,7 @@ export default function ChatBot() {
           {
             from: 'bot',
             text:
-              '🔍 No encontré ese repuesto en el catálogo con esa referencia. Puedo buscarlo de otra forma: dime la marca y modelo de tu moto y el repuesto exacto (cadena, aceite, llanta, frenos...), o consulta directo con un asesor.',
+              'No encontré ese repuesto en el catálogo con esa referencia. Puedo buscarlo de otra forma: dime la marca y modelo de tu moto y el repuesto exacto (cadena, aceite, llanta, frenos...), o consulta directo con un asesor.',
             links: [
               { to: '/tienda', label: 'Ver tienda' },
               phone ? { href: waLink(phone, 'Hola! Busco un repuesto para mi moto.'), label: 'Hablar con asesor' } : { to: '/contacto', label: 'Contacto' },
@@ -253,10 +254,10 @@ function getAnswer(key: string): Msg {
     const ext: Record<string, { text: string; links?: { to?: string; href?: string; label: string }[] }> = {
       ...answers,
       gracias: {
-        text: '😊 ¡Con gusto! Para lo que necesites, aquí estoy. También puedes agendar tu próxima cita o visitar nuestra tienda.',
+        text: '¡Con gusto! Para lo que necesites, aquí estoy. También puedes agendar tu próxima cita o visitar nuestra tienda.',
       },
       repuesto: {
-        text: '🔍 Claro, buscamos repuestos en nuestro catálogo. Escríbeme algo como: "¿cadena para una Bajaj Boxer?" o "¿aceite para MT-09?" y te muestro lo que hay disponible.',
+        text: 'Claro, buscamos repuestos en nuestro catálogo. Escríbeme algo como: "¿cadena para una Bajaj Boxer?" o "¿aceite para MT-09?" y te muestro lo que hay disponible.',
         links: [{ to: '/tienda', label: 'Explorar tienda' }],
       },
     }
@@ -284,7 +285,7 @@ function getAnswer(key: string): Msg {
         <div className="chat-panel anim-fade-up">
           {/* Header */}
           <div className="flex items-center gap-3 bg-carbon-900 px-4 py-3 text-white">
-            <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-lg">🤖</span>
+            <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-600"><Bot className="h-5 w-5 text-white" /></span>
             <div className="min-w-0">
               <p className="text-sm font-bold">Asistente {siteName || APP_NAME}</p>
               <p className="flex items-center gap-1 text-xs text-green-400">● En línea</p>

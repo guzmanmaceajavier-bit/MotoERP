@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { ShoppingCart } from 'lucide-react'
 import { useCart, cartKey } from '../lib/cart'
 import { fmtMoney } from '../lib/money'
 
@@ -35,7 +36,7 @@ export default function CartDrawer({ storePath: _storePath = '/tienda' }: { stor
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
           <div className="flex items-center gap-2">
-            <span className="text-lg">🛒</span>
+            <ShoppingCart className="h-5 w-5 text-orange-500" />
             <h2 className="text-lg font-bold text-gray-800">Tu carrito</h2>
             {count > 0 && <span className="rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-bold text-orange-600">{count}</span>}
           </div>
@@ -48,7 +49,7 @@ export default function CartDrawer({ storePath: _storePath = '/tienda' }: { stor
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-50 text-3xl">🛒</div>
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-50"><ShoppingCart className="h-8 w-8 text-orange-400" /></div>
               <p className="mt-4 text-sm font-semibold text-gray-800">Tu carrito está vacío</p>
               <p className="mt-1 text-xs text-gray-400">Explora la tienda y agrega productos</p>
               <Link to="/tienda" onClick={() => setDrawerOpen(false)} className="btn-primary mt-4 text-sm">Ir a la tienda</Link>

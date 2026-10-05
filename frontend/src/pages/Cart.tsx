@@ -10,31 +10,39 @@ import type { Paginated } from '../lib/pagination'
 import { unwrapList } from '../lib/pagination'
 import { fmtMoney } from '../lib/money'
 import PaymentInfoBlock from '../components/PaymentInfoBlock'
+import { BadgeCheck, Banknote, Check, CreditCard, FileText, Headphones, Home, Landmark, MapPin, Package, RotateCcw, ShieldCheck, ShoppingCart, Trash2, Truck, Wrench } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
-const steps = [
-  { n: 1, label: 'Carrito', icon: '🛒' },
-  { n: 2, label: 'Entrega', icon: '📦' },
-  { n: 3, label: 'Pago', icon: '💳' },
-  { n: 4, label: 'Confirmar', icon: '✅' },
+const steps: { n: number; label: string; icon: LucideIcon }[] = [
+  { n: 1, label: 'Carrito', icon: ShoppingCart },
+  { n: 2, label: 'Entrega', icon: Package },
+  { n: 3, label: 'Pago', icon: CreditCard },
+  { n: 4, label: 'Confirmar', icon: BadgeCheck },
 ]
 
-const fulfillmentOptions: { value: Fulfillment; label: string; desc: string; icon: string }[] = [
-  { value: 'pickup', label: 'Recoger en taller', desc: 'Retira tu pedido sin costo', icon: '🏠' },
-  { value: 'shipping', label: 'Envío a domicilio', desc: 'Recíbelo donde estés', icon: '🚚' },
-  { value: 'installing', label: 'Instalación en servicio', desc: 'Lo instalamos en tu próxima cita', icon: '🔧' },
+const fulfillmentOptions: { value: Fulfillment; label: string; desc: string; icon: LucideIcon }[] = [
+  { value: 'pickup', label: 'Recoger en taller', desc: 'Retira tu pedido sin costo', icon: Home },
+  { value: 'shipping', label: 'Envío a domicilio', desc: 'Recíbelo donde estés', icon: Truck },
+  { value: 'installing', label: 'Instalación en servicio', desc: 'Lo instalamos en tu próxima cita', icon: Wrench },
 ]
 
-const paymentMethods = [
-  { value: 'efectivo', label: 'Efectivo', desc: 'Paga al recoger', icon: '💵' },
-  { value: 'transferencia', label: 'Transferencia', desc: 'Nequi / Daviplata / Banco', icon: '🏦' },
+const paymentMethods: { value: string; label: string; desc: string; icon: LucideIcon }[] = [
+  { value: 'efectivo', label: 'Efectivo', desc: 'Paga al recoger', icon: Banknote },
+  { value: 'transferencia', label: 'Transferencia', desc: 'Nequi / Daviplata / Banco', icon: Landmark },
 ]
 
-const trustBadges = [
-  { icon: '🛡️', label: 'Compra segura' },
-  { icon: '🚚', label: 'Envío gratis +$150k' },
-  { icon: '🔄', label: 'Devolución fácil' },
-  { icon: '🎧', label: 'Soporte experto' },
+const trustBadges: { icon: LucideIcon; label: string }[] = [
+  { icon: ShieldCheck, label: 'Compra segura' },
+  { icon: Truck, label: 'Envío gratis +$150k' },
+  { icon: RotateCcw, label: 'Devolución fácil' },
+  { icon: Headphones, label: 'Soporte experto' },
 ]
+
+function OptIcon({ opt }: { opt?: { icon: LucideIcon } }) {
+  if (!opt) return null
+  const Icon = opt.icon
+  return <Icon className="h-4 w-4" />
+}
 
 function ProductImg({ src, name, className = '' }: { src?: string; name: string; className?: string }) {
   if (src) return <img src={src} alt={name} className={`rounded-xl object-cover ${className}`} />
@@ -202,8 +210,8 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
     return (
       <div className="mx-auto max-w-xl px-4 py-16 text-center">
         <div className="anim-fade-up rounded-2xl border border-gray-100 bg-white p-8 shadow-sm">
-          <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full text-3xl ${isCash ? 'bg-green-50' : 'bg-orange-50'}`}>
-            {isCash ? '✅' : '📄'}
+          <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full ${isCash ? 'bg-green-50' : 'bg-orange-50'}`}>
+            {isCash ? <BadgeCheck className="h-8 w-8 text-green-500" /> : <FileText className="h-8 w-8 text-orange-500" />}
           </div>
           <h1 className="mt-4 text-2xl font-bold text-gray-800">
             {isCash ? '¡Compra confirmada!' : '¡Pedido registrado!'}
@@ -292,7 +300,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
   if (count === 0 && step === 1) {
     return (
       <div className="anim-fade-up mx-auto max-w-lg px-4 py-20 text-center">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-orange-50 text-4xl">🛒</div>
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-orange-50"><ShoppingCart className="h-10 w-10 text-orange-400" /></div>
         <h1 className="mt-5 text-3xl font-bold text-gray-800">Tu carrito está vacío</h1>
         <p className="mt-2 text-gray-500">Explora nuestro catálogo y encuentra lo que tu moto necesita.</p>
         <Link to={storePath} className="btn-primary btn-shine mt-6 inline-flex">Ir a la tienda</Link>
@@ -312,7 +320,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
               <div className="flex flex-col items-center">
                 <div className={`flex h-11 w-11 items-center justify-center rounded-full text-base font-bold transition-all duration-300 ${
                   step > s.n ? 'bg-orange-500 text-white' : step === s.n ? 'bg-orange-500 text-white ring-4 ring-orange-100' : 'bg-gray-100 text-gray-400'
-                }`}>{step > s.n ? '✓' : s.icon}</div>
+                }`}>{step > s.n ? <Check className="h-5 w-5" /> : <s.icon className="h-5 w-5" />}</div>
                 <span className={`mt-1.5 text-xs font-semibold ${step === s.n ? 'text-orange-600' : 'text-gray-400'}`}>{s.label}</span>
               </div>
               {i < steps.length - 1 && <div className={`mx-1 mb-5 h-0.5 flex-1 transition-colors ${step > s.n ? 'bg-orange-400' : 'bg-gray-200'}`} />}
@@ -329,7 +337,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
               <div className="flex items-center justify-between gap-4">
                 <h2 className="text-xl font-bold text-gray-800">Tu carrito <span className="text-sm font-normal text-gray-400">({count} productos)</span></h2>
                 <button onClick={clear} className="flex shrink-0 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-500">
-                  🗑 Vaciar carrito
+                  <Trash2 className="h-4 w-4" /> Vaciar carrito
                 </button>
               </div>
 
@@ -402,7 +410,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                   {fulfillmentOptions.map((o) => (
                     <label key={o.value} className={`flex cursor-pointer items-center gap-4 rounded-2xl border bg-white p-4 shadow-sm transition ${fulfillment === o.value ? 'border-orange-300 ring-2 ring-orange-100 shadow-md' : 'border-gray-100 hover:border-gray-200'}`}>
                       <input type="radio" name="fulfillment" value={o.value} checked={fulfillment === o.value} onChange={() => setFulfillment(o.value)} className="sr-only" />
-                      <span className="text-2xl">{o.icon}</span>
+                      <span className="text-orange-500"><o.icon className="h-6 w-6" /></span>
                       <div className="min-w-0 flex-1">
                         <p className="font-semibold text-gray-800">{o.label}</p>
                         <p className="text-xs text-gray-500">{o.desc}</p>
@@ -416,7 +424,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                 <div className="sm:col-span-3">
                   {fulfillment === 'shipping' && (
                     <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm space-y-3">
-                      <h3 className="text-sm font-bold uppercase tracking-wide text-orange-500">📍 Dirección de envío</h3>
+                      <h3 className="text-sm font-bold uppercase tracking-wide text-orange-500"><MapPin className="mr-1 inline h-4 w-4" />Dirección de envío</h3>
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <input value={shipCity} onChange={(e) => setShipCity(e.target.value)} placeholder="Ciudad *" className={inputCls} />
                         <input value={shipPhone} onChange={(e) => setShipPhone(e.target.value)} placeholder="Teléfono de contacto *" type="tel" className={inputCls} />
@@ -428,7 +436,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
 
                   {fulfillment === 'installing' && user && (
                     <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-                      <h3 className="text-sm font-bold uppercase tracking-wide text-orange-500">🔧 Moto para instalación</h3>
+                      <h3 className="text-sm font-bold uppercase tracking-wide text-orange-500"><Wrench className="mr-1 inline h-4 w-4" />Moto para instalación</h3>
                       <select value={motorcycleId} onChange={(e) => setMotorcycleId(e.target.value)} className="garaje-input mt-3">
                         <option value="">Selecciona una moto</option>
                         {motorcycles.map((mt) => <option key={mt.id} value={mt.id}>{mt.nickname || mt.plate || 'Moto'} {mt.model?.name ? `· ${mt.model.name}` : ''}</option>)}
@@ -444,7 +452,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
 
                   {fulfillment === 'pickup' && (
                     <div className="rounded-2xl border border-green-200 bg-green-50 p-5">
-                      <h3 className="text-sm font-bold text-green-700">🏠 Retiro en taller</h3>
+                      <h3 className="text-sm font-bold text-green-700"><Home className="mr-1 inline h-4 w-4" />Retiro en taller</h3>
                       <p className="mt-1 text-sm text-green-600">Recoge tu pedido sin costo adicional. Te notificaremos cuando esté listo.</p>
                     </div>
                   )}
@@ -473,7 +481,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                   {paymentMethods.map((m) => (
                     <label key={m.value} className={`flex cursor-pointer items-center gap-4 rounded-2xl border bg-white p-4 shadow-sm transition ${paymentMethod === m.value ? 'border-orange-300 ring-2 ring-orange-100 shadow-md' : 'border-gray-100 hover:border-gray-200'}`}>
                       <input type="radio" name="payment" value={m.value} checked={paymentMethod === m.value} onChange={() => setPaymentMethod(m.value)} className="sr-only" />
-                      <span className="text-2xl">{m.icon}</span>
+                      <span className="text-orange-500"><m.icon className="h-6 w-6" /></span>
                       <div className="min-w-0 flex-1">
                         <p className="font-semibold text-gray-800">{m.label}</p>
                         <p className="text-xs text-gray-500">{m.desc}</p>
@@ -487,7 +495,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                 <div className="space-y-4 sm:col-span-3">
                   {paymentMethod === 'transferencia' && (
                     <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-                      <h3 className="text-sm font-bold uppercase tracking-wide text-orange-500">🏦 Datos para transferencia</h3>
+                      <h3 className="text-sm font-bold uppercase tracking-wide text-orange-500"><Landmark className="mr-1 inline h-4 w-4" />Datos para transferencia</h3>
                       <div className="mt-3">
                         <PaymentInfoBlock />
                       </div>
@@ -496,7 +504,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
 
                   {paymentMethod === 'efectivo' && (
                     <div className="rounded-2xl border border-green-200 bg-green-50 p-5">
-                      <h3 className="text-sm font-bold text-green-700">💵 Pago en efectivo</h3>
+                      <h3 className="text-sm font-bold text-green-700"><Banknote className="mr-1 inline h-4 w-4" />Pago en efectivo</h3>
                       <p className="mt-1 text-sm text-green-600">Paga al retirar tu pedido en el taller o al recibirlo en tu domicilio.</p>
                     </div>
                   )}
@@ -561,12 +569,12 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                 <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wide text-gray-400">Entrega</p>
-                    <p className="mt-1 font-medium text-gray-800">{fulfillmentOptions.find((o) => o.value === fulfillment)?.icon} {fulfillmentOptions.find((o) => o.value === fulfillment)?.label}</p>
+                    <p className="mt-1 font-medium text-gray-800"><OptIcon opt={fulfillmentOptions.find((o) => o.value === fulfillment)} /> {fulfillmentOptions.find((o) => o.value === fulfillment)?.label}</p>
                     {fulfillment === 'shipping' && <p className="text-xs text-gray-500 mt-0.5">{shipCity}, {shipAddress}</p>}
                   </div>
                   <div>
                     <p className="text-xs font-bold uppercase tracking-wide text-gray-400">Pago</p>
-                    <p className="mt-1 font-medium text-gray-800">{paymentMethods.find((m) => m.value === paymentMethod)?.icon} {paymentMethods.find((m) => m.value === paymentMethod)?.label}</p>
+                    <p className="mt-1 font-medium text-gray-800"><OptIcon opt={paymentMethods.find((m) => m.value === paymentMethod)} /> {paymentMethods.find((m) => m.value === paymentMethod)?.label}</p>
                     {!user && <p className="text-xs text-gray-500 mt-0.5">{guestName} · {guestEmail}</p>}
                   </div>
                 </div>
@@ -595,13 +603,13 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
               <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm space-y-2">
                 {fulfillment && (
                   <div className="flex items-center gap-2 text-sm">
-                    <span>{fulfillmentOptions.find((o) => o.value === fulfillment)?.icon}</span>
+                    <span><OptIcon opt={fulfillmentOptions.find((o) => o.value === fulfillment)} /></span>
                     <span className="text-gray-600">{fulfillmentOptions.find((o) => o.value === fulfillment)?.label}</span>
                   </div>
                 )}
                 {paymentMethod && (
                   <div className="flex items-center gap-2 text-sm">
-                    <span>{paymentMethods.find((m) => m.value === paymentMethod)?.icon}</span>
+                    <span><OptIcon opt={paymentMethods.find((m) => m.value === paymentMethod)} /></span>
                     <span className="text-gray-600">{paymentMethods.find((m) => m.value === paymentMethod)?.label}</span>
                   </div>
                 )}
@@ -634,7 +642,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
             <div className="grid grid-cols-2 gap-2">
               {trustBadges.map((b) => (
                 <div key={b.label} className="flex items-center gap-2 rounded-xl border border-orange-100 bg-orange-50 px-3 py-2">
-                  <span className="text-base">{b.icon}</span>
+                  <span className="text-orange-500"><b.icon className="h-4 w-4" /></span>
                   <span className="text-xs font-medium text-orange-700">{b.label}</span>
                 </div>
               ))}
@@ -660,7 +668,7 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                   onClick={() => add({ productId: p.id, name: p.name, price: p.final_price ?? p.price, unit: p.unit, available: p.available, image: p.image, brand: p.brand })}
                   className="mt-3 w-full rounded-xl border-2 border-orange-400 py-1.5 text-sm font-semibold text-orange-500 transition hover:bg-orange-500 hover:text-white"
                 >
-                  🛒 Agregar
+                  <ShoppingCart className="mr-1 inline h-4 w-4" /> Agregar
                 </button>
               </div>
             ))}

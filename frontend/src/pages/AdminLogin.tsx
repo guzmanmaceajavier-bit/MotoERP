@@ -6,6 +6,7 @@ import { isStaffRole } from '../lib/roles'
 import { api } from '../lib/api'
 import { useEffect } from 'react'
 import { APP_NAME } from '../lib/config'
+import { BellRing, ClipboardList, Package } from 'lucide-react'
 
 export default function AdminLogin() {
   const { login, logout } = useStaffAuth()
@@ -75,12 +76,12 @@ export default function AdminLogin() {
 
           <ul className="mt-8 space-y-4">
             {[
-              { icon: '📋', title: 'Gestión de órdenes', desc: 'Administra reparaciones y servicios en tiempo real.' },
-              { icon: '📦', title: 'Inventario integrado', desc: 'Controla productos, precios y stock desde un solo lugar.' },
-              { icon: '🔔', title: 'Notificaciones', desc: 'Alertas automáticas para ti y tus clientes.' },
+              { icon: ClipboardList, title: 'Gestión de órdenes', desc: 'Administra reparaciones y servicios en tiempo real.' },
+              { icon: Package, title: 'Inventario integrado', desc: 'Controla productos, precios y stock desde un solo lugar.' },
+              { icon: BellRing, title: 'Notificaciones', desc: 'Alertas automáticas para ti y tus clientes.' },
             ].map((f) => (
               <li key={f.title} className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-base">{f.icon}</span>
+                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50"><f.icon className="h-4 w-4 text-brand-600" /></span>
                 <div>
                   <p className="text-sm font-bold text-carbon-800">{f.title}</p>
                   <p className="text-xs text-carbon-500">{f.desc}</p>
