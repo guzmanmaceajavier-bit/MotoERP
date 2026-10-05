@@ -170,7 +170,7 @@ class OrderController extends Controller
 
             if ($validated['decision'] === 'approved') {
                 $statusService->applyOperative($order, 'approved', $request->user(), 'Cotización aprobada');
-                $this->reserveOrderStock($order, $request->user()->id);
+                app(\App\Services\PaymentService::class)->reserveForOrder($order, $request->user()->id);
                 app(\App\Services\QuotationService::class)->markLatest($order, 'approved');
             } else {
                 // Rechazada o en revisión tras una aprobación previa: se libera stock.
@@ -180,7 +180,7 @@ class OrderController extends Controller
                     $validated['notes'] ?? null
                 );
                 if ($wasApproved) {
-                    $this->releaseOrderStock($order, $request->user()->id);
+                    app(\App\Services\PaymentService::class)->releaseForOrder($order, $request->user()->id);
                 }
                 if ($wasApproved || $order->status === 'approved') {
                     $order->update(['status' => 'awaiting_approval']);
@@ -212,47 +212,6 @@ class OrderController extends Controller
         $order->load(['items', 'labors']);
 
         return response()->json($this->serialize($order, true));
-    }
-
-    /**
-     * Reserva el inventario de los repuestos de una cotización aprobada.
-     * Solo incrementa "reserved"; el físico se descuenta al facturar.
-     * Usa InventoryService (bloqueo + invariantes). Si falta stock, aborta.
-     */
-    private function reserveOrderStock(WorkOrder $order, int $userId): void
-    {
-        $service = app(\App\Services\InventoryService::class);
-        foreach ($order->items as $item) {
-            if (! $item->product_id) {
-                continue;
-            }
-            $service->reserve($item->product_id, $item->quantity, [
-                'order_id' => $order->id,
-                'reference' => $order->order_number,
-                'user_id' => $userId,
-                'note' => 'Reserva por aprobación de cotización',
-            ]);
-        }
-    }
-
-    /**
-     * Libera las reservas de los repuestos de una orden (rechazo, cancelación o
-     * cotización que ya no avanza).
-     */
-    private function releaseOrderStock(WorkOrder $order, int $userId): void
-    {
-        $service = app(\App\Services\InventoryService::class);
-        foreach ($order->items as $item) {
-            if (! $item->product_id) {
-                continue;
-            }
-            $service->release($item->product_id, $item->quantity, [
-                'order_id' => $order->id,
-                'reference' => $order->order_number,
-                'user_id' => $userId,
-                'note' => 'Liberación de reserva',
-            ]);
-        }
     }
 
     private function recordStatus(WorkOrder $order, string $status, ?string $comment, $user): void

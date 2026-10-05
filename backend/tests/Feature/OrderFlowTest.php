@@ -21,7 +21,7 @@ class OrderFlowTest extends TestCase
 
     private function client(): User
     {
-        return User::factory()->create(['role' => 'client', 'email' => 'client@test.test']);
+        return User::factory()->create(['role' => 'customer', 'email' => 'client@test.test']);
     }
 
     private function productWithStock(int $qty = 10): Product

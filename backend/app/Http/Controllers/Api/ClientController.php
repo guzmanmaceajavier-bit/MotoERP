@@ -43,7 +43,7 @@ class ClientController extends Controller
         $nextMaintenances = [];
         $userMotorcycles = Motorcycle::where('user_id', $userId)->get();
         foreach ($userMotorcycles as $motorcycle) {
-            foreach ($this->predictiveMaintenance($motorcycle, $rules) as $due) {
+            foreach (app(\App\Services\MaintenanceService::class)->forMotorcycle($motorcycle, $rules) as $due) {
                 $nextMaintenances[] = $due;
             }
         }
@@ -211,7 +211,7 @@ class ClientController extends Controller
                 'registered_at' => $motorcycle->registered_at?->toDateString(),
             ],
             'odometer' => $motorcycle->current_odometer,
-            'maintenances' => $this->predictiveMaintenance($motorcycle, $rules),
+            'maintenances' => app(\App\Services\MaintenanceService::class)->forMotorcycle($motorcycle, $rules),
             'services' => $orders->map(fn ($o) => [
                 'id' => $o->id,
                 'order_number' => $o->order_number,
@@ -265,62 +265,6 @@ class ClientController extends Controller
                     'issue_date' => $i->issue_date?->toDateString(),
                 ]),
         ]);
-    }
-
-    private function predictiveMaintenance(Motorcycle $motorcycle, $rules): array
-    {
-        $result = [];
-
-        foreach ($rules as $rule) {
-            $order = WorkOrder::where('motorcycle_id', $motorcycle->id)
-                ->when($rule->category, fn ($q) => $q->where('service_type', 'ilike', "%{$rule->category}%"))
-                ->orderByDesc('created_at')
-                ->first();
-
-            $lastKm = $order && $order->odometer_in !== null ? (int) $order->odometer_in : (int) $motorcycle->current_odometer;
-            $lastDate = $order && $order->created_at ? $order->created_at : now()->subMonths($rule->interval_months ?? 0);
-
-            $dueKm = $rule->interval_km !== null ? $lastKm + $rule->interval_km : null;
-            $dueDate = $rule->interval_months !== null ? $lastDate->copy()->addMonths($rule->interval_months) : null;
-
-            $kmLeft = $dueKm !== null ? max(0, $dueKm - (int) $motorcycle->current_odometer) : null;
-            $daysLeft = $dueDate !== null ? (int) now()->diffInDays($dueDate, false) : null;
-
-            $overdue = (($kmLeft !== null && $kmLeft === 0) || ($daysLeft !== null && $daysLeft <= 0));
-
-            // Clasificar urgencia
-            $urgency = 'ok';
-            if (($kmLeft !== null && $kmLeft <= 0) || ($daysLeft !== null && $daysLeft <= 0)) {
-                $urgency = 'overdue';
-            } elseif (($kmLeft !== null && $kmLeft <= 500) || ($daysLeft !== null && $daysLeft <= 14)) {
-                $urgency = 'soon';
-            }
-
-            // Score de prioridad (menor = más urgente)
-            $priorityScore = PHP_INT_MAX;
-            if ($daysLeft !== null) {
-                $priorityScore = $daysLeft;
-            }
-            if ($kmLeft !== null && ($priorityScore === PHP_INT_MAX || $kmLeft < $priorityScore)) {
-                $priorityScore = $kmLeft;
-            }
-
-            $result[] = [
-                'service_name' => $rule->service_name,
-                'category' => $rule->category,
-                'interval_km' => $rule->interval_km,
-                'interval_months' => $rule->interval_months,
-                'due_km' => $dueKm,
-                'due_date' => $dueDate?->toDateString(),
-                'km_left' => $kmLeft,
-                'days_left' => $daysLeft,
-                'urgency' => $urgency,
-                'overdue' => $overdue,
-                'priority_score' => $priorityScore,
-            ];
-        }
-
-        return $result;
     }
 
     private function authorizeOwner(Request $request, Motorcycle $motorcycle): void
