@@ -2,8 +2,6 @@
 
 Plataforma SaaS full-stack para la gestión integral de talleres mecánicos de motocicletas. Incluye sitio público, portal de clientes y panel de administración completo.
 
-
-
 ### Credenciales de prueba
 
 | Rol | Email | Contraseña |
@@ -237,6 +235,13 @@ No requiere variables de entorno. La API se conecta vía proxy de Vercel (`/api/
 
 ---
 
+## Autor
+
+**Javier Guzman** — desarrollo y mantenimiento del proyecto.
+
+- Email: guzmanmaceajavier@gmail.com
+- GitHub: [@guzmanmaceajavier-bit](https://github.com/guzmanmaceajavier-bit)
+
 ## Licencia
 
-Proyecto privado. Todos los derechos reservados.
+Proyecto privado. © 2026 Javier Guzman. Todos los derechos reservados.
