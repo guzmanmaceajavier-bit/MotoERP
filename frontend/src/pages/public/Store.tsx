@@ -10,9 +10,10 @@ import { GridSkeleton } from '../../components/Skeletons'
 import type { Paginated } from '../../lib/pagination'
 import type { Category, Product, RecommendedCatalog } from '../../lib/types'
 import { CategoryIcon } from '../../lib/categoryIcons'
+import CategoryRail from '../../components/CategoryRail'
 import { useHero } from '../../lib/useSiteImages'
 import PageHero from '../../components/PageHero'
-import { BadgeCheck, Headphones, Package, Search, ShieldCheck, Truck, Undo2 } from 'lucide-react'
+import { BadgeCheck, Check, Eye, Flame, Headphones, Package, Search, ShieldCheck, ShoppingCart, Truck, Undo2, X } from 'lucide-react'
 
 const fmt = (n: number) => '$' + n.toLocaleString('es-CO')
 
@@ -23,7 +24,7 @@ function ProductImage({ src, alt, className = '' }: { src?: string | null; alt: 
   return (
     <div className={`flex items-center justify-center overflow-hidden bg-gray-100 ${className || 'h-48 w-full'}`}>
       {show ? (
-        <img src={src} alt={alt} onError={() => setErr(true)} className="h-full w-full object-cover" />
+        <img src={src} alt={alt} onError={() => setErr(true)} className="h-full w-full object-cover transition duration-500 group-hover:scale-110" />
       ) : (
         <div className="flex flex-col items-center gap-2 px-2 text-gray-300">
           <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
@@ -54,7 +55,7 @@ function HeartButton({ active, loading, onClick }: { active: boolean; loading?: 
   )
 }
 
-/* ─────── new ProductCard (reference style) ─────── */
+/* ─────── ProductCard ─────── */
 function ProductCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
   p: Product
   onDetail: (p: Product) => void
@@ -63,78 +64,86 @@ function ProductCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
   favLoading?: boolean
 }) {
   const { add } = useCart()
+  const [added, setAdded] = useState(false)
   const hasPromo = p.promo_price != null && p.promo_price < p.price
   const price = p.final_price ?? p.price
+  const discount = hasPromo ? Math.round((1 - (p.promo_price as number) / p.price) * 100) : 0
   const partType = p.part_type ?? 'original'
+  const soldOut = p.available === 0
+  const low = p.available > 0 && p.available <= 3
+
+  function handleAdd(e: React.MouseEvent) {
+    e.stopPropagation()
+    add({ productId: p.id, name: p.name, price, unit: p.unit, available: p.available, image: p.image, brand: p.brand })
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1400)
+  }
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition hover:shadow-md">
-      {/* image area */}
-      <div className="relative">
-        <ProductImage src={p.image} alt={p.name} className="h-48 w-full" />
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-100/50">
+      {/* imagen */}
+      <div className="relative cursor-pointer" onClick={() => onDetail(p)}>
+        <ProductImage src={p.image} alt={p.name} className={`h-48 w-full ${soldOut ? 'grayscale' : ''}`} />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-950/25 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
 
-        {/* badge: ORIGINAL / ALTERNATIVO */}
-        <span className={`absolute left-3 top-3 rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${
-          partType === 'original' ? 'bg-orange-600 text-white' : 'bg-amber-400 text-white'
-        }`}>
-          {partType === 'original' ? 'ORIGINAL' : 'ALTERNATIVO'}
-        </span>
-
-        {/* brand tag */}
-        {p.brand && (
-          <span className="absolute right-3 top-3 rounded-md bg-white/90 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-gray-600 shadow-sm backdrop-blur">
-            {p.brand}
+        <div className="absolute left-3 top-3 flex flex-col items-start gap-1.5">
+          <span className={`flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wider shadow-sm ${partType === 'original' ? 'bg-orange-600 text-white' : 'bg-amber-400 text-white'}`}>
+            {partType === 'original' && <BadgeCheck className="h-3 w-3" />}
+            {partType === 'original' ? 'Original' : 'Alternativo'}
           </span>
-        )}
-
-        {/* heart */}
-        <div className="absolute right-3 bottom-3 opacity-0 transition group-hover:opacity-100">
-          <HeartButton
-            active={!!isFavorite}
-            loading={favLoading}
-            onClick={(e) => { e.stopPropagation(); onToggleFav?.(e, p) }}
-          />
+          {discount > 0 && (
+            <span className="rounded-md bg-rose-500 px-2 py-1 text-[10px] font-black text-white shadow-sm">-{discount}%</span>
+          )}
         </div>
+
+        {/* siempre visible: en celular no existe hover */}
+        <div className="absolute right-3 top-3">
+          <HeartButton active={!!isFavorite} loading={favLoading} onClick={(e) => { e.stopPropagation(); onToggleFav?.(e, p) }} />
+        </div>
+
+        {soldOut && (
+          <span className="absolute inset-x-0 bottom-0 bg-gray-900/80 py-1.5 text-center text-[11px] font-bold uppercase tracking-widest text-white">Agotado</span>
+        )}
       </div>
 
-      {/* content */}
-      <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="line-clamp-2 text-sm font-bold leading-snug text-gray-900">{p.name}</h3>
+      {/* contenido */}
+      <div className="flex flex-1 flex-col gap-1.5 p-4">
+        {p.brand && <span className="text-[10px] font-bold uppercase tracking-widest text-orange-600">{p.brand}</span>}
+        <h3 onClick={() => onDetail(p)} className="line-clamp-2 min-h-[2.5rem] cursor-pointer text-sm font-bold leading-snug text-gray-900 transition group-hover:text-orange-700">
+          {p.name}
+        </h3>
+        {p.description && <p className="line-clamp-2 text-xs text-gray-400">{p.description}</p>}
 
-        {p.description && (
-          <p className="line-clamp-2 text-xs text-gray-400">{p.description}</p>
-        )}
-
-        {/* price */}
-        <div className="mt-auto flex items-baseline gap-2">
-          {hasPromo && (
-            <span className="text-xs text-gray-400 line-through">{fmt(p.price)}</span>
-          )}
-          <span className="text-lg font-black text-orange-600">{fmt(price)}</span>
+        <div className="mt-auto pt-2">
+          <div className="flex items-baseline gap-2">
+            <span className="text-xl font-black text-gray-900">{fmt(price)}</span>
+            {hasPromo && <span className="text-xs text-gray-400 line-through">{fmt(p.price)}</span>}
+          </div>
+          <div className="mt-1 flex items-center gap-1.5 text-[11px] font-semibold">
+            {soldOut ? (
+              <><span className="h-2 w-2 rounded-full bg-rose-400" /><span className="text-rose-500">Sin stock</span></>
+            ) : low ? (
+              <><Flame className="h-3.5 w-3.5 text-amber-500" /><span className="text-amber-600">¡Últimas {p.available} unidades!</span></>
+            ) : (
+              <><span className="h-2 w-2 rounded-full bg-emerald-500" /><span className="text-emerald-600">En stock</span></>
+            )}
+          </div>
         </div>
 
-        {/* stock */}
-        <div className="flex items-center gap-1.5">
-          <span className={`h-2 w-2 rounded-full ${p.available > 0 ? 'bg-emerald-500' : 'bg-rose-400'}`} />
-          <span className={`text-[11px] font-medium ${p.available > 0 ? 'text-emerald-600' : 'text-rose-500'}`}>
-            {p.available > 0 ? 'En stock' : 'Agotado'}
-          </span>
-        </div>
-
-        {/* actions */}
-        <div className="mt-1 flex gap-2">
+        <div className="mt-3 flex gap-2">
           <button
-            onClick={(e) => { e.stopPropagation(); onDetail(p) }}
-            className="flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-semibold text-gray-700 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
+            onClick={handleAdd}
+            disabled={soldOut}
+            className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold text-white shadow-sm transition active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40 ${added ? 'bg-emerald-500' : 'bg-gray-900 hover:bg-orange-600 hover:shadow-lg hover:shadow-orange-600/25'}`}
           >
-            Ver detalle
+            {added ? <><Check className="h-4 w-4" /> Agregado</> : <><ShoppingCart className="h-4 w-4" /> Agregar</>}
           </button>
           <button
-            onClick={(e) => { e.stopPropagation(); add({ productId: p.id, name: p.name, price, unit: p.unit, available: p.available, image: p.image, brand: p.brand }) }}
-            disabled={p.available === 0}
-            className="flex-1 rounded-xl bg-orange-600 px-3 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-orange-700 hover:shadow active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={(e) => { e.stopPropagation(); onDetail(p) }}
+            aria-label="Ver detalle"
+            className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-xl border border-gray-200 text-gray-500 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-600"
           >
-            Agregar al carrito
+            <Eye className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -207,12 +216,73 @@ function Section({ subtitle, products: items, onDetail, isFavorite, onToggleFav,
       <p className="mb-3 text-sm font-semibold text-gray-600">{subtitle}</p>
       <div className="flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {items.map((p) => (
-          <div key={p.id} className="w-44 shrink-0">
+          <div key={p.id} className="w-56 shrink-0">
             <ProductCard p={p} onDetail={onDetail} isFavorite={isFavorite?.(p.id)} onToggleFav={onToggleFav} favLoading={favLoading} />
           </div>
         ))}
       </div>
     </div>
+  )
+}
+
+/* buscador con atajo de teclado (/) */
+function StoreSearch({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const ref = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    const h = (e: KeyboardEvent) => {
+      const tag = document.activeElement?.tagName
+      if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA') { e.preventDefault(); ref.current?.focus() }
+    }
+    window.addEventListener('keydown', h)
+    return () => window.removeEventListener('keydown', h)
+  }, [])
+  return (
+    <label className="mx-auto flex w-full max-w-xl items-center gap-3 rounded-2xl border border-white/10 bg-white/95 px-4 py-3.5 shadow-xl shadow-black/30 transition focus-within:border-orange-400 focus-within:ring-4 focus-within:ring-orange-500/20">
+      <Search className="h-5 w-5 shrink-0 text-orange-500" />
+      <input
+        ref={ref}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Busca pastillas, aceite, llantas, kit de arrastre…"
+        className="w-full bg-transparent text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none md:text-base"
+      />
+      {value ? (
+        <button type="button" onClick={() => onChange('')} aria-label="Limpiar búsqueda" className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-500 transition hover:bg-gray-200">
+          <X className="h-4 w-4" />
+        </button>
+      ) : (
+        <kbd className="hidden rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-xs font-semibold text-gray-400 md:block">/</kbd>
+      )}
+    </label>
+  )
+}
+
+/* marcas en movimiento, clic filtra */
+function BrandMarquee({ brands, onPick }: { brands: { id: number; name: string; count: number }[]; onPick: (id: string) => void }) {
+  if (brands.length < 6) return null
+  const row = [...brands, ...brands]
+  return (
+    <div className="overflow-hidden border-b border-gray-100 bg-white py-3 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]">
+      <div className="anim-marquee flex w-max gap-3 hover:[animation-play-state:paused]">
+        {row.map((b, i) => (
+          <button key={i} onClick={() => onPick(String(b.id))}
+            className="flex shrink-0 items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-semibold text-gray-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700">
+            {b.name}
+            <span className="rounded-full bg-gray-100 px-1.5 text-[11px] font-bold text-gray-400">{b.count}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* chip de filtro activo */
+function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <button onClick={onRemove} className="anim-rise group flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 py-1 pl-3 pr-2 text-xs font-semibold text-orange-700 transition hover:border-orange-400 hover:bg-orange-100">
+      {label}
+      <X className="h-3.5 w-3.5 opacity-60 transition group-hover:opacity-100" />
+    </button>
   )
 }
 
@@ -260,7 +330,6 @@ export default function Store() {
   const [brandSearch, setBrandSearch] = useState('')
   const [modelSearch, setModelSearch] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState({ brand: false, model: false, partType: false, category: false, price: false })
-  const [catsOpen, setCatsOpen] = useState(false)
 
   /* favorites */
   const [favIds, setFavIds] = useState<Set<number>>(new Set())
@@ -345,10 +414,6 @@ export default function Store() {
     return q ? list.filter((m) => m.name.toLowerCase().includes(q)) : list
   }, [storeFilters, brand, modelSearch])
 
-  const catScrollRef = useRef<HTMLDivElement>(null)
-  function scrollCats(dir: -1 | 1) {
-    if (catScrollRef.current) catScrollRef.current.scrollBy({ left: dir * 220, behavior: 'smooth' })
-  }
   const filterCount = (brand ? 1 : 0) + (model ? 1 : 0) + (partType ? 1 : 0) + (priceMin || priceMax ? 1 : 0)
 
   /* ─── favorites handlers ─── */
@@ -371,7 +436,7 @@ export default function Store() {
   const fav = (id: number) => favIds.has(id)
   const favProps = { isFavorite: fav, onToggleFav: toggleFav, favLoading: favToggling !== null }
 
-  /* ═══════════════════ RENDER ═══════════════════ */
+  /* render */
   return (
     <div>
       <PageHero
@@ -384,22 +449,13 @@ export default function Store() {
           { icon: Undo2, title: 'Devoluciones', desc: '' },
           { icon: Headphones, title: '¿Necesitas ayuda?', desc: '' },
         ]}
-        below={
-          <div className="relative mx-auto w-full max-w-xl">
-            <svg className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar producto…"
-              className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-11 pr-10 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm transition focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
-            />
-            {search && (
-              <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-gray-100 text-gray-400 transition hover:bg-gray-200 hover:text-gray-600" aria-label="Limpiar búsqueda">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
-              </button>
-            )}
-          </div>
-        }
+        below={<StoreSearch value={search} onChange={setSearch} />}
+        images={hero.images}
+      />
+
+      <BrandMarquee
+        brands={storeFilters?.brands ?? []}
+        onPick={(id) => { setBrand(id); setModel('') }}
       />
 
       {banners.length > 0 && (
@@ -424,70 +480,33 @@ export default function Store() {
       )}
 
       <div className="mx-auto max-w-6xl px-4 py-8">
-        {/* ──── CATEGORY TILES (collapsible) ──── */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
-            <button
-              onClick={() => setCatsOpen((v) => !v)}
-              className="flex flex-1 items-center gap-3 text-left"
-              aria-expanded={catsOpen}
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-100 text-orange-600">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /></svg>
-              </span>
-              <span className="min-w-0">
-                <span className="block text-sm font-black text-gray-900">Categorías</span>
-                <span className="block text-xs text-gray-500">
-                  {category
-                    ? `Filtrando: ${categories.find((c) => c.slug === category)?.name ?? ''}`
-                    : 'Mostrando todos los productos'}
-                </span>
-              </span>
-            </button>
-            <div className="flex shrink-0 items-center gap-2">
+        {/* ──── CATEGORY RAIL ──── */}
+        <div className="mb-6 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+          <div className="mb-1 flex items-center justify-between">
+            <p className="text-sm font-black text-gray-900">Explora por categoría</p>
+            <div className="flex items-center gap-3">
+              {category && <button onClick={() => setCategory('')} className="text-xs font-semibold text-orange-600 hover:underline">quitar filtro</button>}
               {hasFilters && (
-                <button onClick={clearFilters} className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 py-2 text-xs font-semibold text-gray-500 transition hover:border-rose-300 hover:text-rose-600">
+                <button onClick={clearFilters} className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs font-semibold text-gray-500 transition hover:border-rose-300 hover:text-rose-600">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
                   Limpiar
                 </button>
               )}
-              <button
-                onClick={() => setCatsOpen((v) => !v)}
-                className={`flex h-9 w-9 items-center justify-center rounded-lg border transition ${catsOpen ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-gray-200 bg-white text-gray-600 hover:border-orange-300 hover:text-orange-600'}`}
-                aria-label={catsOpen ? 'Ocultar categorías' : 'Mostrar categorías'}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className={`transition-transform duration-200 ${catsOpen ? 'rotate-180' : ''}`}>
-                  <path d="M6 9l6 6 6-6" />
-                </svg>
-              </button>
             </div>
           </div>
-
-          {catsOpen && (
-            <div className="anim-fade-up mt-3">
-              <div className="flex items-center gap-2">
-                <button onClick={() => scrollCats(-1)} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition hover:border-orange-300 hover:text-orange-600" aria-label="Categorías anteriores">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
-                </button>
-                <div ref={catScrollRef} className="flex gap-2.5 overflow-x-auto pb-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                {categories.map((c) => (
-                  <button key={c.id} onClick={() => setCategory(c.slug)} className={`flex w-[104px] shrink-0 flex-col items-center gap-1 rounded-xl border px-3 py-3 transition ${category === c.slug ? 'border-orange-500 bg-orange-50 shadow-sm' : 'border-gray-200 bg-white hover:border-orange-300 hover:bg-orange-50/40'}`}>
-                    <span className={`flex h-9 w-9 items-center justify-center rounded-full ${category === c.slug ? 'bg-orange-600 text-white' : 'bg-orange-100 text-orange-600'}`}>
-                      <CategoryIcon name={c.icon} className="h-5 w-5" />
-                    </span>
-                    <span className="text-center text-xs font-semibold leading-tight">{c.name}</span>
-                    {c.products_count > 0 && (
-                      <span className={`text-[10px] font-medium ${category === c.slug ? 'text-orange-600' : 'text-gray-400'}`}>{c.products_count} items</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-                <button onClick={() => scrollCats(1)} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 shadow-sm transition hover:border-orange-300 hover:text-orange-600" aria-label="Siguientes categorías">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6" /></svg>
-                </button>
-              </div>
-            </div>
-          )}
+          <CategoryRail
+            active={category}
+            onPick={setCategory}
+            items={[
+              { key: '', label: 'Todos', sub: `${meta.total} productos` },
+              ...categories.map((c) => ({
+                key: c.slug,
+                label: c.name,
+                sub: `${c.products_count} items`,
+                icon: <CategoryIcon name={c.icon} className="h-6 w-6" />,
+              })),
+            ]}
+          />
         </div>
 
         {/* ──── SIDEBAR + PRODUCTS LAYOUT ──── */}
@@ -602,15 +621,7 @@ export default function Store() {
           {/* ── CONTENT ── */}
           <div className="min-w-0 flex-1">
             {/* toolbar */}
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm text-gray-500">
-                <span className="font-bold text-gray-800">{meta.total}</span> producto{meta.total === 1 ? '' : 's'}
-                {category && ` en «${categories.find((c) => c.slug === category)?.name ?? ''}»`}
-                {brand && ` · ${storeFilters?.brands.find((b) => String(b.id) === brand)?.name ?? ''}`}
-                {model && ` · ${storeFilters?.models.find((m) => String(m.id) === model)?.name ?? ''}`}
-                {partType && ` · ${partType === 'original' ? 'Original' : 'Alternativo'}`}
-                {search.trim() && ` · "${search.trim()}"`}
-              </p>
+            <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
               <div className="flex items-center gap-2">
                 <select value={perPage} onChange={(e) => setPerPage(Number(e.target.value))} className="rounded-xl border border-gray-300 bg-white px-2 py-2 text-sm text-gray-900 transition focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-500/15" title="Productos por página">
                   <option value={12}>12 / pág</option>
@@ -632,6 +643,20 @@ export default function Store() {
                   </button>
                 </div>
               </div>
+            </div>
+
+            {/* filtros activos */}
+            <div className="mb-4 flex flex-wrap items-center gap-2">
+              <p className="mr-2 text-sm text-gray-500">
+                <span className="font-bold text-gray-900">{meta.total}</span> producto{meta.total === 1 ? '' : 's'}
+              </p>
+              {search.trim() && <FilterChip label={`“${search.trim()}”`} onRemove={() => setSearch('')} />}
+              {category && <FilterChip label={categories.find((c) => c.slug === category)?.name ?? category} onRemove={() => setCategory('')} />}
+              {brand && <FilterChip label={storeFilters?.brands.find((b) => String(b.id) === brand)?.name ?? 'Marca'} onRemove={() => { setBrand(''); setModel('') }} />}
+              {model && <FilterChip label={storeFilters?.models.find((m) => String(m.id) === model)?.name ?? 'Modelo'} onRemove={() => setModel('')} />}
+              {partType && <FilterChip label={partType === 'original' ? 'Original' : 'Alternativo'} onRemove={() => setPartType('')} />}
+              {(priceMin || priceMax) && <FilterChip label={`${priceMin ? fmt(Number(priceMin)) : '$0'} – ${priceMax ? fmt(Number(priceMax)) : 'sin límite'}`} onRemove={() => { setPriceMin(''); setPriceMax('') }} />}
+              {hasFilters && <button onClick={clearFilters} className="text-xs font-semibold text-gray-400 underline-offset-2 transition hover:text-orange-600 hover:underline">Limpiar todo</button>}
             </div>
 
             {/* recommended */}
@@ -668,8 +693,10 @@ export default function Store() {
               </div>
             ) : view === 'grid' ? (
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {products.map((p) => (
-                  <ProductCard key={p.id} p={p} onDetail={goDetail} isFavorite={fav(p.id)} onToggleFav={toggleFav} favLoading={favToggling === p.id} />
+                {products.map((p, i) => (
+                  <div key={p.id} className="anim-rise" style={{ animationDelay: `${(i % 12) * 45}ms` }}>
+                    <ProductCard p={p} onDetail={goDetail} isFavorite={fav(p.id)} onToggleFav={toggleFav} favLoading={favToggling === p.id} />
+                  </div>
                 ))}
               </div>
             ) : (

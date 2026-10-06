@@ -87,6 +87,7 @@ export default function Contact() {
         eyebrow="Contacto"
         title={hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Estamos aquí para ayudarte y que te sientas <span className="gradient-text">cómodo</span></>}
         subtitle={hero.slides?.[0]?.subtitle || 'Resuelve tus dudas, agenda un servicio, nuestro equipo está listo para brindarte la mejor atención.'}
+        images={hero.images}
       />
 
       {/* ──── INFO CARDS ──── */}

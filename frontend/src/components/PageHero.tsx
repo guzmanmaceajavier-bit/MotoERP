@@ -1,44 +1,100 @@
-import type { ReactNode } from 'react'
+import type { MouseEvent, ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
+import { HeroBg } from './HeroBg'
 
-// cabecera pareja para las paginas publicas, con o sin foto al lado
-export default function PageHero({ eyebrow, title, subtitle, actions, points, visual, below }: {
-  eyebrow: string
+interface Point { icon: LucideIcon; title: string; desc?: string }
+
+// cabecera clara para las paginas, mismo idioma que servicios
+// si hay foto del CMS se muestra al lado, si no queda centrada
+export default function PageHero({ eyebrow, title, subtitle, points = [], below, images, visual }: {
+  eyebrow?: string
   title: ReactNode
   subtitle?: string
-  actions?: ReactNode
-  points?: { icon: LucideIcon; title: string; desc: string }[]
-  visual?: ReactNode
+  points?: Point[]
   below?: ReactNode
+  images?: string[]
+  visual?: ReactNode
 }) {
-  const centered = !visual
+  function onMove(e: MouseEvent<HTMLElement>) {
+    const r = e.currentTarget.getBoundingClientRect()
+    e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`)
+    e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`)
+  }
+
+  const side = visual ?? (images && images.length > 0 ? (
+    <div className="relative">
+      <div className="absolute inset-0 translate-x-3 translate-y-3 rotate-2 rounded-[2rem] bg-orange-500/90 shadow-xl shadow-orange-500/20" />
+      <div className="relative h-[280px] overflow-hidden rounded-[2rem] border-4 border-white bg-gray-100 shadow-2xl sm:h-[320px] dark:border-white/10">
+        <HeroBg images={images} />
+      </div>
+    </div>
+  ) : undefined)
+  const centered = !side
+
   return (
-    <section className="relative overflow-hidden bg-white pb-10 pt-14 md:pt-20">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(40rem_18rem_at_50%_-5rem,#ffedd5,transparent)]" />
-      <div className="relative mx-auto max-w-6xl px-4">
-        <div className={centered ? 'mx-auto max-w-3xl text-center' : 'flex flex-col items-center gap-10 md:flex-row md:justify-between'}>
-          <div className={centered ? '' : 'w-full max-w-xl text-center md:text-left'}>
-            <p className="text-xs font-bold uppercase tracking-widest text-orange-600">{eyebrow}</p>
-            <h1 className="mt-2 text-3xl font-black leading-[1.08] tracking-tight text-gray-900 md:text-4xl lg:text-5xl">{title}</h1>
-            {subtitle && <p className={`mt-4 text-base leading-relaxed text-gray-500 ${centered ? 'mx-auto max-w-xl' : 'max-w-md'}`}>{subtitle}</p>}
-            {actions && <div className={`mt-7 flex flex-wrap items-center gap-3 ${centered ? 'justify-center' : 'justify-center md:justify-start'}`}>{actions}</div>}
-            {points && (
-              <div className={`mt-7 flex flex-wrap gap-x-6 gap-y-4 ${centered ? 'justify-center' : 'justify-center md:justify-start'}`}>
-                {points.map((p) => (
-                  <div key={p.title} className="flex items-center gap-2.5 text-left">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-500"><p.icon className="h-4 w-4" /></span>
-                    <div>
-                      <p className="text-sm font-bold text-gray-900">{p.title}</p>
-                      <p className="text-xs text-gray-400">{p.desc}</p>
-                    </div>
-                  </div>
+    <section onMouseMove={onMove} className="relative isolate overflow-hidden bg-orange-50 dark:bg-gray-950">
+      <div
+        className="absolute inset-0 -z-10"
+        style={{
+          backgroundImage: 'radial-gradient(#fdba74 1.2px, transparent 1.2px)',
+          backgroundSize: '24px 24px',
+          maskImage: 'linear-gradient(180deg,#000 35%,transparent)',
+          WebkitMaskImage: 'linear-gradient(180deg,#000 35%,transparent)',
+        }}
+      />
+      <div className="anim-glow absolute -right-20 -top-20 -z-10 h-80 w-80 rounded-full bg-orange-300/50 blur-3xl" />
+      <div
+        className="pointer-events-none absolute inset-0 -z-10 hidden md:block"
+        style={{ background: 'radial-gradient(420px circle at var(--mx,50%) var(--my,30%), rgba(249,115,22,.12), transparent 60%)' }}
+      />
+
+      <div className="mx-auto max-w-6xl px-4 pb-10 pt-14 md:pt-20">
+        <div className={centered ? 'mx-auto max-w-4xl text-center' : 'flex flex-col items-center gap-10 lg:flex-row lg:justify-between'}>
+          <div className={centered ? '' : 'w-full max-w-xl text-center lg:text-left'}>
+            {eyebrow && (
+              <p className="anim-rise inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white px-3 py-1 text-xs font-bold uppercase tracking-widest text-orange-600 shadow-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-orange-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-orange-500" />
+                </span>
+                {eyebrow}
+              </p>
+            )}
+
+            <h1 className="anim-rise mt-4 text-4xl font-black leading-[1.05] tracking-tight text-gray-900 dark:text-white md:text-6xl" style={{ animationDelay: '120ms' }}>
+              {title}
+            </h1>
+
+            {subtitle && (
+              <p className={`anim-rise mt-4 text-base leading-relaxed text-gray-600 dark:text-gray-300 md:text-lg ${centered ? 'mx-auto max-w-2xl' : 'max-w-md'}`} style={{ animationDelay: '260ms' }}>
+                {subtitle}
+              </p>
+            )}
+
+            {below && <div className="anim-rise mt-8" style={{ animationDelay: '400ms' }}>{below}</div>}
+
+            {points.length > 0 && (
+              <ul className={`mt-10 grid grid-cols-2 gap-3 text-left ${centered ? 'md:grid-cols-4' : 'sm:grid-cols-2'}`}>
+                {points.map((p, i) => (
+                  <li
+                    key={p.title}
+                    className="anim-rise group flex items-center gap-3 rounded-2xl border border-gray-100 bg-white p-3 shadow-sm backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:border-orange-200 hover:shadow-md dark:border-white/10 dark:bg-white/5"
+                    style={{ animationDelay: `${550 + i * 90}ms` }}
+                  >
+                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 transition group-hover:bg-orange-100 dark:bg-orange-500/15">
+                      <p.icon className="h-5 w-5 text-orange-500" />
+                    </span>
+                    <span>
+                      <span className="block text-sm font-semibold leading-tight text-gray-900 dark:text-white">{p.title}</span>
+                      {p.desc && <span className="block text-xs text-gray-500">{p.desc}</span>}
+                    </span>
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
           </div>
-          {visual && <div className="w-full shrink-0 md:w-[440px]">{visual}</div>}
+          {side && <div className="w-full max-w-xl shrink-0 lg:w-[500px]">{side}</div>}
         </div>
-        {below && <div className="mt-8">{below}</div>}
       </div>
     </section>
   )

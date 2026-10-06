@@ -7,8 +7,8 @@ import { usePageMeta } from '../../lib/usePageMeta'
 import { HeroBg } from '../../components/HeroBg'
 import { useHero, useSiteInfo } from '../../lib/useSiteImages'
 import { APP_NAME } from '../../lib/config'
-import PageHero from '../../components/PageHero'
-import { BadgeCheck, CalendarDays, CircleDot, ClipboardList, Cog, Disc3, Droplets, Gauge, Package, Palette, Search, Settings, ShieldCheck, Smile, Sparkles, User, Wrench, Zap } from 'lucide-react'
+import { ArrowRight, BadgeCheck, Bike, CalendarDays, Check, CircleDot, ClipboardList, Clock, Cog, Disc3, Droplets, Gauge, Package, Palette, Search, Settings, ShieldCheck, Smile, Sparkles, User, Wrench, Zap } from 'lucide-react'
+import CategoryRail from '../../components/CategoryRail'
 import type { LucideIcon } from 'lucide-react'
 
 interface Service {
@@ -44,14 +44,116 @@ function CatIcon({ name, className = 'h-4 w-4' }: { name?: string | null; classN
 
 const PER_PAGE = 6
 
+function ServicesHeroLight({ title, subtitle, images, total, totalCats }: {
+  title: string; subtitle: string; images?: string[]; total: number; totalCats: number
+}) {
+  const words = title.split(' ')
+  const accentFrom = Math.max(0, words.length - 2)
+
+  return (
+    <section className="relative isolate overflow-hidden bg-orange-50 dark:bg-gray-950">
+      <div
+        className="absolute inset-0 -z-10"
+        style={{
+          backgroundImage: 'radial-gradient(#fdba74 1.2px, transparent 1.2px)',
+          backgroundSize: '24px 24px',
+          maskImage: 'linear-gradient(180deg,#000 35%,transparent)',
+          WebkitMaskImage: 'linear-gradient(180deg,#000 35%,transparent)',
+        }}
+      />
+      <div className="anim-glow absolute -right-20 -top-20 -z-10 h-80 w-80 rounded-full bg-orange-300/50 blur-3xl" />
+
+      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 pb-24 pt-10 md:pt-14 lg:grid-cols-[1.1fr_1fr]">
+        <div>
+          <p className="anim-rise inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white px-3 py-1 text-xs font-bold uppercase tracking-widest text-orange-600 shadow-sm">
+            <Wrench className="h-3.5 w-3.5" /> Nuestros servicios
+          </p>
+
+          <h1 className="mt-4 max-w-2xl text-4xl font-black leading-[1.05] tracking-tight text-gray-900 dark:text-white md:text-6xl">
+            {words.map((w, i) => {
+              const accent = i >= accentFrom
+              const last = i === words.length - 1
+              return (
+                <span
+                  key={i}
+                  className={`anim-rise relative mr-[.25em] inline-block ${accent ? 'text-orange-600' : ''}`}
+                  style={{ animationDelay: `${150 + i * 90}ms` }}
+                >
+                  {w}
+                  {last && (
+                    <svg viewBox="0 0 120 10" preserveAspectRatio="none" className="absolute -bottom-2 left-0 h-3 w-full text-orange-400">
+                      <path className="anim-draw" pathLength={300} d="M2 6 Q30 0 60 5 T118 4" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                  )}
+                </span>
+              )
+            })}
+          </h1>
+
+          <p className="anim-rise mt-5 max-w-xl text-base leading-relaxed text-gray-600 dark:text-gray-300 md:text-lg" style={{ animationDelay: '700ms' }}>
+            {subtitle}
+          </p>
+
+          <div className="anim-rise mt-7 flex flex-wrap items-center gap-3" style={{ animationDelay: '820ms' }}>
+            <Link to="/agendar" className="group inline-flex items-center gap-2 rounded-xl bg-gray-900 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-gray-900/20 transition hover:bg-orange-600 hover:shadow-orange-600/30 dark:bg-orange-500 dark:hover:bg-orange-400">
+              Agendar cita <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+            </Link>
+            <a href="#servicios-grid" className="inline-flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-6 py-3.5 text-sm font-bold text-gray-700 transition hover:border-orange-400 hover:text-orange-700 dark:border-white/15 dark:bg-white/5 dark:text-gray-200">
+              Ver los {total || ''} servicios
+            </a>
+          </div>
+
+          <ul className="anim-rise mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-gray-600 dark:text-gray-300" style={{ animationDelay: '940ms' }}>
+            {['Garantía en cada servicio', 'Repuestos de calidad', 'Atención rápida'].map((t) => (
+              <li key={t} className="flex items-center gap-1.5">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white"><Check className="h-3 w-3" strokeWidth={3} /></span>
+                {t}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="anim-rise relative mx-auto h-[360px] w-full max-w-md" style={{ animationDelay: '400ms' }}>
+          <div className="absolute inset-3 rotate-3 rounded-[2rem] bg-orange-500 shadow-xl shadow-orange-500/30" />
+          <div className="absolute inset-3 -rotate-2 overflow-hidden rounded-[2rem] border-4 border-white bg-gray-900 shadow-2xl dark:border-white/10">
+            {images && images.length > 0 ? (
+              <HeroBg images={images} />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-gray-800 to-gray-950">
+                <Bike className="h-28 w-28 text-orange-500/80" strokeWidth={1.2} />
+              </div>
+            )}
+          </div>
+
+          <div className="anim-float absolute -left-2 top-10 flex items-center gap-2.5 rounded-2xl border border-gray-100 bg-white px-3.5 py-2.5 shadow-xl dark:border-white/10 dark:bg-gray-900">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 dark:bg-orange-500/15"><ShieldCheck className="h-5 w-5 text-orange-500" /></span>
+            <span className="text-xs font-bold leading-tight text-gray-900 dark:text-white">Garantía<br /><span className="font-medium text-gray-500">en mano de obra</span></span>
+          </div>
+          <div className="anim-float absolute -right-2 bottom-12 flex items-center gap-2.5 rounded-2xl border border-gray-100 bg-white px-3.5 py-2.5 shadow-xl [animation-delay:1.5s] dark:border-white/10 dark:bg-gray-900">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 dark:bg-emerald-500/15"><BadgeCheck className="h-5 w-5 text-emerald-500" /></span>
+            <span className="text-xs font-bold leading-tight text-gray-900 dark:text-white">{totalCats} categorías<br /><span className="font-medium text-gray-500">un solo taller</span></span>
+          </div>
+
+          <div className="absolute -right-3 -top-3 flex h-28 w-28 items-center justify-center rounded-full bg-white text-orange-600 shadow-xl dark:bg-gray-900">
+            <svg viewBox="0 0 120 120" className="h-full w-full animate-[spin_18s_linear_infinite] motion-reduce:animate-none">
+              <defs><path id="sello" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0" /></defs>
+              <text fontSize="9" fontWeight="800" fill="currentColor"><textPath href="#sello" textLength="272">SERVICIO CON GARANTÍA • TALLER CERTIFICADO •</textPath></text>
+            </svg>
+            <Wrench className="absolute h-7 w-7 text-gray-900 dark:text-white" />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 export default function Services() {
   const [services, setServices] = useState<Service[]>([])
   const [loaded, setLoaded] = useState(false)
   const [page, setPage] = useState(1)
   const [category, setCategory] = useState('')
-  const [filterOpen, setFilterOpen] = useState(false)
-  const [sortOpen, setSortOpen] = useState(false)
-  const [sort, setSort] = useState('populares')
+  const [query, setQuery] = useState('')
+  const [sort, setSort] = useState<'nombre' | 'rapidos'>('nombre')
   const hero = useHero('services')
   const { workshop_name: siteName } = useSiteInfo()
 
@@ -73,137 +175,97 @@ export default function Services() {
     return [...map.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => a.name.localeCompare(b.name))
   }, [services])
 
-  const filtered = useMemo(
-    () => (category ? services.filter((s) => (s.category || 'Otros') === category) : services),
-    [services, category],
-  )
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    const list = services.filter((s) =>
+      (!category || (s.category || 'Otros') === category) &&
+      (!q || s.name.toLowerCase().includes(q) || (s.description || '').toLowerCase().includes(q)),
+    )
+    return [...list].sort((a, b) =>
+      sort === 'rapidos'
+        ? (a.estimated_minutes ?? 9999) - (b.estimated_minutes ?? 9999)
+        : a.name.localeCompare(b.name),
+    )
+  }, [services, category, query, sort])
 
-  useEffect(() => { setPage(1) }, [category])
-
-  useEffect(() => {
-    if (!filterOpen) return
-    const handler = (e: MouseEvent) => {
-      if (!(e.target as HTMLElement).closest('[data-filter-dropdown]')) setFilterOpen(false)
-    }
-    document.addEventListener('click', handler)
-    return () => document.removeEventListener('click', handler)
-  }, [filterOpen])
-
-  useEffect(() => {
-    if (!sortOpen) return
-    const handler = (e: MouseEvent) => {
-      if (!(e.target as HTMLElement).closest('[data-sort-dropdown]')) setSortOpen(false)
-    }
-    document.addEventListener('click', handler)
-    return () => document.removeEventListener('click', handler)
-  }, [sortOpen])
+  useEffect(() => { setPage(1) }, [category, query, sort])
 
   const lastPage = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
   const paged = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
 
   function selectCategory(value: string) {
     setCategory(value)
-    setFilterOpen(false)
+    document.getElementById('servicios-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
-
-  const activeCategory = category ? categories.find((c) => c.name === category) : null
 
   return (
     <div className="bg-gray-50">
-      <PageHero
-        eyebrow="Nuestros servicios"
-        title={hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Cuidamos tu moto como si fuera <span className="gradient-text">nuestra</span></>}
-        subtitle={hero.slides?.[0]?.subtitle || 'Explora los servicios que tenemos para tu moto.'}
-        actions={
-          <>
-            <Link to="/agendar" className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-7 py-3.5 text-sm font-bold text-white shadow-lg shadow-orange-500/25 transition-all duration-300 hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-600/30">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><path d="M16 2v4M8 2v4M3 10h18" /></svg>
-              Agenda ahora
-            </Link>
-            <Link to="/contacto" className="inline-flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-7 py-3.5 text-sm font-bold text-gray-700 transition-all duration-300 hover:border-orange-300 hover:text-orange-700">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
-              Contáctanos
-            </Link>
-          </>
-        }
+      <ServicesHeroLight
+        title={hero.slides?.[0]?.title || 'Cuidamos tu moto como si fuera nuestra'}
+        subtitle={hero.slides?.[0]?.subtitle || 'Explora los servicios que tenemos para tu moto'}
+        images={hero.images}
+        total={services.length}
+        totalCats={categories.length}
       />
 
-      {/* beneficios */}
-      <section className="border-y border-gray-100 bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-5">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {[
-              { icon: ShieldCheck, title: 'Garantía', desc: 'en cada servicio' },
-              { icon: Package, title: 'Repuestos', desc: 'de calidad' },
-              { icon: Zap, title: 'Atención rápida', desc: 'y personalizada' },
-              { icon: User, title: 'Equipo certificado', desc: 'profesionales apasionados' },
-            ].map((b, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-50"><b.icon className="h-5 w-5 text-orange-500" /></span>
-                <div>
-                  <p className="text-sm font-bold text-gray-900">{b.title}</p>
-                  <p className="text-xs text-gray-500">{b.desc}</p>
-                </div>
+      <div className="relative z-10 mx-auto -mt-12 max-w-6xl px-4">
+        <div className="grid grid-cols-2 gap-1 rounded-3xl border border-gray-100 bg-white p-2 shadow-xl shadow-orange-900/5 dark:border-white/10 dark:bg-gray-900 md:grid-cols-4">
+          {[
+            { icon: ShieldCheck, title: 'Garantía', desc: 'en cada servicio' },
+            { icon: Package, title: 'Repuestos', desc: 'de calidad' },
+            { icon: Zap, title: 'Atención rápida', desc: 'y personalizada' },
+            { icon: User, title: 'Equipo certificado', desc: 'profesionales apasionados' },
+          ].map((b) => (
+            <div key={b.title} className="flex items-center gap-3 rounded-2xl p-3 transition hover:bg-orange-50 dark:hover:bg-white/5">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 dark:bg-orange-500/15"><b.icon className="h-5 w-5 text-orange-500" /></span>
+              <div>
+                <p className="text-sm font-bold text-gray-900 dark:text-white">{b.title}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{b.desc}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-      </section>
+      </div>
 
       {/* lista de servicios */}
-      <section className="mx-auto max-w-6xl px-4 py-10">
-        {/* Controles */}
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative" data-filter-dropdown>
-            <button
-              onClick={() => setFilterOpen((v) => !v)}
-              className={`flex items-center gap-2 rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold shadow-sm transition-all ${
-                filterOpen || category ? 'border-gray-900 shadow-md' : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" /></svg>
-              {activeCategory ? activeCategory.name : 'Todas las categorías'}
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`text-gray-400 transition-transform ${filterOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
-            </button>
-            {filterOpen && (
-              <div className="anim-fade-up absolute left-0 top-full z-30 mt-2 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
-                <button onClick={() => selectCategory('')} className={`flex w-full items-center justify-between px-4 py-2.5 text-sm font-medium transition hover:bg-orange-50 ${!category ? 'bg-orange-50 text-orange-700' : 'text-gray-700'}`}>
-                  Todas las categorías
-                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-500">{services.length}</span>
-                </button>
-                {categories.map((c) => (
-                  <button key={c.name} onClick={() => selectCategory(c.name)} className={`flex w-full items-center justify-between border-t border-gray-100 px-4 py-2.5 text-sm font-medium transition hover:bg-orange-50 ${category === c.name ? 'bg-orange-50 text-orange-700' : 'text-gray-700'}`}>
-                    <span className="flex items-center gap-2">
-                      <span><CatIcon name={c.name} /></span>
-                      {c.name}
-                    </span>
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-500">{c.count}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+      <section id="servicios-grid" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-10">
+        <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white md:text-3xl">Elige tu servicio</h2>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              <span className="font-bold text-gray-900 dark:text-white">{filtered.length}</span> de {services.length} servicios
+              {category && <> · <button onClick={() => selectCategory('')} className="font-semibold text-orange-600 hover:underline">quitar filtro</button></>}
+            </p>
           </div>
-
-          <div className="relative" data-sort-dropdown>
-            <button
-              onClick={() => setSortOpen((v) => !v)}
-              className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold shadow-sm transition-all hover:border-gray-300"
-            >
-              <span className="text-gray-400">Ordenar por</span>
-              <span className="text-gray-900">{sort === 'populares' ? 'Más populares' : sort === 'nombre' ? 'Nombre' : 'Recientes'}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`text-gray-400 transition-transform ${sortOpen ? 'rotate-180' : ''}`}><path d="M6 9l6 6 6-6" /></svg>
-            </button>
-            {sortOpen && (
-              <div className="anim-fade-up absolute right-0 top-full z-30 mt-2 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
-                {[{ v: 'populares', l: 'Más populares' }, { v: 'nombre', l: 'Nombre' }, { v: 'recientes', l: 'Recientes' }].map((o) => (
-                  <button key={o.v} onClick={() => { setSort(o.v); setSortOpen(false) }} className={`flex w-full items-center px-4 py-2.5 text-sm font-medium transition hover:bg-orange-50 ${sort === o.v ? 'bg-orange-50 text-orange-700' : 'text-gray-700'}`}>
-                    {o.l}
-                  </button>
-                ))}
-              </div>
-            )}
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <label className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 shadow-sm transition focus-within:border-orange-400 focus-within:ring-4 focus-within:ring-orange-500/10 sm:w-64 dark:border-white/10 dark:bg-white/5">
+              <Search className="h-4 w-4 text-gray-400" />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Buscar servicio…" className="w-full bg-transparent text-sm focus:outline-none" />
+            </label>
+            <label className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm shadow-sm dark:border-white/10 dark:bg-white/5">
+              <span className="text-gray-400">Ordenar</span>
+              <select value={sort} onChange={(e) => setSort(e.target.value as 'nombre' | 'rapidos')} className="bg-transparent font-semibold text-gray-900 focus:outline-none dark:text-white">
+                <option value="nombre">Nombre A–Z</option>
+                <option value="rapidos">Más rápidos</option>
+              </select>
+            </label>
           </div>
         </div>
+
+        <CategoryRail
+          tone="dark"
+          active={category}
+          onPick={selectCategory}
+          items={[
+            { key: '', label: 'Todos', sub: `${services.length} servicios` },
+            ...categories.map((c) => ({
+              key: c.name,
+              label: c.name,
+              sub: `${c.count} ${c.count === 1 ? 'servicio' : 'servicios'}`,
+              icon: <CatIcon name={c.name} className="h-6 w-6" />,
+            })),
+          ]}
+        />
 
         {/* Grid */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -225,10 +287,11 @@ export default function Services() {
                   <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
                     {s.description || 'Cotiza con nosotros y dejamos tu moto lista en el menor tiempo posible.'}
                   </p>
-                  <div className="mt-4 flex items-center gap-2 text-xs text-gray-500">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-orange-500"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    Incluye revisión de seguridad
-                  </div>
+                  {s.estimated_minutes ? (
+                    <p className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500">
+                      <Clock className="h-3.5 w-3.5 text-orange-500" /> ~{s.estimated_minutes} min
+                    </p>
+                  ) : null}
                   <Link
                     to={`/agendar?service=${encodeURIComponent(s.name)}`}
                     className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-orange-600 hover:shadow-lg hover:shadow-orange-600/25"

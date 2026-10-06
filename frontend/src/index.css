@@ -442,11 +442,8 @@
   100% { background-position: 0% center; }
 }
 
-/* ═══════════ MODO OSCURO ═══════════
-   Al añadir .dark a <html> se invierte la escala completa:
-   superficies claras -> oscuras, textos oscuros -> claros.
-   El naranja de identidad (#EA580C) se mantiene igual en ambos temas
-   y los heroes profundos (bg-carbon-950) se conservan oscuros. */
+/* modo oscuro: con .dark en <html> se invierte la escala (superficies claras -> oscuras).
+   El naranja (#EA580C) se mantiene igual y los heroes oscuros se conservan. */
 html.dark {
   --color-carbon-50: #171412;
   --color-carbon-100: #1c1816;
@@ -546,3 +543,25 @@ html.dark .cta-card {
 }
 html.dark .cta-card .text-carbon-900 { color: var(--color-carbon-800); }
 html.dark .cta-card .text-carbon-500 { color: var(--color-carbon-400); }
+
+/* hero de servicios (ojo: shimmer ya existe para btn-shine, por eso este se llama text-shimmer) */
+@keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+@keyframes text-shimmer { to { background-position: 200% center; } }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes speed { from { transform: translateX(-120%); } to { transform: translateX(420%); } }
+@keyframes glow { 0%,100% { opacity: .35; transform: scale(1); } 50% { opacity: .6; transform: scale(1.12); } }
+
+.anim-rise { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+.anim-text-shimmer { background-size: 200% auto; animation: text-shimmer 4s linear infinite; }
+.anim-float { animation: float 4s ease-in-out infinite; }
+.anim-speed { animation: speed 5s linear infinite; }
+.anim-glow { animation: glow 6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-rise, .anim-text-shimmer, .anim-float, .anim-speed, .anim-glow { animation: none; }
+}
+
+/* subrayado que se dibuja solo (hero claro de servicios) */
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.anim-draw { stroke-dasharray: 300; stroke-dashoffset: 300; animation: draw 1s .9s ease forwards; }
+@media (prefers-reduced-motion: reduce) { .anim-draw { animation: none; stroke-dashoffset: 0; } }

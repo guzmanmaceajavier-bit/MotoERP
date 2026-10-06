@@ -74,11 +74,7 @@ export default function About() {
           { icon: Eye, title: 'Servicio transparente', desc: 'Sigue cada paso del proceso en tiempo real.' },
           { icon: ShieldCheck, title: 'Garantía incluida', desc: 'Todos nuestros trabajos cuentan con garantía.' },
         ]}
-        visual={
-          <div className="relative h-[220px] w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 shadow-xl shadow-gray-200/50 sm:h-[280px] md:h-[320px]">
-            {hero.images && hero.images.length > 0 && <HeroBg images={hero.images} />}
-          </div>
-        }
+        images={hero.images}
       />
 
       {/* galeria */}

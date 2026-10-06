@@ -7,6 +7,7 @@ import { Reveal } from '../../components/Reveal'
 import { useHero, useSiteInfo } from '../../lib/useSiteImages'
 import { APP_NAME } from '../../lib/config'
 import PageHero from '../../components/PageHero'
+import CategoryRail from '../../components/CategoryRail'
 import { Clock, FileText, Zap } from 'lucide-react'
 
 interface PostCard {
@@ -73,14 +74,6 @@ export default function BlogPage() {
   }, [slug])
 
   const fmt = (d?: string) => (d ? new Date(d + 'T00:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' }) : '')
-
-  const categories = useMemo(() => {
-    const cats = new Set<string>()
-    list.forEach((p) => {
-      if (p.category) cats.add(p.category)
-    })
-    return Array.from(cats)
-  }, [list])
 
   const filtered = useMemo(() => {
     if (!activeCat) return list
@@ -190,37 +183,21 @@ export default function BlogPage() {
           { icon: Zap, title: 'Expertos en motos', desc: 'Información respaldada por mecánicos profesionales.' },
           { icon: Clock, title: 'Actualizado constantemente', desc: 'Nuevos artículos cada semana para ti.' },
         ]}
+        images={hero.images}
       />
 
       {/* ──── CATEGORIES FILTER ──── */}
       <section className="border-b border-gray-100 bg-white py-4">
         <div className="mx-auto max-w-6xl px-4">
-          <div className="flex flex-wrap items-center gap-2">
-            {ALL_CATS.map((cat) => {
-              const meta = CATEGORY_META[cat]
-              return (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCat(activeCat === cat ? null : cat)}
-                  className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition ${activeCat === cat ? 'bg-orange-500 text-white shadow-md shadow-orange-500/25' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                >
-                  {meta?.icon}
-                  {cat}
-                </button>
-              )
-            })}
-            {categories.length > ALL_CATS.length && (
-              <button
-                onClick={() => {
-                  const nextCat = categories.find((c) => c !== activeCat && !ALL_CATS.includes(c))
-                  if (nextCat) setActiveCat(nextCat)
-                }}
-                className="ml-auto text-sm font-semibold text-orange-500 hover:underline"
-              >
-                Ver todas →
-              </button>
-            )}
-          </div>
+          <CategoryRail
+            active={activeCat ?? ''}
+            onPick={(name) => setActiveCat(activeCat === name ? null : name)}
+            items={ALL_CATS.map((cat) => ({
+              key: cat,
+              label: cat,
+              icon: CATEGORY_META[cat]?.icon,
+            }))}
+          />
         </div>
       </section>
 
