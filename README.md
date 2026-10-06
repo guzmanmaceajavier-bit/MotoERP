@@ -12,6 +12,7 @@ Plataforma SaaS full-stack para la gestión integral de talleres mecánicos de m
 | Servicios | [moto-erp-ckx7.vercel.app/servicios](https://moto-erp-ckx7.vercel.app/servicios) |
 | Blog | [moto-erp-ckx7.vercel.app/blog](https://moto-erp-ckx7.vercel.app/blog) |
 | Agendar cita | [moto-erp-ckx7.vercel.app/agendar](https://moto-erp-ckx7.vercel.app/agendar) |
+| Consultar orden | [moto-erp-ckx7.vercel.app/consultar](https://moto-erp-ckx7.vercel.app/consultar) |
 | Nosotros | [moto-erp-ckx7.vercel.app/nosotros](https://moto-erp-ckx7.vercel.app/nosotros) |
 | Contacto | [moto-erp-ckx7.vercel.app/contacto](https://moto-erp-ckx7.vercel.app/contacto) |
 
@@ -51,6 +52,7 @@ Plataforma SaaS full-stack para la gestión integral de talleres mecánicos de m
 | Mis finanzas | [moto-erp-ckx7.vercel.app/panel/mi-cuenta](https://moto-erp-ckx7.vercel.app/panel/mi-cuenta) |
 | Servicios | [moto-erp-ckx7.vercel.app/panel/servicios](https://moto-erp-ckx7.vercel.app/panel/servicios) |
 | Tienda (logueado) | [moto-erp-ckx7.vercel.app/panel/tienda](https://moto-erp-ckx7.vercel.app/panel/tienda) |
+| Chat del taller | [moto-erp-ckx7.vercel.app/panel/chat](https://moto-erp-ckx7.vercel.app/panel/chat) |
 
 ### Credenciales de prueba
 
@@ -116,17 +118,18 @@ Plataforma SaaS full-stack para la gestión integral de talleres mecánicos de m
 - Sistema de puntos de fidelización (configurable)
 - IVA configurable, estimación de entrega, protección contra doble clic
 
-### Portal de cliente (8 módulos)
+### Portal de cliente (13 módulos)
 - Dashboard personalizado con resumen y puntos de fidelización
 - Mis pedidos con subida de comprobantes de pago
 - Finanzas: saldo, pagos, facturas e historial
 - Mi garaje: registro de motos con placa, modelo, año
 - Historial de servicios por moto
-- Listas de productos compartidas
+- Listas de productos compartidas y favoritos
+- Chat directo con el taller
 - Notificaciones en tiempo real
 - Registro e inicio de sesión con roles
 
-### Panel de administración (20+ módulos)
+### Panel de administración (20 módulos)
 - Dashboard con métricas en tiempo real
 - Ventas y facturación con caja diaria
 - Órdenes de trabajo con flujo completo: diagnóstico → cotización → aprobación → factura
@@ -165,7 +168,7 @@ motoERP/
 ├── backend/                    # API REST (Laravel 13)
 │   ├── app/
 │   │   ├── Console/Commands/   # 3 comandos programados
-│   │   ├── Http/Controllers/   # 15 controladores API
+│   │   ├── Http/Controllers/   # 14 controladores API
 │   │   ├── Http/Middleware/     # CheckRole
 │   │   ├── Jobs/               # Trabajos en cola (WhatsApp)
 │   │   ├── Models/             # 39 modelos Eloquent
@@ -174,7 +177,7 @@ motoERP/
 │   │   └── Support/            # Helpers (Settings, Input)
 │   ├── config/                 # Configuración de Laravel
 │   ├── database/
-│   │   ├── migrations/         # 56 migraciones
+│   │   ├── migrations/         # 57 migraciones
 │   │   └── seeders/            # ProductionSeeder
 │   ├── Dockerfile              # php:8.3-fpm + nginx
 │   ├── entrypoint.sh           # Startup script
@@ -278,7 +281,7 @@ No requiere variables de entorno. La API se conecta vía proxy de Vercel (`/api/
 ## Arquitectura de datos
 
 - **39 modelos Eloquent** con relaciones completas
-- **56 migraciones** de PostgreSQL
+- **57 migraciones** de PostgreSQL
 - **Supabase PgBouncer** para connection pooling (transaction mode, puerto 6543)
 - **Emulación de prepared statements** para compatibilidad con PgBouncer
 

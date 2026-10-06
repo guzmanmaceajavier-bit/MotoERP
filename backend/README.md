@@ -7,9 +7,9 @@ PHP 8.3 · Laravel 13 · Sanctum · PostgreSQL 16 (Supabase Pooler 6543, PgBounc
 
 ## Estructura
 - `routes/api.php` — ~150 endpoints bajo prefijo `v1` (públicos, `auth:sanctum`, `role:admin,receptionist,mechanic`).
-- `app/Http/Controllers/Api/` — 15 controladores: Auth, Public, Store, Order, Invoice, Finance, Staff, StaffCatalog, Client, Motorcycle, Notification, Content, Chat, Catalog.
+- `app/Http/Controllers/Api/` — 14 controladores: Auth, Public, Store, Order, Invoice, Finance, Staff, StaffCatalog, Client, Motorcycle, Notification, Content, Chat, Catalog.
 - `app/Models/` — 39 modelos Eloquent.
-- `database/migrations/` — 56 migraciones.
+- `database/migrations/` — 57 migraciones.
 - `config/cors.php` — orígenes desde `FRONTEND_URL` (coma-separados).
 - `entrypoint.sh` — genera `.env` en Render desde variables de entorno (`APP_DEBUG` respeta env, default `false`).
 

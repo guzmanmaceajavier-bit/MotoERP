@@ -33,6 +33,7 @@ const PurchaseHistory = lazy(() => import('./pages/PurchaseHistory'))
 const Favorites = lazy(() => import('./pages/Favorites'))
 const PortalSettings = lazy(() => import('./pages/PortalSettings'))
 const Cart = lazy(() => import('./pages/Cart'))
+const Chat = lazy(() => import('./pages/Chat'))
 const BlogPage = lazy(() => import('./pages/public/BlogPage'))
 const SharedList = lazy(() => import('./pages/public/SharedList'))
 const LegalPage = lazy(() => import('./pages/LegalPage'))
@@ -147,6 +148,7 @@ export default function App() {
                   <Route path="/panel/carrito" element={<Cart storePath="/panel/tienda" />} />
                   <Route path="/panel/mi-cuenta" element={<MyFinances />} />
                   <Route path="/panel/notificaciones" element={<Notifications />} />
+                  <Route path="/panel/chat" element={<Chat />} />
                 </Route>
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route

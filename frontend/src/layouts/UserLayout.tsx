@@ -12,6 +12,7 @@ import CartDrawer from '../components/CartDrawer'
 
 const links = [
   { to: '/panel', label: 'Dashboard', section: null, icon: 'M20 13V7a2 2 0 00-2-2H6a2 2 0 00-2 2v6m14 0H8m14 0a2 2 0 012 2v3a2 2 0 01-2 2H6a2 2 0 01-2-2v-3a2 2 0 012-2m14 0V9H8v4' },
+  { to: '/panel/chat', label: 'Chat del taller', section: null, icon: 'M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z' },
   { to: '/panel/garaje', label: 'Mi Garaje', section: 'Mis vehículos', icon: 'M5 16l3.5-6.5a2 2 0 011.8-1H16l2 4.5H20a1 1 0 011 1V16H5z' },
   { to: '/panel/servicios', label: 'Mis Servicios', section: 'Mis vehículos', icon: 'M3 13l2-1 2 1m0 0l2-2 2 2m-4 0V6m0 4l2-1m-2 1V6m6 4l2-1m-2 1v4m0 0l2-1m-2 1v2' },
   { to: '/panel/historial', label: 'Historial', section: 'Mis vehículos', icon: 'M4 6h16M4 12h16M4 18h16' },
