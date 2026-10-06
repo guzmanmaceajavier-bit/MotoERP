@@ -2,57 +2,7 @@
 
 Plataforma SaaS full-stack para la gestión integral de talleres mecánicos de motocicletas. Incluye sitio público, portal de clientes y panel de administración completo.
 
-## Demo en vivo
 
-### Sitio público
-| Sección | URL |
-|---------|-----|
-| Inicio | [moto-erp-ckx7.vercel.app](https://moto-erp-ckx7.vercel.app) |
-| Tienda | [moto-erp-ckx7.vercel.app/tienda](https://moto-erp-ckx7.vercel.app/tienda) |
-| Servicios | [moto-erp-ckx7.vercel.app/servicios](https://moto-erp-ckx7.vercel.app/servicios) |
-| Blog | [moto-erp-ckx7.vercel.app/blog](https://moto-erp-ckx7.vercel.app/blog) |
-| Agendar cita | [moto-erp-ckx7.vercel.app/agendar](https://moto-erp-ckx7.vercel.app/agendar) |
-| Consultar orden | [moto-erp-ckx7.vercel.app/consultar](https://moto-erp-ckx7.vercel.app/consultar) |
-| Nosotros | [moto-erp-ckx7.vercel.app/nosotros](https://moto-erp-ckx7.vercel.app/nosotros) |
-| Contacto | [moto-erp-ckx7.vercel.app/contacto](https://moto-erp-ckx7.vercel.app/contacto) |
-
-### Panel de administración
-| Sección | URL |
-|---------|-----|
-| Login admin | [moto-erp-ckx7.vercel.app/admin/login](https://moto-erp-ckx7.vercel.app/admin/login) |
-| Dashboard | [moto-erp-ckx7.vercel.app/admin/dashboard](https://moto-erp-ckx7.vercel.app/admin/dashboard) |
-| Agenda taller | [moto-erp-ckx7.vercel.app/admin/agenda](https://moto-erp-ckx7.vercel.app/admin/agenda) |
-| Órdenes de trabajo | [moto-erp-ckx7.vercel.app/admin/ordenes](https://moto-erp-ckx7.vercel.app/admin/ordenes) |
-| Inventario | [moto-erp-ckx7.vercel.app/admin/inventario](https://moto-erp-ckx7.vercel.app/admin/inventario) |
-| Catálogo | [moto-erp-ckx7.vercel.app/admin/catalogo](https://moto-erp-ckx7.vercel.app/admin/catalogo) |
-| Categorías | [moto-erp-ckx7.vercel.app/admin/categorias](https://moto-erp-ckx7.vercel.app/admin/categorias) |
-| Marcas y modelos | [moto-erp-ckx7.vercel.app/admin/marcas](https://moto-erp-ckx7.vercel.app/admin/marcas) |
-| Servicios | [moto-erp-ckx7.vercel.app/admin/servicios](https://moto-erp-ckx7.vercel.app/admin/servicios) |
-| Clientes | [moto-erp-ckx7.vercel.app/admin/clientes](https://moto-erp-ckx7.vercel.app/admin/clientes) |
-| Citas | [moto-erp-ckx7.vercel.app/admin/citas](https://moto-erp-ckx7.vercel.app/admin/citas) |
-| Equipo | [moto-erp-ckx7.vercel.app/admin/equipo](https://moto-erp-ckx7.vercel.app/admin/equipo) |
-| Ventas | [moto-erp-ckx7.vercel.app/admin/ventas](https://moto-erp-ckx7.vercel.app/admin/ventas) |
-| Reportes | [moto-erp-ckx7.vercel.app/admin/reportes](https://moto-erp-ckx7.vercel.app/admin/reportes) |
-| Caja | [moto-erp-ckx7.vercel.app/admin/caja](https://moto-erp-ckx7.vercel.app/admin/caja) |
-| Compras | [moto-erp-ckx7.vercel.app/admin/compras](https://moto-erp-ckx7.vercel.app/admin/compras) |
-| Garantías | [moto-erp-ckx7.vercel.app/admin/garantias](https://moto-erp-ckx7.vercel.app/admin/garantias) |
-| Auditoría | [moto-erp-ckx7.vercel.app/admin/auditoria](https://moto-erp-ckx7.vercel.app/admin/auditoria) |
-| Notificaciones | [moto-erp-ckx7.vercel.app/admin/notificaciones](https://moto-erp-ckx7.vercel.app/admin/notificaciones) |
-| Configuración | [moto-erp-ckx7.vercel.app/admin/configuracion](https://moto-erp-ckx7.vercel.app/admin/configuracion) |
-| Mi cuenta | [moto-erp-ckx7.vercel.app/admin/cuenta](https://moto-erp-ckx7.vercel.app/admin/cuenta) |
-
-### Portal de clientes
-| Sección | URL |
-|---------|-----|
-| Login cliente | [moto-erp-ckx7.vercel.app/login](https://moto-erp-ckx7.vercel.app/login) |
-| Registro | [moto-erp-ckx7.vercel.app/registro](https://moto-erp-ckx7.vercel.app/registro) |
-| Panel cliente | [moto-erp-ckx7.vercel.app/panel](https://moto-erp-ckx7.vercel.app/panel) |
-| Mis pedidos | [moto-erp-ckx7.vercel.app/panel/pedidos](https://moto-erp-ckx7.vercel.app/panel/pedidos) |
-| Mi garaje | [moto-erp-ckx7.vercel.app/panel/garaje](https://moto-erp-ckx7.vercel.app/panel/garaje) |
-| Mis finanzas | [moto-erp-ckx7.vercel.app/panel/mi-cuenta](https://moto-erp-ckx7.vercel.app/panel/mi-cuenta) |
-| Servicios | [moto-erp-ckx7.vercel.app/panel/servicios](https://moto-erp-ckx7.vercel.app/panel/servicios) |
-| Tienda (logueado) | [moto-erp-ckx7.vercel.app/panel/tienda](https://moto-erp-ckx7.vercel.app/panel/tienda) |
-| Chat del taller | [moto-erp-ckx7.vercel.app/panel/chat](https://moto-erp-ckx7.vercel.app/panel/chat) |
 
 ### Credenciales de prueba
 
