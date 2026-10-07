@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import { api } from '../lib/api'
@@ -51,7 +51,7 @@ function ProductImg({ src, name, className = '' }: { src?: string; name: string;
 
 export default function Cart({ storePath = '/tienda' }: { storePath?: string }) {
   const { user } = useAuth()
-  const { items, count, total, fulfillment, setFulfillment, setQuantity, remove, clear, add } = useCart()
+  const { items, count, total, fulfillment, setFulfillment, setQuantity, remove, clear, add, validate } = useCart()
   const { workshop_phone } = useSiteInfo()
   const [step, setStep] = useState(1)
   const [pointsToUse, setPointsToUse] = useState(0)
@@ -85,6 +85,12 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
     api<Paginated<Product>>('/products?page=1&per_page=8')
       .then((res) => setAllProducts(unwrapList(res)))
       .catch(() => {})
+  }, [])
+
+  // al abrir el carrito se revalidan precios y stock con el servidor
+  useEffect(() => {
+    validate().catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const [storeConfig, setStoreConfig] = useState({ shipping_fee: 12000, free_shipping_threshold: 150000, delivery_days: 3 })
@@ -300,15 +306,34 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
   if (count === 0 && step === 1) {
     return (
       <div className="anim-fade-up mx-auto max-w-lg px-4 py-20 text-center">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-orange-50"><ShoppingCart className="h-10 w-10 text-orange-400" /></div>
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-orange-50 ring-8 ring-orange-50/50"><ShoppingCart className="h-10 w-10 text-orange-400" /></div>
         <h1 className="mt-5 text-3xl font-bold text-gray-800">Tu carrito está vacío</h1>
         <p className="mt-2 text-gray-500">Explora nuestro catálogo y encuentra lo que tu moto necesita.</p>
-        <Link to={storePath} className="btn-primary btn-shine mt-6 inline-flex">Ir a la tienda</Link>
+        <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link to={storePath} className="btn-primary btn-shine inline-flex">Ir a la tienda</Link>
+          <Link to="/servicios" className="btn-ghost inline-flex">Ver servicios</Link>
+        </div>
       </div>
     )
   }
 
   const inputCls = 'w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-800 placeholder:text-gray-400 transition focus:border-orange-400 focus:outline-none focus:ring-4 focus:ring-orange-100'
+
+  // eliminar con doble toque para no borrar sin querer
+  const [confirmKey, setConfirmKey] = useState<string | null>(null)
+  const confirmTimer = useRef<number | null>(null)
+  function askRemove(key: string) {
+    if (confirmKey === key) {
+      if (confirmTimer.current) window.clearTimeout(confirmTimer.current)
+      setConfirmKey(null)
+      if (key === '__clear__') clear()
+      else remove(key)
+    } else {
+      setConfirmKey(key)
+      if (confirmTimer.current) window.clearTimeout(confirmTimer.current)
+      confirmTimer.current = window.setTimeout(() => setConfirmKey(null), 3000)
+    }
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -336,8 +361,8 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
             <div>
               <div className="flex items-center justify-between gap-4">
                 <h2 className="text-xl font-bold text-gray-800">Tu carrito <span className="text-sm font-normal text-gray-400">({count} productos)</span></h2>
-                <button onClick={clear} className="flex shrink-0 items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-500">
-                  <Trash2 className="h-4 w-4" /> Vaciar carrito
+                <button onClick={() => askRemove('__clear__')} className={`flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-1.5 text-sm font-medium transition ${confirmKey === '__clear__' ? 'border-red-300 bg-red-500 text-white' : 'border-gray-200 bg-white text-gray-500 hover:border-red-200 hover:bg-red-50 hover:text-red-500'}`}>
+                  <Trash2 className="h-4 w-4" /> {confirmKey === '__clear__' ? '¿Vaciar?' : 'Vaciar carrito'}
                 </button>
               </div>
 
@@ -359,36 +384,50 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
               )}
 
               <div className="mt-5 space-y-3">
-                {items.map((i) => (
-                  <div key={cartKey(i)} className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-md">
-                    <div className="flex items-center gap-4">
-                      <ProductImg src={i.image} name={i.name} className="h-20 w-20 shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-gray-800">{i.name}</p>
-                        {i.variant && (
-                          <span className="mt-0.5 inline-flex items-center gap-1.5 text-xs font-medium text-gray-500">
-                            <span className="h-3 w-3 rounded-full border border-gray-200" style={{ backgroundColor: i.variant.hex }} />
-                            {i.variant.name}
-                          </span>
-                        )}
-                        {i.brand && <p className="text-xs text-gray-400">{i.brand}</p>}
-                        <p className="mt-1 text-sm text-gray-500">{fmtMoney(i.price)} / {i.unit}</p>
-                        <span className={`mt-1 inline-block text-xs font-medium ${i.available > 0 ? 'text-green-500' : 'text-red-400'}`}>
-                          {i.available > 0 ? `✓ En stock (${i.available})` : '✗ Agotado'}
-                        </span>
+                {items.map((i, idx) => {
+                  const key = cartKey(i)
+                  const confirming = confirmKey === key
+                  return (
+                  <div key={key} className="anim-rise rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:shadow-md" style={{ animationDelay: `${Math.min(idx, 7) * 45}ms` }}>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                      <div className="flex min-w-0 flex-1 items-center gap-4">
+                        <ProductImg src={i.image} name={i.name} className="h-20 w-20 shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold text-gray-800 line-clamp-2">{i.name}</p>
+                          {i.variant && (
+                            <span className="mt-0.5 inline-flex items-center gap-1.5 text-xs font-medium text-gray-500">
+                              <span className="h-3 w-3 rounded-full border border-gray-200" style={{ backgroundColor: i.variant.hex }} />
+                              {i.variant.name}
+                            </span>
+                          )}
+                          {i.brand && <p className="text-xs text-gray-400">{i.brand}</p>}
+                          <p className="mt-1 text-sm text-gray-500">{fmtMoney(i.price)} / {i.unit}</p>
+                          {i.available > 0 ? (
+                            i.available <= 3 ? (
+                              <span className="mt-1 inline-block rounded-full bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-600">¡Solo quedan {i.available}!</span>
+                            ) : (
+                              <span className="mt-1 inline-block text-xs font-medium text-green-500">✓ En stock ({i.available})</span>
+                            )
+                          ) : (
+                            <span className="mt-1 inline-block text-xs font-medium text-red-400">✗ Agotado</span>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-between gap-3 border-t border-gray-50 pt-3 sm:justify-end sm:border-0 sm:pt-0">
                         <div className="flex items-center rounded-xl border border-gray-200 bg-gray-50">
-                          <button onClick={() => setQuantity(cartKey(i), i.quantity - 1)} className="flex h-10 w-9 items-center justify-center rounded-l-xl text-gray-500 transition hover:bg-white">−</button>
+                          <button onClick={() => (i.quantity <= 1 ? askRemove(key) : setQuantity(key, i.quantity - 1))} title={i.quantity <= 1 ? 'Quitar del carrito' : 'Quitar uno'} className="flex h-10 w-9 items-center justify-center rounded-l-xl text-gray-500 transition hover:bg-white active:scale-95">−</button>
                           <span className="flex h-10 w-10 items-center justify-center border-x border-gray-200 text-sm font-semibold text-gray-700">{i.quantity}</span>
-                          <button onClick={() => setQuantity(cartKey(i), i.quantity + 1)} className="flex h-10 w-9 items-center justify-center rounded-r-xl text-gray-500 transition hover:bg-white">+</button>
+                          <button onClick={() => setQuantity(key, i.quantity + 1)} title="Agregar uno" className="flex h-10 w-9 items-center justify-center rounded-r-xl text-gray-500 transition hover:bg-white active:scale-95">+</button>
                         </div>
                         <span className="w-20 text-right text-base font-bold text-gray-800">{fmtMoney(i.price * i.quantity)}</span>
-                        <button onClick={() => remove(cartKey(i))} className="text-gray-300 transition hover:text-red-400" title="Eliminar">✕</button>
+                        <button onClick={() => askRemove(key)} title="Eliminar" className={`flex h-9 items-center justify-center rounded-lg text-sm font-semibold transition ${confirming ? 'bg-red-500 px-3 text-white' : 'w-9 text-gray-300 hover:text-red-400'}`}>
+                          {confirming ? '¿Quitar?' : '✕'}
+                        </button>
                       </div>
                     </div>
                   </div>
-                ))}
+                  )
+                })}
               </div>
 
               <div className="mt-5 flex flex-col items-stretch justify-between gap-4 border-t border-gray-100 pt-5 sm:flex-row sm:items-center">

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ShoppingCart } from 'lucide-react'
 import { useCart, cartKey } from '../lib/cart'
@@ -11,6 +11,17 @@ function ProductImg({ src, name, className = '' }: { src?: string; name: string;
 
 export default function CartDrawer({ storePath: _storePath = '/tienda' }: { storePath?: string }) {
   const { items, count, total, drawerOpen, setDrawerOpen, setQuantity, remove } = useCart()
+  const [confirmKey, setConfirmKey] = useState<string | null>(null)
+
+  function askRemove(key: string) {
+    if (confirmKey === key) {
+      setConfirmKey(null)
+      remove(key)
+    } else {
+      setConfirmKey(key)
+      window.setTimeout(() => setConfirmKey((k) => (k === key ? null : k)), 3000)
+    }
+  }
 
   useEffect(() => {
     if (drawerOpen) {
@@ -56,8 +67,11 @@ export default function CartDrawer({ storePath: _storePath = '/tienda' }: { stor
             </div>
           ) : (
             <div className="space-y-4">
-              {items.map((i) => (
-                <div key={cartKey(i)} className="flex gap-3">
+              {items.map((i) => {
+                const key = cartKey(i)
+                const confirming = confirmKey === key
+                return (
+                <div key={key} className="anim-rise flex gap-3">
                   <ProductImg src={i.image} name={i.name} className="h-16 w-16 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-gray-800 line-clamp-1">{i.name}</p>
@@ -68,18 +82,24 @@ export default function CartDrawer({ storePath: _storePath = '/tienda' }: { stor
                       </span>
                     )}
                     <p className="text-xs text-gray-400">{fmtMoney(i.price)} / {i.unit}</p>
+                    {i.available > 0 && i.available <= 3 && (
+                      <p className="text-[11px] font-bold text-amber-600">¡Solo quedan {i.available}!</p>
+                    )}
                     <div className="mt-1.5 flex items-center justify-between">
                       <div className="flex items-center rounded-lg border border-gray-200 bg-gray-50">
-                        <button onClick={() => setQuantity(cartKey(i), i.quantity - 1)} className="flex h-7 w-7 items-center justify-center rounded-l-lg text-gray-500 transition hover:bg-white text-xs">−</button>
+                        <button onClick={() => (i.quantity <= 1 ? askRemove(key) : setQuantity(key, i.quantity - 1))} className="flex h-7 w-7 items-center justify-center rounded-l-lg text-gray-500 transition hover:bg-white text-xs active:scale-95">−</button>
                         <span className="flex h-7 w-8 items-center justify-center border-x border-gray-200 text-xs font-semibold text-gray-700">{i.quantity}</span>
-                        <button onClick={() => setQuantity(cartKey(i), i.quantity + 1)} className="flex h-7 w-7 items-center justify-center rounded-r-lg text-gray-500 transition hover:bg-white text-xs">+</button>
+                        <button onClick={() => setQuantity(key, i.quantity + 1)} className="flex h-7 w-7 items-center justify-center rounded-r-lg text-gray-500 transition hover:bg-white text-xs active:scale-95">+</button>
                       </div>
                       <span className="text-sm font-bold text-gray-800">{fmtMoney(i.price * i.quantity)}</span>
                     </div>
                   </div>
-                  <button onClick={() => remove(cartKey(i))} className="shrink-0 self-start text-gray-300 transition hover:text-red-400" title="Eliminar">✕</button>
+                  <button onClick={() => askRemove(key)} className={`shrink-0 self-start rounded-lg text-xs font-semibold transition ${confirming ? 'bg-red-500 px-2 py-1 text-white' : 'text-gray-300 hover:text-red-400'}`} title="Eliminar">
+                    {confirming ? '¿Quitar?' : '✕'}
+                  </button>
                 </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
