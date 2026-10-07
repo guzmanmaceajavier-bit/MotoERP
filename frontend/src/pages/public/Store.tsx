@@ -415,6 +415,7 @@ export default function Store() {
   }, [storeFilters, brand, modelSearch])
 
   const filterCount = (brand ? 1 : 0) + (model ? 1 : 0) + (partType ? 1 : 0) + (priceMin || priceMax ? 1 : 0)
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   /* ─── favorites handlers ─── */
   async function toggleFav(e: React.MouseEvent, p: Product) {
@@ -511,14 +512,22 @@ export default function Store() {
 
         {/* ──── SIDEBAR + PRODUCTS LAYOUT ──── */}
         <div className="flex gap-6">
-          {/* ── SIDEBAR ── */}
-          <aside className="hidden w-64 shrink-0 md:block">
+          {/* ── SIDEBAR (en movil se abre como drawer) ── */}
+          {filtersOpen && (
+            <div className="fixed inset-0 z-40 bg-black/40 md:hidden" onClick={() => setFiltersOpen(false)} />
+          )}
+          <aside aria-hidden={!filtersOpen} className={`shrink-0 bg-white transition-transform duration-300 md:static md:z-auto md:w-64 md:translate-x-0 md:bg-transparent md:shadow-none ${filtersOpen ? 'fixed inset-y-0 left-0 z-50 w-[85%] max-w-sm translate-x-0 overflow-y-auto p-4 shadow-xl' : 'pointer-events-none fixed inset-y-0 left-0 z-50 w-[85%] max-w-sm -translate-x-full overflow-y-auto p-4 shadow-xl md:pointer-events-auto'}`}>
             <div className="sticky top-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="text-sm font-black text-gray-900">FILTRAR PRODUCTOS</h3>
-                {filterCount > 0 && (
-                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-600 px-1.5 text-[10px] font-bold text-white">{filterCount}</span>
-                )}
+                <div className="flex items-center gap-2">
+                  {filterCount > 0 && (
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-600 px-1.5 text-[10px] font-bold text-white">{filterCount}</span>
+                  )}
+                  <button onClick={() => setFiltersOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition hover:bg-gray-100 md:hidden" aria-label="Cerrar filtros">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                  </button>
+                </div>
               </div>
 
               {/* Category */}
@@ -615,13 +624,23 @@ export default function Store() {
                   Limpiar filtros
                 </button>
               )}
+              <button onClick={() => setFiltersOpen(false)} className="btn-primary mt-3 w-full md:hidden">
+                Ver {meta.total} producto{meta.total === 1 ? '' : 's'}
+              </button>
             </div>
           </aside>
 
           {/* ── CONTENT ── */}
           <div className="min-w-0 flex-1">
             {/* toolbar */}
-            <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+              <button onClick={() => setFiltersOpen(true)} className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-orange-300 md:hidden">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" /></svg>
+                Filtros
+                {filterCount > 0 && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-600 px-1.5 text-[10px] font-bold text-white">{filterCount}</span>
+                )}
+              </button>
               <div className="flex items-center gap-2">
                 <select value={perPage} onChange={(e) => setPerPage(Number(e.target.value))} className="rounded-xl border border-gray-300 bg-white px-2 py-2 text-sm text-gray-900 transition focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-500/15" title="Productos por página">
                   <option value={12}>12 / pág</option>
@@ -692,7 +711,7 @@ export default function Store() {
                 <button onClick={clearFilters} className="btn-outline">Limpiar filtros</button>
               </div>
             ) : view === 'grid' ? (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <div key={`grid-${view}-${meta.current_page}`} className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {products.map((p, i) => (
                   <div key={p.id} className="anim-rise" style={{ animationDelay: `${(i % 12) * 45}ms` }}>
                     <ProductCard p={p} onDetail={goDetail} isFavorite={fav(p.id)} onToggleFav={toggleFav} favLoading={favToggling === p.id} />
@@ -700,7 +719,7 @@ export default function Store() {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div key={`list-${view}-${meta.current_page}`} className="anim-fade-up flex flex-col gap-4">
                 {products.map((p) => (
                   <RowCard key={p.id} p={p} onDetail={goDetail} isFavorite={fav(p.id)} onToggleFav={toggleFav} favLoading={favToggling === p.id} />
                 ))}
