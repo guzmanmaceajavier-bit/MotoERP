@@ -39,6 +39,8 @@ class AuthController extends Controller
 
         $token = $user->createToken('moto-app')->plainTextToken;
 
+        app(\App\Services\AuditService::class)->log($user->id, 'register', 'User', $user->id, ['email' => $user->email]);
+
         return response()->json([
             'message' => 'Usuario registrado',
             'user' => $user,
@@ -80,6 +82,8 @@ class AuthController extends Controller
 
         $this->clearLoginState($validated['email']);
         $token = $user->createToken('moto-app')->plainTextToken;
+
+        app(\App\Services\AuditService::class)->log($user->id, 'login', 'User', $user->id);
 
         return response()->json([
             'user' => $user,
@@ -276,7 +280,10 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
+        $userId = $request->user()->id;
         $request->user()->currentAccessToken()->delete();
+
+        app(\App\Services\AuditService::class)->log($userId, 'logout', 'User', $userId);
 
         return response()->json(['message' => 'Sesión cerrada']);
     }

@@ -186,6 +186,66 @@ class StoreController extends Controller
         }
     }
 
+    /**
+     * Revalida un carrito contra el catálogo actual: precio vigente,
+     * stock real y variantes válidas. El frontend lo usa al abrir el
+     * carrito y antes de pagar; el checkout igual recalcula todo.
+     */
+    public function validateCartLines(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'items' => 'required|array|min:1|max:50',
+            'items.*.product_id' => 'required|integer',
+            'items.*.quantity' => 'required|integer|min:1|max:999',
+            'items.*.variant' => 'nullable|string|max:100',
+        ]);
+
+        $lines = [];
+        foreach ($validated['items'] as $line) {
+            $product = Product::with('inventory')->find($line['product_id']);
+            if (! $product || ! $product->is_active) {
+                $lines[] = ['product_id' => $line['product_id'], 'ok' => false, 'message' => 'Ya no está disponible'];
+                continue;
+            }
+
+            try {
+                $variant = $this->resolveVariant($product, $line['variant'] ?? null);
+            } catch (\RuntimeException $e) {
+                $lines[] = ['product_id' => $line['product_id'], 'ok' => false, 'message' => $e->getMessage()];
+                continue;
+            }
+
+            $lines[] = [
+                'product_id' => $product->id,
+                'ok' => true,
+                'name' => $product->name,
+                'price' => (float) $product->final_price,
+                'available' => (int) $product->available,
+                'image' => $product->image,
+                'variant' => $variant,
+            ];
+        }
+
+        return response()->json(['lines' => $lines]);
+    }
+
+    /**
+     * Normaliza la variante pedida contra el catálogo del producto.
+     * Lanza RuntimeException si no existe (el llamador la vuelve 422).
+     */
+    private function resolveVariant(Product $product, ?string $variant): ?string
+    {
+        $variantName = is_string($variant) && trim($variant) !== '' ? trim($variant) : null;
+        if ($variantName !== null && isset($product->variants) && is_array($product->variants)) {
+            $names = array_column($product->variants, 'name');
+            if (! in_array($variantName, $names, true)) {
+                throw new \RuntimeException("Color '{$variantName}' no válido para {$product->name}.");
+            }
+        }
+
+        return $variantName;
+    }
+
     private function validateCart(Request $request): array
     {
         $validated = $request->validate([
@@ -257,15 +317,7 @@ class StoreController extends Controller
                 $price = $product->final_price;
                 $total = round($price * $line['quantity'], 2);
                 $subtotal += $total;
-                $variantName = isset($line['variant']) && is_string($line['variant']) && trim($line['variant']) !== ''
-                    ? trim($line['variant'])
-                    : null;
-                if ($variantName !== null && isset($product->variants) && is_array($product->variants)) {
-                    $names = array_column($product->variants, 'name');
-                    if (! in_array($variantName, $names, true)) {
-                        throw new \RuntimeException("Color '{$variantName}' no válido para {$product->name}.");
-                    }
-                }
+                $variantName = $this->resolveVariant($product, $line['variant'] ?? null);
                 $lineItems[] = [
                     'product' => $product,
                     'quantity' => $line['quantity'],

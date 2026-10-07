@@ -46,6 +46,7 @@ Route::prefix('v1')->group(function () {
     Route::get('team', [PublicController::class, 'team']);
     Route::post('contact', [PublicController::class, 'contact'])->middleware('throttle:10,1');
     Route::post('store/checkout-guest', [StoreController::class, 'checkoutGuest'])->middleware('throttle:10,1');
+    Route::post('store/validate-cart', [StoreController::class, 'validateCartLines'])->middleware('throttle:30,1');
 Route::get('products', [PublicController::class, 'products']);
     Route::get('store/filters', [PublicController::class, 'storeFilters']);
             Route::get('products/{slug}', [PublicController::class, 'productBySlug']);
