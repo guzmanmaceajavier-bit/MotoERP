@@ -544,6 +544,36 @@ html.dark .cta-card {
 html.dark .cta-card .text-carbon-900 { color: var(--color-carbon-800); }
 html.dark .cta-card .text-carbon-500 { color: var(--color-carbon-400); }
 
+/* grises de tailwind (las paginas publicas usan gray-*, no carbon) */
+html.dark .text-gray-900 { color: #f9fafb; }
+html.dark .text-gray-800 { color: #f3f4f6; }
+html.dark .text-gray-700 { color: #e5e7eb; }
+html.dark .text-gray-600 { color: #d1d5db; }
+html.dark .text-gray-500 { color: #9ca3af; }
+html.dark .text-gray-400 { color: #9ca3af; }
+html.dark .text-gray-300 { color: #d1d5db; }
+html.dark .bg-gray-50 { background-color: #1c1816; }
+html.dark .bg-gray-100 { background-color: #26211e; }
+html.dark .border-gray-100 { border-color: #2b2521; }
+html.dark .border-gray-200 { border-color: #3a332e; }
+html.dark .border-gray-300 { border-color: #4a443e; }
+html.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) { border-color: #2b2521; }
+html.dark .hover\:bg-gray-50:hover { background-color: #26211e; }
+html.dark .hover\:bg-gray-100:hover { background-color: #2b2521; }
+html.dark .hover\:bg-gray-200:hover { background-color: #3a332e; }
+html.dark section.bg-orange-50 { background-color: #171412; }
+
+/* naranjas y semaforos legibles sobre fondo oscuro */
+html.dark .bg-orange-50 { background-color: rgba(249, 115, 22, 0.16); }
+html.dark .bg-orange-100 { background-color: rgba(249, 115, 22, 0.22); }
+html.dark .text-orange-700 { color: #fdba74; }
+html.dark .text-orange-600 { color: #fb923c; }
+html.dark .text-orange-500 { color: #fb923c; }
+html.dark .text-red-600 { color: #f87171; }
+html.dark .text-rose-500 { color: #fb7185; }
+html.dark .bg-rose-400 { background-color: #fb7185; }
+html.dark .text-emerald-600 { color: #34d399; }
+
 /* hero de servicios (ojo: shimmer ya existe para btn-shine, por eso este se llama text-shimmer) */
 @keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
 @keyframes text-shimmer { to { background-position: 200% center; } }

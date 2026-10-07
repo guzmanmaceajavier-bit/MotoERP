@@ -15,6 +15,8 @@ export default function Register() {
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
+  const mismatch = confirm.length > 0 && confirm !== password
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError('')
@@ -56,6 +58,7 @@ export default function Register() {
         <AuthInput label="Teléfono" type="tel" value={phone} onChange={setPhone} autoComplete="tel" placeholder="Opcional" />
         <AuthInput label="Contraseña" type="password" value={password} onChange={setPassword} autoComplete="new-password" />
         <AuthInput label="Confirmar contraseña" type="password" value={confirm} onChange={setConfirm} autoComplete="new-password" />
+        {mismatch && <p className="-mt-2 text-xs font-semibold text-red-600">No coincide con la contraseña de arriba.</p>}
         {error && <p className="text-sm text-red-600">{error}</p>}
         <AuthSubmit submitting={submitting}>{submitting ? 'Creando...' : 'Registrarme'}</AuthSubmit>
       </form>
