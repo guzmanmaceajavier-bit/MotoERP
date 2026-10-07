@@ -4,7 +4,6 @@ import { api } from '../../lib/api'
 import { usePageMeta } from '../../lib/usePageMeta'
 import { Reveal } from '../../components/Reveal'
 import { useHero, useSiteInfo } from '../../lib/useSiteImages'
-import { HeroBg } from '../../components/HeroBg'
 import PageHero from '../../components/PageHero'
 import { Eye, ShieldCheck, Wrench } from 'lucide-react'
 
