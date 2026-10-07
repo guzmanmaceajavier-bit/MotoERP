@@ -242,6 +242,17 @@ No requiere variables de entorno. La API se conecta vía proxy de Vercel (`/api/
 - Email: guzmanmaceajavier@gmail.com
 - GitHub: [@guzmanmaceajavier-bit](https://github.com/guzmanmaceajavier-bit)
 
+
+-inicio
+<img width="1366" height="618" alt="image" src="https://github.com/user-attachments/assets/8a3a1108-9ba6-4cc7-9750-53f1e8be4224" />
+
+-login
+<img width="1360" height="612" alt="image" src="https://github.com/user-attachments/assets/9aa87d1b-8a28-4908-b69d-86f00352710e" />
+
+-
+
+
+
 ## Licencia
 
 Proyecto privado. © 2026 Javier Guzman. Todos los derechos reservados.
