@@ -249,7 +249,9 @@ No requiere variables de entorno. La API se conecta vía proxy de Vercel (`/api/
 -login
 <img width="1360" height="612" alt="image" src="https://github.com/user-attachments/assets/9aa87d1b-8a28-4908-b69d-86f00352710e" />
 
--
+-login admin
+<img width="1254" height="600" alt="image" src="https://github.com/user-attachments/assets/136724e6-33d8-4905-9996-12f635623b33" />
+
 
 
 
