@@ -57,7 +57,6 @@ class AuthController extends Controller
 
         $key = $this->lockKey($validated['email']);
 
-        // El usuario quedó bloqueado tras varios intentos fallidos.
         if ($remaining = $this->lockRemaining($key)) {
             return response()->json([
                 'message' => 'Demasiados intentos fallidos. Vuelve a intentarlo en '.ceil($remaining / 60).' minuto(s).',
@@ -91,9 +90,6 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Pide un código de recuperación por WhatsApp para restablecer la contraseña.
-     */
     public function forgotPassword(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -102,7 +98,6 @@ class AuthController extends Controller
 
         $user = User::where('email', $validated['email'])->first();
 
-        // Respuesta idéntica exista o no la cuenta, para no filtrar usuarios.
         if (! $user) {
             return response()->json(['message' => 'Si el correo está registrado, se enviará el código por WhatsApp.']);
         }
@@ -120,8 +115,6 @@ class AuthController extends Controller
             'whatsapp_sent' => $sent,
         ];
 
-        // Sin WhatsApp configurado aún: entregamos el código por el log para
-        // poder probar el flujo completo en desarrollo.
         if (! $sent && (bool) config('app.debug')) {
             Log::warning("Código de recuperación para {$user->email}: {$code}");
             $response['debug_code'] = $code;
@@ -130,9 +123,6 @@ class AuthController extends Controller
         return response()->json($response);
     }
 
-    /**
-     * Valida el código y restablece la contraseña.
-     */
     public function resetPassword(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -243,9 +233,6 @@ class AuthController extends Controller
         $user->refresh();
 
         if (isset($validated['password'])) {
-            // Conserva el token de la sesión actual y solo revoca las demás
-            // sesiones del usuario (p. ej. otros dispositivos o el otro panel),
-            // evitando que este panel cierre sesión al cambiar la contraseña.
             $currentTokenId = $request->user()?->currentAccessToken()?->id;
 
             $user->tokens()
@@ -260,9 +247,6 @@ class AuthController extends Controller
         return response()->json(['user' => $user]);
     }
 
-    /**
-     * Sube y actualiza la foto de perfil del cliente autenticado.
-     */
     public function uploadPhoto(Request $request): JsonResponse
     {
         $validated = $request->validate([

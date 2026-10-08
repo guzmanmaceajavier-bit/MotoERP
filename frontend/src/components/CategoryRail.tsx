@@ -1,7 +1,6 @@
 import { useRef, type ReactNode } from 'react'
 import { ChevronLeft, ChevronRight, LayoutGrid } from 'lucide-react'
 
-// carrusel de categorias con flechas, se usa en tienda y servicios
 export interface RailItem {
   key: string
   label: string

@@ -6,7 +6,6 @@ use App\Models\Invoice;
 use App\Models\WorkOrder;
 use Illuminate\Support\Facades\DB;
 
-// facturacion: totales, crear facturas desde ordenes y estados de pedidos de tienda
 class InvoiceService
 {
     public function generateInvoiceNumber(): string
@@ -18,7 +17,6 @@ class InvoiceService
         return $number;
     }
 
-    // a donde se puede pasar desde cada estado
     public function allowedTransitions(): array
     {
         return [
@@ -31,8 +29,6 @@ class InvoiceService
         ];
     }
 
-    // saca subtotal, descuento (manual + puntos), iva, total y cuanto se abona
-    // ojo: la orden tiene que venir con items, labors y user cargados
     public function calculateOrderTotals(WorkOrder $order, array $validated): array
     {
         $partsTotal = (float) $order->items->sum(fn ($i) => $i->quantity * $i->unit_price);
@@ -42,11 +38,9 @@ class InvoiceService
         $pointsValue = app(LoyaltyService::class)->pointsValue();
         $taxRate = (float) (\App\Support\Settings::get('tax_rate') ?? 18);
 
-        // Descuento por convenio / especial (porcentaje)
         $manualPercent = (float) ($validated['discount'] ?? 0);
         $manualDiscount = round($subtotal * ($manualPercent / 100), 2);
 
-        // Si se paga de contado (abono ≥ total) se pueden usar puntos; en abonos parciales no.
         $requestedPaid = (float) ($validated['amount_paid'] ?? ($subtotal - $manualDiscount));
         $fullPayment = $requestedPaid >= ($subtotal - $manualDiscount);
 
@@ -77,7 +71,6 @@ class InvoiceService
         );
     }
 
-    // crea la factura de una orden con todo (items, pago, stock, puntos)
     public function createFromOrder(WorkOrder $order, array $validated, int $actorId): Invoice
     {
         $t = $this->calculateOrderTotals($order, $validated);
@@ -113,7 +106,6 @@ class InvoiceService
                 ]);
             }
 
-            // Consumir la reserva de inventario hecha al aprobar la cotización
             $stock = app(\App\Services\InventoryService::class);
             foreach ($order->items as $item) {
                 $invoice->items()->create([
@@ -142,7 +134,6 @@ class InvoiceService
                 ]);
             }
 
-            // Puntos: solo aplicar/ganar cuando la factura queda totalmente pagada.
             if ($t['status'] === 'paid') {
                 if ($t['pointsToUse'] > 0) {
                     $loyalty->spend($order->user, $t['pointsToUse'], "Canje por descuento en {$invoice->invoice_number}");
@@ -154,16 +145,12 @@ class InvoiceService
         });
     }
 
-    // cambia el estado del pedido y hace lo que toca (stock, pago, puntos) y avisa al cliente
     public function transitionShopOrder(Invoice $invoice, string $to): void
     {
         DB::transaction(function () use ($invoice, $to) {
             $invoice->update(['order_status' => $to]);
             if ($to === 'confirmed') {
                 app(PaymentService::class)->consumeReservedFor($invoice);
-                // Transferencia/tarjeta ya están pagadas al confirmar (comprobante verificado o
-                // cobro directo). El efectivo se paga al retirar/recibir, cuando el staff
-                // registra el pago.
                 if ($invoice->payment_method !== 'efectivo' && $invoice->user && ! $invoice->paid_amount) {
                     $invoice->update(['paid_amount' => (float) $invoice->total, 'status' => 'paid']);
                 }
@@ -200,12 +187,10 @@ class InvoiceService
         }
     }
 
-    // cancela el pedido, suelta la reserva y devuelve los puntos
     public function cancelShopOrder(Invoice $invoice): void
     {
         DB::transaction(function () use ($invoice) {
             app(PaymentService::class)->releaseReservedFor($invoice);
-            // Devolver los puntos canjeados por el descuento
             if ((int) $invoice->points_used > 0 && $invoice->user) {
                 app(LoyaltyService::class)->award(
                     $invoice->user,

@@ -56,3 +56,5 @@ services:
         value: error
       - key: POINTS_VALUE
         value: "100"
+      - key: SEED_PASSWORD
+        sync: false

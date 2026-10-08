@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\WorkOrder;
 
-// deja la orden lista para mandarla en el json
 class WorkOrderSerializer
 {
     public function serialize(WorkOrder $o): array

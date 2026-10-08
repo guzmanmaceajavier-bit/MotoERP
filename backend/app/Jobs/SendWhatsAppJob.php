@@ -8,11 +8,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Envía el WhatsApp de una notificación en segundo plano.
- * La notificación in-app ya fue creada de forma síncrona; aquí solo se
- * ejecuta el side-effect de red para no bloquear la petición HTTP.
- */
 class SendWhatsAppJob implements ShouldQueue
 {
     use Queueable;

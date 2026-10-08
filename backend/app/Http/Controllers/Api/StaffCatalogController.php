@@ -15,8 +15,6 @@ use Illuminate\Support\Str;
 
 class StaffCatalogController extends Controller
 {
-    // ---------- Servicios del taller ----------
-
     public function services(): JsonResponse
     {
         return response()->json(Service::orderBy('name')->get());
@@ -58,8 +56,6 @@ class StaffCatalogController extends Controller
 
         return response()->json(['message' => 'Servicio eliminado']);
     }
-
-    // ---------- Marcas ----------
 
     public function brands(): JsonResponse
     {
@@ -124,8 +120,6 @@ class StaffCatalogController extends Controller
         return response()->json(['message' => 'Marca eliminada']);
     }
 
-    // ---------- Modelos ----------
-
     public function models(): JsonResponse
     {
         return response()->json(
@@ -166,8 +160,6 @@ class StaffCatalogController extends Controller
 
         return response()->json(['message' => 'Modelo eliminado']);
     }
-
-    // ---------- Categorías ----------
 
     public function categories(): JsonResponse
     {
@@ -221,8 +213,6 @@ class StaffCatalogController extends Controller
 
         return response()->json(['message' => 'Categoría eliminada']);
     }
-
-    // ---------- Productos (tienda) ----------
 
     public function products(Request $request): JsonResponse
     {
@@ -338,7 +328,6 @@ class StaffCatalogController extends Controller
             'variants.*.hex' => 'nullable|string|max:20',
         ]);
 
-        // Precio de venta no puede ser menor que el costo.
         $price = isset($validated['price']) ? (float) $validated['price'] : (float) $product->price;
         $cost = isset($validated['cost']) ? (float) $validated['cost'] : (float) $product->cost;
         if ($price < $cost) {
@@ -381,8 +370,6 @@ class StaffCatalogController extends Controller
 
         return response()->json(['message' => 'Producto eliminado']);
     }
-
-    // ---------- helpers ----------
 
     private function normalizeVariants(Request $request): void
     {

@@ -6,10 +6,8 @@ use App\Models\Invoice;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-// ventas de mostrador (POS)
 class SaleService
 {
-    // todas las facturas con totales
     public function list(array $filters, int $page, int $perPage): array
     {
         $query = Invoice::with(['user', 'items', 'workOrder.items.product']);
@@ -65,7 +63,6 @@ class SaleService
         ];
     }
 
-    // buscar clientes para el POS
     public function clients(string $q)
     {
         $query = User::where('role', 'customer');
@@ -83,12 +80,9 @@ class SaleService
         ]);
     }
 
-    // guarda la venta: cliente, precios reales, quita stock y deja el pago
-    // si no hay stock tira RuntimeException y el controlador devuelve 422
     public function store(array $validated, int $actorId, float $taxRate): Invoice
     {
         return DB::transaction(function () use ($validated, $actorId, $taxRate) {
-            // Resolver o crear cliente
             if (! empty($validated['client_id'])) {
                 $client = User::findOrFail($validated['client_id']);
             } else {
@@ -104,7 +98,6 @@ class SaleService
                     : User::firstOrCreate(['email' => $identity['email']], $identity);
             }
 
-            // Reconstruir items con precio/costo reales (no confiar en el cliente)
             $inventory = app(InventoryService::class);
             $subtotal = 0;
             $lines = [];
@@ -157,7 +150,6 @@ class SaleService
                 ]);
             }
 
-            // Registrar abono (pago total)
             $invoice->payments()->create([
                 'user_id' => $client->id,
                 'amount' => $total,
@@ -171,7 +163,6 @@ class SaleService
         });
     }
 
-    // cambia metodo o estado de pago de una venta
     public function update(Invoice $invoice, array $validated): array
     {
         $data = [];
@@ -204,7 +195,6 @@ class SaleService
         ];
     }
 
-    // anula la venta y devuelve el stock
     public function destroy(Invoice $invoice, int $actorId): void
     {
         DB::transaction(function () use ($invoice, $actorId) {

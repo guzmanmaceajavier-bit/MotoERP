@@ -10,10 +10,6 @@ use App\Models\User;
 
 class ProductAlertService
 {
-    /**
-     * Registra un snapshot de precio si cambió respecto al último, y evalúa
-     * las alertas de bajada de precio (one-shot) para ese producto.
-     */
     public function recordPriceChange(Product $product): void
     {
         $last = PriceHistory::where('product_id', $product->id)->latest('id')->first();
@@ -37,7 +33,6 @@ class ProductAlertService
             'promo_price' => $promo,
         ]);
 
-        // Solo conservamos las últimas 30 entradas por producto.
         PriceHistory::where('product_id', $product->id)
             ->orderByDesc('id')
             ->skip(30)
@@ -47,10 +42,6 @@ class ProductAlertService
         $this->checkPriceAlerts($product);
     }
 
-    /**
-     * Notifica (una vez) a los usuarios que pidieron aviso si el precio final
-     * ya es menor o igual a su precio objetivo, y elimina la alerta.
-     */
     public function checkPriceAlerts(Product $product): void
     {
         $final = (float) $product->final_price;
@@ -75,10 +66,6 @@ class ProductAlertService
         }
     }
 
-    /**
-     * Si el producto volvió a estar disponible, notifica a los usuarios con
-     * alerta de stock y limpia esas alertas (one-shot).
-     */
     public function checkStockAlerts(Product $product): void
     {
         if ($product->available <= 0 || $product->is_active === false) {

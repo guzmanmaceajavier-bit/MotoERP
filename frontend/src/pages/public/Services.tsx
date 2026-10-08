@@ -227,7 +227,6 @@ export default function Services() {
         </div>
       </div>
 
-      {/* lista de servicios */}
       <section id="servicios-grid" className="mx-auto max-w-6xl scroll-mt-24 px-4 py-10">
         <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
@@ -267,7 +266,6 @@ export default function Services() {
           ]}
         />
 
-        {/* Grid */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {paged.map((s, i) => (
             <Reveal key={s.id ?? i} delay={i * 60}>
@@ -317,10 +315,8 @@ export default function Services() {
         <Pagination page={page} lastPage={lastPage} total={filtered.length} onChange={setPage} />
       </section>
 
-      {/* porque elegirnos */}
       <section className="mx-auto max-w-6xl px-4 py-14">
         <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-start">
-          {/* Imagen */}
           <Reveal className="w-full flex-1">
             <div className="relative overflow-hidden rounded-3xl border border-gray-200 shadow-xl shadow-gray-200/50">
               <div className="relative h-[260px] sm:h-[320px] lg:h-[380px]">
@@ -338,7 +334,6 @@ export default function Services() {
             </div>
           </Reveal>
 
-          {/* Tarjetas */}
           <div className="w-full flex-1">
             <Reveal>
               <h2 className="text-3xl font-black text-gray-900 md:text-4xl">
@@ -370,7 +365,6 @@ export default function Services() {
         </div>
       </section>
 
-      {/* pasos */}
       <section className="mx-auto max-w-6xl px-4 py-14">
         <Reveal>
           <div className="text-center">
@@ -380,7 +374,6 @@ export default function Services() {
           </div>
         </Reveal>
         <div className="relative mt-12 grid grid-cols-2 gap-8 md:grid-cols-4">
-          {/* Línea conectora */}
           <div className="absolute left-[12%] right-[12%] top-10 hidden h-px bg-gradient-to-r from-orange-200 via-orange-300 to-orange-200 md:block" />
 
           {[
@@ -405,7 +398,6 @@ export default function Services() {
         </div>
       </section>
 
-      {/* cta final */}
       <section className="mx-auto max-w-6xl px-4 pb-16">
         <Reveal>
           <div className="flex flex-col items-center gap-6 rounded-3xl border border-gray-100 bg-white px-8 py-10 shadow-sm sm:flex-row sm:justify-between sm:px-12">

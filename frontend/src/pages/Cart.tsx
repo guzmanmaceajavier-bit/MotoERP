@@ -319,7 +319,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
 
   const inputCls = 'w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-gray-800 placeholder:text-gray-400 transition focus:border-orange-400 focus:outline-none focus:ring-4 focus:ring-orange-100'
 
-  // eliminar con doble toque para no borrar sin querer
   const [confirmKey, setConfirmKey] = useState<string | null>(null)
   const confirmTimer = useRef<number | null>(null)
   function askRemove(key: string) {
@@ -337,7 +336,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
-      {/* ── Progress ── */}
       <div className="mb-10 flex items-center justify-center">
         <div className="flex w-full max-w-2xl items-center">
           {steps.map((s, i) => (
@@ -355,7 +353,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
       </div>
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* ── Main ── */}
         <div className="lg:col-span-2 anim-fade-up" key={step}>
           {step === 1 && (
             <div>
@@ -444,7 +441,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
             <div>
               <h2 className="mb-5 text-xl font-bold text-gray-800">¿Cómo lo recibes?</h2>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-5">
-                {/* Opciones de entrega — columna izquierda */}
                 <div className="space-y-3 sm:col-span-2">
                   {fulfillmentOptions.map((o) => (
                     <label key={o.value} className={`flex cursor-pointer items-center gap-4 rounded-2xl border bg-white p-4 shadow-sm transition ${fulfillment === o.value ? 'border-orange-300 ring-2 ring-orange-100 shadow-md' : 'border-gray-100 hover:border-gray-200'}`}>
@@ -459,7 +455,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                   ))}
                 </div>
 
-                {/* Formulario contextual — columna derecha */}
                 <div className="sm:col-span-3">
                   {fulfillment === 'shipping' && (
                     <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm space-y-3">
@@ -515,7 +510,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
             <div>
               <h2 className="mb-5 text-xl font-bold text-gray-800">Método de pago</h2>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-5">
-                {/* Métodos de pago — columna izquierda */}
                 <div className="space-y-3 sm:col-span-2">
                   {paymentMethods.map((m) => (
                     <label key={m.value} className={`flex cursor-pointer items-center gap-4 rounded-2xl border bg-white p-4 shadow-sm transition ${paymentMethod === m.value ? 'border-orange-300 ring-2 ring-orange-100 shadow-md' : 'border-gray-100 hover:border-gray-200'}`}>
@@ -530,7 +524,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                   ))}
                 </div>
 
-                {/* Formulario contextual — columna derecha */}
                 <div className="space-y-4 sm:col-span-3">
                   {paymentMethod === 'transferencia' && (
                     <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
@@ -580,7 +573,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
             <div>
               <h2 className="mb-5 text-xl font-bold text-gray-800">Confirma tu pedido</h2>
 
-              {/* Resumen de artículos */}
               <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
                 <h3 className="text-xs font-bold uppercase tracking-wide text-gray-400">Artículos ({count})</h3>
                 <div className="mt-3 divide-y divide-gray-100">
@@ -603,7 +595,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
                 </div>
               </div>
 
-              {/* Resumen de entrega y pago */}
               <div className="mt-4 rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
                 <div className="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
                   <div>
@@ -634,10 +625,8 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
           )}
         </div>
 
-        {/* ── Sidebar ── */}
         <div className="lg:col-span-1">
           <div className="sticky top-24 space-y-4">
-            {/* Resumen rápido */}
             {(fulfillment || paymentMethod) && (
               <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm space-y-2">
                 {fulfillment && (
@@ -655,7 +644,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
               </div>
             )}
 
-            {/* Totales */}
             <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
               <h3 className="text-xs font-bold uppercase tracking-wide text-gray-400">Resumen</h3>
               <div className="mt-3 space-y-2.5 text-sm">
@@ -677,7 +665,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
 
             {msg && <p className="rounded-xl bg-red-50 border border-red-100 px-3 py-2 text-sm text-red-500">{msg}</p>}
 
-            {/* Badges de confianza */}
             <div className="grid grid-cols-2 gap-2">
               {trustBadges.map((b) => (
                 <div key={b.label} className="flex items-center gap-2 rounded-xl border border-orange-100 bg-orange-50 px-3 py-2">
@@ -690,7 +677,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
         </div>
       </div>
 
-      {/* ── Sugerencias ── */}
       {suggestionsToShow.length > 0 && (
         <div className="mt-10 border-t border-gray-100 pt-8">
           <h3 className="text-xl font-bold text-gray-800">También te puede interesar</h3>
@@ -715,7 +701,6 @@ export default function Cart({ storePath = '/tienda' }: { storePath?: string }) 
         </div>
       )}
 
-      {/* ── WhatsApp ── */}
       <div className="mt-8 rounded-2xl border border-gray-100 bg-white py-4 text-center text-sm text-gray-500 shadow-sm">
         ¿Tienes dudas con tu pedido? Contáctanos por <a href={`https://wa.me/${workshop_phone || '573001234567'}`} target="_blank" rel="noopener noreferrer" className="font-semibold text-green-500 hover:underline">WhatsApp</a>
       </div>

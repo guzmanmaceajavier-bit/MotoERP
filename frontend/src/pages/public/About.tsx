@@ -76,7 +76,6 @@ export default function About() {
         images={hero.images}
       />
 
-      {/* galeria */}
       <section className="mx-auto max-w-6xl px-4 py-14">
         <Reveal className="text-center">
           <h2 className="text-3xl font-black text-gray-900">Nuestros <span className="gradient-text">trabajos</span></h2>
@@ -130,7 +129,6 @@ export default function About() {
         </div>
       )}
 
-      {/* equipo */}
       <section className="mx-auto max-w-6xl px-4 py-14">
         <Reveal className="text-center">
           <h2 className="mt-1 text-3xl font-black text-gray-900">Las personas que <span className="gradient-text">cuidan tu moto</span></h2>
@@ -163,7 +161,6 @@ export default function About() {
         </div>
       </section>
 
-      {/* cta final */}
       <section className="mx-auto max-w-6xl px-4 pb-16">
         <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
           <div className="flex flex-col items-center gap-6 p-8 sm:flex-row sm:justify-between sm:px-12">

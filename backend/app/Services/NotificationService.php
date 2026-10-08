@@ -15,9 +15,6 @@ use Illuminate\Support\Facades\Log;
 
 class NotificationService
 {
-    /**
-     * Crea una notificación in-app (siempre) e intenta enviar WhatsApp (si está habilitado).
-     */
     public function notify(User $user, string $title, string $message, string $type = 'info', array $extra = []): AppNotification
     {
         $notification = AppNotification::create([
@@ -29,8 +26,6 @@ class NotificationService
             'wa_sent' => false,
         ]);
 
-        // El envío de WhatsApp se encola para no bloquear la petición HTTP
-        // (si no hay worker, solo queda pendiente; la notificación in-app ya está).
         if ($this->whatsappEnabled() && $user->phone) {
             SendWhatsAppJob::dispatch($notification->id);
         }
@@ -38,10 +33,6 @@ class NotificationService
         return $notification;
     }
 
-    /**
-     * Envía WhatsApp a un teléfono sin depender de un usuario registrado
-     * (p.ej. confirmación de cita del sitio público).
-     */
     public function sendAppointmentConfirmation(Appointment $appointment): bool
     {
         if (! $this->whatsappEnabled() || ! $appointment->phone) {
@@ -74,9 +65,6 @@ class NotificationService
         return Settings::bool('whatsapp_enabled', (bool) config('services.whatsapp.enabled', false));
     }
 
-    /**
-     * @param  User|string  $user  Usuario o número de teléfono directo.
-     */
     public function sendWhatsApp($user, string $message): bool
     {
         $phone = is_string($user) ? $user : $user->phone;
@@ -109,11 +97,6 @@ class NotificationService
         }
     }
 
-    /**
-     * Envía un código de recuperación usando una PLANTILLA aprobada de
-     * WhatsApp (Meta Cloud API). Es obligatorio para mensajes de negocio
-     * iniciados por el taller (fuera de la ventana de 24h), como un OTP.
-     */
     public function sendRecoveryCode(string $phone, string $code): bool
     {
         if (! $phone) {
@@ -234,8 +217,6 @@ class NotificationService
 
         return $ok;
     }
-
-    // ---------- Mensajes predefinidos por evento ----------
 
     public function orderCreated(WorkOrder $order): void
     {

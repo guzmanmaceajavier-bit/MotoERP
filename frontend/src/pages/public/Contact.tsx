@@ -90,7 +90,6 @@ export default function Contact() {
         images={hero.images}
       />
 
-      {/* ──── INFO CARDS ──── */}
       <section className="mx-auto max-w-6xl px-4 py-10">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
@@ -144,7 +143,6 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* ──── CONTACTO DIRECTO + MAPA ──── */}
       <section className="mx-auto max-w-6xl px-4 pb-14">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <Reveal>
@@ -235,7 +233,6 @@ export default function Contact() {
             </div>
           </Reveal>
 
-          {/* Beneficios + Mapa */}
           <div className="space-y-6">
             <Reveal delay={100}>
               <div className="space-y-4">
@@ -278,7 +275,6 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* ──── 3 PASOS ──── */}
       <section className="mx-auto max-w-6xl px-4 py-16">
         <Reveal className="text-center">
           <h2 className="text-3xl font-black text-gray-900 md:text-4xl">
@@ -302,7 +298,6 @@ export default function Contact() {
         </div>
       </section>
 
-      {/* ──── CTA ──── */}
       <section className="mx-auto max-w-6xl px-4 pb-16">
         <div className="relative overflow-hidden rounded-3xl bg-gray-900">
           <div className="absolute inset-0 opacity-20">

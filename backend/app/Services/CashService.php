@@ -7,7 +7,6 @@ use App\Models\Payment;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-// caja del dia: abrir, cerrar, ver pagos
 class CashService
 {
     public function overview(int $page, int $perPage): array
@@ -54,7 +53,6 @@ class CashService
             'meta' => $this->meta($page, $perPage, $total),
         ];
 
-        // Resumen del día (recaudado por método desde medianoche)
         $todayStart = now()->startOfDay()->toDateTimeString();
         $byMethodToday = Payment::where('paid_at', '>=', $todayStart)
             ->select('method', DB::raw('SUM(amount) as total'), DB::raw('COUNT(*) as count'))
@@ -73,7 +71,6 @@ class CashService
         ];
     }
 
-    // lista de pagos con filtros
     public function payments(array $filters, int $page, int $perPage): array
     {
         $query = Payment::with(['invoice', 'recorder'])->orderByDesc('paid_at');
@@ -121,7 +118,6 @@ class CashService
         ];
     }
 
-    // editar un pago y recalcular la factura, si se pasa del total tira error
     public function updatePayment(Payment $payment, array $validated): void
     {
         $invoice = $payment->invoice;
@@ -150,7 +146,6 @@ class CashService
         });
     }
 
-    // borrar un pago y recalcular
     public function deletePayment(Payment $payment): string
     {
         $invoice = $payment->invoice;
@@ -166,7 +161,6 @@ class CashService
         return $label;
     }
 
-    // abre caja, null si ya hay una abierta
     public function open(int $userId, array $validated): ?CashSession
     {
         if (CashSession::where('status', 'open')->exists()) {
@@ -182,15 +176,12 @@ class CashService
         ]);
     }
 
-    // cierra y calcula cuanto deberia haber vs cuanto hay
     public function close(CashSession $session, array $validated): array
     {
-        // Pagos en efectivo registrados durante la sesión (desde la apertura)
         $cashIn = Payment::where('method', 'efectivo')
             ->where('paid_at', '>=', $session->opened_at)
             ->sum('amount');
 
-        // Transferencias y tarjetas registradas en el periodo (informativas)
         $byMethod = Payment::where('paid_at', '>=', $session->opened_at)
             ->select('method', DB::raw('SUM(amount) as total'), DB::raw('COUNT(*) as count'))
             ->groupBy('method')

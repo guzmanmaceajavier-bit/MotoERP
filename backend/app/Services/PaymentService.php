@@ -7,7 +7,6 @@ use App\Models\StockMovement;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-// pagos y abonos de facturas, y lo del stock reservado de tienda
 class PaymentService
 {
     public function nextReceiptNumber(): string
@@ -17,7 +16,6 @@ class PaymentService
         return 'RECV-' . now()->format('Ymd') . '-' . str_pad((string) $count, 4, '0', STR_PAD_LEFT);
     }
 
-    // registra un abono, si se completa da puntos y si es pedido de tienda lo confirma
     public function register(Invoice $invoice, array $validated, int $actorId): Invoice
     {
         $wasPaid = $invoice->status === 'paid';
@@ -47,7 +45,6 @@ class PaymentService
                     );
                 }
 
-                // Pedido de tienda: confirmar pedido + consumir la reserva de stock
                 if (! $invoice->work_order_id && $invoice->order_status !== 'confirmed') {
                     $invoice->update(['order_status' => 'confirmed']);
                     $this->consumeReservedFor($invoice);
@@ -65,7 +62,6 @@ class PaymentService
         return $invoice->fresh()->load('payments', 'items');
     }
 
-    // recalcula lo pagado y el estado desde los pagos (cuando se edita o borra uno)
     public function recompute(Invoice $invoice): Invoice
     {
         $paid = round((float) $invoice->payments()->sum('amount'), 2);
@@ -75,7 +71,6 @@ class PaymentService
         return $invoice->fresh()->load('payments', 'items');
     }
 
-    // historial de pagos listo para devolver en la api
     public function history(Invoice $invoice): Collection
     {
         return $invoice->payments()->with('recorder')->orderByDesc('paid_at')->get()->map(fn ($p) => [
@@ -90,7 +85,6 @@ class PaymentService
         ]);
     }
 
-    // aparta el stock cuando se aprueba una cotizacion (solo reserved, el fisico baja al facturar)
     public function reserveForOrder(\App\Models\WorkOrder $order, int $userId): void
     {
         $stock = app(InventoryService::class);
@@ -107,7 +101,6 @@ class PaymentService
         }
     }
 
-    // suelta la reserva (cuando rechazan o cancelan)
     public function releaseForOrder(\App\Models\WorkOrder $order, int $userId): void
     {
         $stock = app(InventoryService::class);
@@ -124,7 +117,6 @@ class PaymentService
         }
     }
 
-    // vende lo que estaba reservado para una factura confirmada
     public function consumeReservedFor(Invoice $invoice): void
     {
         $stock = app(InventoryService::class);
@@ -138,7 +130,6 @@ class PaymentService
         }
     }
 
-    // libera lo reservado de un pedido cancelado
     public function releaseReservedFor(Invoice $invoice): void
     {
         $stock = app(InventoryService::class);

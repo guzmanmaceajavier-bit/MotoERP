@@ -51,10 +51,6 @@ class OrderController extends Controller
         return response()->json($this->paginatePayload($items, $this->page($request), $this->perPage($request), $total));
     }
 
-    /**
-     * Devuelve las fechas reales de cada orden del cliente para el calendario:
-     * creada, iniciada, finalizada y entrega estimada, junto a su estado.
-     */
     public function myCalendar(Request $request): JsonResponse
     {
         $orders = $request->user()->workOrders()
@@ -88,9 +84,6 @@ class OrderController extends Controller
         return response()->json($this->serialize($order, true));
     }
 
-    /**
-     * PDF de la cotización para el cliente.
-     */
     public function quotationPdf(Request $request, WorkOrder $order): \Illuminate\Http\Response
     {
         $this->authorizeOwner($request, $order);
@@ -116,10 +109,6 @@ class OrderController extends Controller
         return $pdf->download("cotizacion-{$order->order_number}.pdf");
     }
 
-    /**
-     * Permite al cliente cancelar su propia orden SOLO mientras esté pendiente
-     * de asignación y sin cotización emitida. Marca como cancelada (no borra).
-     */
     public function cancelOwnOrder(Request $request, WorkOrder $order): JsonResponse
     {
         $this->authorizeOwner($request, $order);
@@ -173,7 +162,6 @@ class OrderController extends Controller
                 app(\App\Services\PaymentService::class)->reserveForOrder($order, $request->user()->id);
                 app(\App\Services\QuotationService::class)->markLatest($order, 'approved');
             } else {
-                // Rechazada o en revisión tras una aprobación previa: se libera stock.
                 app(\App\Services\QuotationService::class)->markLatest(
                     $order,
                     $validated['decision'] === 'modification_requested' ? 'modification_requested' : 'rejected',
@@ -198,7 +186,6 @@ class OrderController extends Controller
         if ($validated['decision'] === 'approved') {
             app(NotificationService::class)->quotationApproved($order);
         }
-        // Notificar a staff sobre la decisión del cliente
         foreach (\App\Models\User::whereIn('role', ['admin', 'receptionist', 'mechanic'])->get() as $staff) {
             app(NotificationService::class)->notify(
                 $staff,

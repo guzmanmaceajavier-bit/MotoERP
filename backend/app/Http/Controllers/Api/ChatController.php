@@ -11,9 +11,6 @@ use Illuminate\Http\Request;
 
 class ChatController extends Controller
 {
-    /**
-     * Conversación completa del cliente con el taller.
-     */
     public function clientThread(Request $request): JsonResponse
     {
         $messages = ChatMessage::with('staff:id,name')
@@ -25,9 +22,6 @@ class ChatController extends Controller
         return response()->json($messages);
     }
 
-    /**
-     * Enviar un mensaje desde el portal del cliente.
-     */
     public function clientSend(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -44,9 +38,6 @@ class ChatController extends Controller
         return response()->json($this->serialize($message->load('staff:id,name')), 201);
     }
 
-    /**
-     * Marcar como leídos los mensajes del taller vistos por el cliente.
-     */
     public function clientMarkRead(Request $request): JsonResponse
     {
         ChatMessage::where('user_id', $request->user()->id)
@@ -67,11 +58,6 @@ class ChatController extends Controller
         return response()->json(['count' => $count]);
     }
 
-    // ---------- Panel del taller ----------
-
-    /**
-     * Lista de clientes con conversación: último mensaje, no leídos y motor de facturación de presencia.
-     */
     public function staffConversations(Request $request): JsonResponse
     {
         $conversations = ChatMessage::with('user:id,name,email,phone,photo')
@@ -109,9 +95,6 @@ class ChatController extends Controller
         return response()->json($conversations);
     }
 
-    /**
-     * Hilo de chat con un cliente (equipo del taller).
-     */
     public function staffThread(Request $request, User $client): JsonResponse
     {
         abort_if($client->role !== 'customer', 422, 'Solo se puede conversar con clientes.');
@@ -125,9 +108,6 @@ class ChatController extends Controller
         return response()->json($messages);
     }
 
-    /**
-     * Enviar un mensaje como taller.
-     */
     public function staffSend(Request $request, User $client): JsonResponse
     {
         abort_if($client->role !== 'customer', 422, 'Solo se puede conversar con clientes.');
@@ -147,9 +127,6 @@ class ChatController extends Controller
         return response()->json($this->serialize($message->load('staff:id,name')), 201);
     }
 
-    /**
-     * Marcar como leídos los mensajes del cliente atendidos por el taller.
-     */
     public function staffMarkRead(Request $request, User $client): JsonResponse
     {
         ChatMessage::where('user_id', $client->id)

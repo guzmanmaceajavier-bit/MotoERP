@@ -17,7 +17,6 @@ import { BadgeCheck, Check, Eye, Flame, Headphones, Package, Search, ShieldCheck
 
 const fmt = (n: number) => '$' + n.toLocaleString('es-CO')
 
-/* ─────── image ─────── */
 function ProductImage({ src, alt, className = '' }: { src?: string | null; alt: string; className?: string }) {
   const [err, setErr] = useState(false)
   const show = src && !err
@@ -38,7 +37,6 @@ function ProductImage({ src, alt, className = '' }: { src?: string | null; alt: 
   )
 }
 
-/* ─────── heart ─────── */
 function HeartButton({ active, loading, onClick }: { active: boolean; loading?: boolean; onClick: (e: React.MouseEvent) => void }) {
   return (
     <button
@@ -55,7 +53,6 @@ function HeartButton({ active, loading, onClick }: { active: boolean; loading?: 
   )
 }
 
-/* ─────── ProductCard ─────── */
 function ProductCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
   p: Product
   onDetail: (p: Product) => void
@@ -81,7 +78,6 @@ function ProductCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
 
   return (
     <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-orange-200 hover:shadow-xl hover:shadow-orange-100/50">
-      {/* imagen */}
       <div className="relative cursor-pointer" onClick={() => onDetail(p)}>
         <ProductImage src={p.image} alt={p.name} className={`h-48 w-full ${soldOut ? 'grayscale' : ''}`} />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-gray-950/25 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
@@ -96,7 +92,6 @@ function ProductCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
           )}
         </div>
 
-        {/* siempre visible: en celular no existe hover */}
         <div className="absolute right-3 top-3">
           <HeartButton active={!!isFavorite} loading={favLoading} onClick={(e) => { e.stopPropagation(); onToggleFav?.(e, p) }} />
         </div>
@@ -106,7 +101,6 @@ function ProductCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
         )}
       </div>
 
-      {/* contenido */}
       <div className="flex flex-1 flex-col gap-1.5 p-4">
         {p.brand && <span className="text-[10px] font-bold uppercase tracking-widest text-orange-600">{p.brand}</span>}
         <h3 onClick={() => onDetail(p)} className="line-clamp-2 min-h-[2.5rem] cursor-pointer text-sm font-bold leading-snug text-gray-900 transition group-hover:text-orange-700">
@@ -151,7 +145,6 @@ function ProductCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
   )
 }
 
-/* ─────── sidebar filter section (collapsible) ─────── */
 function FilterSection({ title, open, onToggle, children }: { title: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
   return (
     <div className="border-b border-gray-100 py-4 first:pt-0">
@@ -166,7 +159,6 @@ function FilterSection({ title, open, onToggle, children }: { title: string; ope
   )
 }
 
-/* ─────── radio option with count ─────── */
 function RadioOption({ label, count, checked, onChange }: { label: string; count?: number; checked: boolean; onChange: () => void }) {
   return (
     <button type="button" onClick={onChange} className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition ${checked ? 'bg-orange-50 text-orange-700' : 'text-gray-600 hover:bg-gray-50'}`}>
@@ -179,7 +171,6 @@ function RadioOption({ label, count, checked, onChange }: { label: string; count
   )
 }
 
-/* ─────── row list card ─────── */
 function RowCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
   p: Product; onDetail: (p: Product) => void; isFavorite?: boolean; onToggleFav?: (e: React.MouseEvent, p: Product) => void; favLoading?: boolean
 }) {
@@ -205,7 +196,6 @@ function RowCard({ p, onDetail, isFavorite, onToggleFav, favLoading }: {
   )
 }
 
-/* ─────── section (recommended) ─────── */
 function Section({ subtitle, products: items, onDetail, isFavorite, onToggleFav, favLoading }: {
   subtitle: string; products: Product[]; onDetail: (p: Product) => void
   isFavorite?: (id: number) => boolean; onToggleFav?: (e: React.MouseEvent, p: Product) => void; favLoading?: boolean
@@ -225,7 +215,6 @@ function Section({ subtitle, products: items, onDetail, isFavorite, onToggleFav,
   )
 }
 
-/* buscador con atajo de teclado (/) */
 function StoreSearch({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const ref = useRef<HTMLInputElement>(null)
   useEffect(() => {
@@ -257,7 +246,6 @@ function StoreSearch({ value, onChange }: { value: string; onChange: (v: string)
   )
 }
 
-/* marcas en movimiento, clic filtra */
 function BrandMarquee({ brands, onPick }: { brands: { id: number; name: string; count: number }[]; onPick: (id: string) => void }) {
   if (brands.length < 6) return null
   const row = [...brands, ...brands]
@@ -276,7 +264,6 @@ function BrandMarquee({ brands, onPick }: { brands: { id: number; name: string; 
   )
 }
 
-/* chip de filtro activo */
 function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
     <button onClick={onRemove} className="anim-rise group flex items-center gap-1.5 rounded-full border border-orange-200 bg-orange-50 py-1 pl-3 pr-2 text-xs font-semibold text-orange-700 transition hover:border-orange-400 hover:bg-orange-100">
@@ -286,7 +273,6 @@ function FilterChip({ label, onRemove }: { label: string; onRemove: () => void }
   )
 }
 
-/* componente principal */
 export default function Store() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
@@ -302,14 +288,12 @@ export default function Store() {
     }).catch(() => {})
   }, [])
 
-  /* data */
   const [categories, setCategories] = useState<Category[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 })
   const [recommended, setRecommended] = useState<RecommendedCatalog | null>(null)
   const [storeFilters, setStoreFilters] = useState<{ brands: { id: number; name: string; count: number }[]; models: { id: number; name: string; brand_id: number; count: number }[]; part_types: { type: string; count: number }[]; price_range: { min: number; max: number } } | null>(null)
 
-  /* filters */
   const [category, setCategory] = useState('')
   const [brand, setBrand] = useState(searchParams.get('brand') ?? '')
   const [model, setModel] = useState('')
@@ -326,12 +310,10 @@ export default function Store() {
     try { const v = localStorage.getItem('tienda_view'); return v === 'list' || v === 'grid' ? v : 'grid' } catch { return 'grid' }
   })
 
-  /* sidebar search */
   const [brandSearch, setBrandSearch] = useState('')
   const [modelSearch, setModelSearch] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState({ brand: false, model: false, partType: false, category: false, price: false })
 
-  /* favorites */
   const [favIds, setFavIds] = useState<Set<number>>(new Set())
   const [favToggling, setFavToggling] = useState<number | null>(null)
   const { user } = useAuth()
@@ -344,7 +326,6 @@ export default function Store() {
     'Repuestos originales y alternativos, accesorios y más con stock en vivo, envíos e instalación en el taller.',
   )
 
-  /* ─── fetch products ─── */
   const fetchProducts = useCallback(
     (targetPage: number) => {
       setLoading(true)
@@ -368,36 +349,28 @@ export default function Store() {
     [category, brand, model, partType, debouncedPrice.min, debouncedPrice.max, debouncedSearch, sort, perPage],
   )
 
-  /* ─── initial data ─── */
   useEffect(() => {
     api<Category[]>('/categories').then(setCategories).catch(() => {})
     api<{ brands: any[]; models: any[]; part_types: any[]; price_range: any }>('/store/filters').then(setStoreFilters).catch(() => {})
   }, [])
 
-  /* ─── recommended ─── */
   useEffect(() => {
     if (hasToken) api<RecommendedCatalog>('/store/recommended').then(setRecommended).catch(() => {})
   }, [hasToken])
 
-  /* ─── favorites ─── */
   useEffect(() => {
     if (!hasToken) return
     api<{ data: Product[] }>('/favorites').then((r) => setFavIds(new Set((r.data ?? []).map((p) => p.id)))).catch(() => {})
   }, [hasToken])
 
-  /* ─── debounce search ─── */
   useEffect(() => { const t = setTimeout(() => setDebouncedSearch(search), 300); return () => clearTimeout(t) }, [search])
 
-  /* ─── debounce price ─── */
   useEffect(() => { const t = setTimeout(() => setDebouncedPrice({ min: priceMin, max: priceMax }), 400); return () => clearTimeout(t) }, [priceMin, priceMax])
 
-  /* ─── fetch on filter change ─── */
   useEffect(() => { fetchProducts(1) }, [fetchProducts])
 
-  /* ─── persist view preference ─── */
   useEffect(() => { try { localStorage.setItem('tienda_view', view) } catch {} }, [view])
 
-  /* ─── derived ─── */
   const hasFilters = Boolean(category || brand || model || partType || priceMin || priceMax || search.trim())
   const clearFilters = () => { setCategory(''); setBrand(''); setModel(''); setPartType(''); setPriceMin(''); setPriceMax(''); setSort('name'); setSearch('') }
 
@@ -417,7 +390,6 @@ export default function Store() {
   const filterCount = (brand ? 1 : 0) + (model ? 1 : 0) + (partType ? 1 : 0) + (priceMin || priceMax ? 1 : 0)
   const [filtersOpen, setFiltersOpen] = useState(false)
 
-  /* ─── favorites handlers ─── */
   async function toggleFav(e: React.MouseEvent, p: Product) {
     e.preventDefault(); e.stopPropagation()
     if (!user) { toast.info('Inicia sesión para guardar favoritos'); navigate('/login'); return }
@@ -437,7 +409,6 @@ export default function Store() {
   const fav = (id: number) => favIds.has(id)
   const favProps = { isFavorite: fav, onToggleFav: toggleFav, favLoading: favToggling !== null }
 
-  /* render */
   return (
     <div>
       <PageHero
@@ -481,7 +452,6 @@ export default function Store() {
       )}
 
       <div className="mx-auto max-w-6xl px-4 py-8">
-        {/* ──── CATEGORY RAIL ──── */}
         <div className="mb-6 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
           <div className="mb-1 flex items-center justify-between">
             <p className="text-sm font-black text-gray-900">Explora por categoría</p>
@@ -510,9 +480,7 @@ export default function Store() {
           />
         </div>
 
-        {/* ──── SIDEBAR + PRODUCTS LAYOUT ──── */}
         <div className="flex gap-6">
-          {/* ── SIDEBAR (en movil se abre como drawer) ── */}
           {filtersOpen && (
             <div className="fixed inset-0 z-40 bg-black/40 md:hidden" onClick={() => setFiltersOpen(false)} />
           )}
@@ -530,7 +498,6 @@ export default function Store() {
                 </div>
               </div>
 
-              {/* Category */}
               <FilterSection title="Categoría" open={sidebarOpen.category} onToggle={() => setSidebarOpen((s) => ({ ...s, category: !s.category }))}>
                 <div className="space-y-0.5">
                   {categories.map((c) => (
@@ -539,7 +506,6 @@ export default function Store() {
                 </div>
               </FilterSection>
 
-              {/* Brand */}
               <FilterSection title="Marca de moto" open={sidebarOpen.brand} onToggle={() => setSidebarOpen((s) => ({ ...s, brand: !s.brand }))}>
                 <div className="relative mb-2">
                   <svg className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-300" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
@@ -554,7 +520,6 @@ export default function Store() {
                 </div>
               </FilterSection>
 
-              {/* Model */}
               <FilterSection title="Modelo de moto" open={sidebarOpen.model} onToggle={() => setSidebarOpen((s) => ({ ...s, model: !s.model }))}>
                 <div className="relative mb-2">
                   <svg className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-300" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>
@@ -576,7 +541,6 @@ export default function Store() {
                 </div>
               </FilterSection>
 
-              {/* Part type */}
               <FilterSection title="Tipo de repuesto" open={sidebarOpen.partType} onToggle={() => setSidebarOpen((s) => ({ ...s, partType: !s.partType }))}>
                 <div className="space-y-0.5">
                   <RadioOption label="Todos" checked={!partType} onChange={() => setPartType('')} />
@@ -586,7 +550,6 @@ export default function Store() {
                 </div>
               </FilterSection>
 
-              {/* Price */}
               <FilterSection title="Precio" open={sidebarOpen.price} onToggle={() => setSidebarOpen((s) => ({ ...s, price: !s.price }))}>
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1">
@@ -618,7 +581,6 @@ export default function Store() {
                 </p>
               </FilterSection>
 
-              {/* Clear */}
               {filterCount > 0 && (
                 <button onClick={clearFilters} className="mt-4 w-full rounded-xl border border-gray-200 bg-white py-2.5 text-xs font-semibold text-gray-600 transition hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700">
                   Limpiar filtros
@@ -630,9 +592,7 @@ export default function Store() {
             </div>
           </aside>
 
-          {/* ── CONTENT ── */}
           <div className="min-w-0 flex-1">
-            {/* toolbar */}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
               <button onClick={() => setFiltersOpen(true)} className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-700 shadow-sm transition hover:border-orange-300 md:hidden">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" /></svg>
@@ -664,7 +624,6 @@ export default function Store() {
               </div>
             </div>
 
-            {/* filtros activos */}
             <div className="mb-4 flex flex-wrap items-center gap-2">
               <p className="mr-2 text-sm text-gray-500">
                 <span className="font-bold text-gray-900">{meta.total}</span> producto{meta.total === 1 ? '' : 's'}
@@ -678,7 +637,6 @@ export default function Store() {
               {hasFilters && <button onClick={clearFilters} className="text-xs font-semibold text-gray-400 underline-offset-2 transition hover:text-orange-600 hover:underline">Limpiar todo</button>}
             </div>
 
-            {/* recommended */}
             {user && recommended && (
               <div className="mb-8 rounded-3xl border border-orange-100 bg-gradient-to-br from-orange-50/60 to-white p-5 md:p-7">
                 <div className="mb-2 flex items-center justify-between">
@@ -699,7 +657,6 @@ export default function Store() {
               </div>
             )}
 
-            {/* products */}
             {loading ? (
               <div className="mt-2"><GridSkeleton count={9} /></div>
             ) : products.length === 0 ? (
@@ -730,7 +687,6 @@ export default function Store() {
           </div>
         </div>
 
-        {/* ──── TRUST BAR ──── */}
         <div className="mt-12 grid grid-cols-2 gap-4 md:grid-cols-4">
           {[
             { icon: ShieldCheck, label: 'Productos 100% originales', sub: 'Trabajamos con las mejores marcas del mercado.' },
@@ -748,7 +704,6 @@ export default function Store() {
           ))}
         </div>
 
-        {/* ──── CTA WHATSAPP ──── */}
         <div className="mt-8 flex flex-col items-center gap-4 rounded-3xl border border-gray-100 bg-white px-8 py-8 shadow-sm sm:flex-row sm:justify-between sm:px-12">
           <div className="flex items-center gap-4 text-center sm:text-left">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-50"><Search className="h-6 w-6 text-orange-500" /></div>

@@ -4,8 +4,6 @@ import { HeroBg } from './HeroBg'
 
 interface Point { icon: LucideIcon; title: string; desc?: string }
 
-// cabecera clara para las paginas, mismo idioma que servicios
-// si hay foto del CMS se muestra al lado, si no queda centrada
 export default function PageHero({ eyebrow, title, subtitle, points = [], below, images, visual }: {
   eyebrow?: string
   title: ReactNode

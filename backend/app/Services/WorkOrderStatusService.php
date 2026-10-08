@@ -5,20 +5,10 @@ namespace App\Services;
 use App\Models\User;
 use App\Models\WorkOrder;
 
-/**
- * Autoridad única para las transiciones de estado de una orden de trabajo.
- *
- * Estados operativos (columna status) existentes en el proyecto.
- * Estados de cotización (columna quotation_status) se validan por separado.
- */
 class WorkOrderStatusService
 {
-    /** Roles de contacto básicos para staff. */
     private const STAFF = ['admin', 'receptionist', 'mechanic'];
 
-    /**
-     * Mapa de transiciones permitidas (status) => [status destino => roles permitidos].
-     */
     public function allowedTransitions(): array
     {
         return [
@@ -52,11 +42,9 @@ class WorkOrderStatusService
                 'delivered' => ['admin', 'receptionist'],
                 'cancelled' => ['admin', 'receptionist'],
             ],
-            // delivered y cancelled son terminales.
         ];
     }
 
-    /** Transiciones de cotización (quotation_status). */
     public function quotationTransitions(): array
     {
         return [
@@ -87,12 +75,6 @@ class WorkOrderStatusService
         return in_array($to, $allowed, true);
     }
 
-    /**
-     * Verifica y registra una transición de estado operativo.
-     *
-     * @param  string|null  $comment
-     * @return \App\Models\WorkOrderStatus
-     */
     public function applyOperative(WorkOrder $order, string $to, User $actor, ?string $comment = null)
     {
         if (! $this->canTransitionOperative($order, $to, $actor)) {

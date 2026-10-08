@@ -68,7 +68,6 @@ const answers: Record<string, { text: string; links?: { to?: string; href?: stri
 const fmtMoney = (n: number) =>
   '$' + Math.round(n).toLocaleString('es-CO', { maximumFractionDigits: 0 })
 
-// Categorías / piezas que buscamos en el catálogo
 const partTerms: { terms: string[]; search: string }[] = [
   { terms: ['cadena', 'cadenilla', 'kit de arrastre'], search: 'cadena' },
   { terms: ['aceite', 'lubricante'], search: 'aceite' },
@@ -112,7 +111,6 @@ function normalize(t: string): string {
 function isCatalogQuestion(text: string): boolean {
 const t = normalize(text)
   if (detectPart(text)) return true
-  // pregunta de compatibilidad: menciona una moto y un repuesto
   const mentionsModel = /mt[- ]?09|boxer|pulsar|ak|ninja|duke|fz|xtz|r15|activ|discover|cbr|gsx|gz/.test(t)
   const mentionsPart = /cadena|aceite|llanta|freno|bujia|filtro|bateria|espejo|manigueta|casco|guante/.test(t)
   return mentionsModel && mentionsPart
@@ -173,7 +171,6 @@ export default function ChatBot() {
     if (isCatalogQuestion(clean)) {
       const part = detectPart(clean)
       const brand = detectBrand(clean)
-      // buscar el repuesto con la marca (y quizá el modelo) primero; si no hay resultados, solo el repuesto
       let products: Product[] = []
       if (part) {
         products = await searchCatalog(brand ? `${part} ${brand}` : part)
@@ -210,7 +207,6 @@ export default function ChatBot() {
       return
     }
 
-    // Respuestas predefinidas
     setTyping(true)
     const key = detect(clean)
       const delay = key === 'default' ? 700 : 500 + Math.min(400, clean.length * 10)
@@ -283,7 +279,6 @@ function getAnswer(key: string): Msg {
 
       {open && (
         <div className="chat-panel anim-fade-up">
-          {/* Header */}
           <div className="flex items-center gap-3 bg-carbon-900 px-4 py-3 text-white">
             <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-600"><Bot className="h-5 w-5 text-white" /></span>
             <div className="min-w-0">
@@ -292,7 +287,6 @@ function getAnswer(key: string): Msg {
             </div>
           </div>
 
-          {/* Messages */}
           <div className="chat-body">
             {msgs.map((m, i) => (
               <div key={i} className={`rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed whitespace-pre-line ${m.from === 'bot' ? 'self-start rounded-bl-sm bg-white text-carbon-800 shadow' : 'self-end rounded-br-sm bg-brand-600 text-white'}`}>
@@ -347,7 +341,6 @@ function getAnswer(key: string): Msg {
             <div ref={bottomRef} />
           </div>
 
-          {/* Quick actions */}
           <div className="flex flex-wrap gap-1.5 border-t border-carbon-100 px-3 pt-2.5">
             {quickActions.map((q) => (
               <button key={q.key} type="button" onClick={() => send(q.key)} className="rounded-full border border-carbon-200 px-3 py-1 text-xs text-carbon-600 transition hover:border-brand-500 hover:text-brand-600">
@@ -356,7 +349,6 @@ function getAnswer(key: string): Msg {
             ))}
           </div>
 
-          {/* Input */}
           <div className="flex items-center gap-2 p-3">
             <input
               value={input}

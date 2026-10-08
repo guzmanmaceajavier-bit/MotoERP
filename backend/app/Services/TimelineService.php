@@ -11,10 +11,8 @@ use App\Models\Rating;
 use App\Models\User;
 use Illuminate\Support\Collection;
 
-// historial del cliente: facturas, ordenes, citas, favoritos, etc todo junto ordenado por fecha
 class TimelineService
 {
-    // arma los eventos para el feed (mas recientes primero)
     public function collect(User $user, array $f): Collection
     {
         $source = $f['source'] ?? 'all';
@@ -25,7 +23,6 @@ class TimelineService
 
         $events = collect();
 
-        // ---- Facturas (tienda y/o servicio) ----
         if (in_array($source, ['all', 'store', 'service'], true)) {
             $invQ = Invoice::with('items')->where('user_id', $user->id);
             if ($source === 'store') {
@@ -85,7 +82,6 @@ class TimelineService
             }
         }
 
-        // ---- Órdenes de trabajo (servicios) ----
         if (in_array($source, ['all', 'service'], true)) {
             $ordQ = $user->workOrders()
                 ->with(['motorcycle', 'motorcycle.brand']);
@@ -136,7 +132,6 @@ class TimelineService
             }
         }
 
-        // ---- Citas agendadas ----
         if (in_array($source, ['all', 'service'], true)) {
             $apptQ = Appointment::where('user_id', $user->id);
             if ($from !== '') {
@@ -181,7 +176,6 @@ class TimelineService
             }
         }
 
-        // ---- Favoritos de tienda ----
         if (in_array($source, ['all', 'store'], true)) {
             $favQ = Favorite::with('product')->where('user_id', $user->id);
             if ($from !== '') {
@@ -218,7 +212,6 @@ class TimelineService
             }
         }
 
-        // ---- Valoraciones de servicios ----
         if (in_array($source, ['all', 'service'], true)) {
             $ratQ = Rating::where('user_id', $user->id);
             if ($from !== '') {
@@ -255,7 +248,6 @@ class TimelineService
             }
         }
 
-        // ---- Motos registradas en el garaje ----
         if (in_array($source, ['all', 'service'], true)) {
             $motoQ = Motorcycle::with(['brand', 'model'])->where('user_id', $user->id);
             if ($from !== '') {
@@ -295,7 +287,6 @@ class TimelineService
             }
         }
 
-        // ---- Movimientos de puntos ----
         if (in_array($source, ['all', 'points'], true)) {
             $ptQ = LoyaltyPoint::where('user_id', $user->id);
             if ($from !== '') {
@@ -332,11 +323,9 @@ class TimelineService
             }
         }
 
-        // Orden cronológico descendente (los nulos al final)
         return $events->sortByDesc('date')->values();
     }
 
-    // filas para el csv (mas viejos primero)
     public function collectExportRows(User $user, array $f): Collection
     {
         $source = $f['source'] ?? 'all';
@@ -545,7 +534,6 @@ class TimelineService
         return $events->sortBy('date')->values();
     }
 
-    // totales de facturas sin paginar
     public function invoiceTotals(int $userId, ?string $source = null): array
     {
         $totQ = Invoice::where('user_id', $userId);

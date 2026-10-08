@@ -22,8 +22,6 @@ class StaffController extends Controller
 {
     use Paginates;
 
-    // ---------- Recepcionista / Admin: crear y gestionar órdenes ----------
-
     public function createOrder(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -142,8 +140,6 @@ class StaffController extends Controller
         return response()->json(app(\App\Services\WorkOrderSerializer::class)->serialize($order->fresh()));
     }
 
-    // ---------- Mecánico: diagnóstico y cotización ----------
-
     public function submitDiagnosisAndQuotation(Request $request, WorkOrder $order): JsonResponse
     {
         $this->authorizeMechanic($request, $order);
@@ -178,8 +174,6 @@ class StaffController extends Controller
             foreach ($validated['items'] as $item) {
                 $order->items()->create($item);
                 $partsTotal += $item['quantity'] * $item['unit_price'];
-                // Solo validamos disponibilidad al cotizar; la reserva real se hace
-                // cuando el cliente APRUEBA. Evita la doble reserva.
                 if (! empty($item['product_id'])) {
                     $stock->assertAvailable($item['product_id'], $item['quantity']);
                 }
@@ -224,8 +218,6 @@ class StaffController extends Controller
         return response()->json(app(\App\Services\WorkOrderSerializer::class)->serialize($order->fresh()->load('items', 'labors')));
     }
 
-    // ---------- Estados / finalización ----------
-
     public function updateStatus(Request $request, WorkOrder $order): JsonResponse
     {
         $validated = $request->validate([
@@ -240,7 +232,6 @@ class StaffController extends Controller
             app(NotificationService::class)->workCompleted($order);
         }
 
-        // Si se cancela la orden, se libera el stock reservado (si quedaba alguno).
         if ($validated['status'] === 'cancelled') {
             $stock = app(\App\Services\InventoryService::class);
             foreach ($order->items as $item) {
@@ -257,8 +248,6 @@ class StaffController extends Controller
 
         return response()->json(app(\App\Services\WorkOrderSerializer::class)->serialize($order->fresh()));
     }
-
-    // ---------- Fotografías de la orden ----------
 
     public function uploadPhoto(Request $request, WorkOrder $order): JsonResponse
     {
@@ -314,8 +303,6 @@ class StaffController extends Controller
             'uploaded_by' => $p->uploader?->name,
         ]));
     }
-
-    // ---------- Clientes / motos (recepcionista) ----------
 
     public function storeClient(Request $request): JsonResponse
     {
@@ -402,7 +389,6 @@ class StaffController extends Controller
 
         $user->update($data);
 
-        // Cerrar todas las sesiones del cliente cuando el admin cambia su contraseña
         if ($passwordChanged) {
             $user->tokens()->delete();
         }
@@ -410,9 +396,6 @@ class StaffController extends Controller
         return response()->json($user->setHidden(['password']));
     }
 
-    /**
-     * Envía las credenciales de acceso al cliente por WhatsApp.
-     */
     public function sendClientCredentials(Request $request, User $user): JsonResponse
     {
         if ($user->role !== 'customer') {
@@ -443,10 +426,6 @@ class StaffController extends Controller
         return response()->json(['message' => 'No se pudo enviar el mensaje. Verifica que WhatsApp esté configurado.'], 500);
     }
 
-    /**
-     * Vista del admin sobre el garaje de un cliente: sus motos, servicios e historial.
-     * NO se exponen credenciales, tokens ni información sensible.
-     */
     public function clientDetail(Request $request, User $client): JsonResponse
     {
         if ($client->role !== 'customer') {
@@ -603,7 +582,6 @@ class StaffController extends Controller
 
         $appointment->update($validated);
 
-        // Al confirmar, avisar por WhatsApp al cliente (si está configurado).
         if (($validated['status'] ?? null) === 'confirmed') {
             $appointment->refresh();
             $sent = app(\App\Services\NotificationService::class)->sendAppointmentConfirmation($appointment);
@@ -621,8 +599,6 @@ class StaffController extends Controller
 
         return response()->json(['message' => 'Cita eliminada'], 200);
     }
-
-    // ---------- Citas ----------
 
     public function storeAppointment(Request $request): JsonResponse
     {
@@ -656,8 +632,6 @@ class StaffController extends Controller
 
         return response()->json($appointment->load('mechanic'), 201);
     }
-
-    // ---------- Inventario ----------
 
     public function stockMovements(Request $request, Product $product): JsonResponse
     {
@@ -764,8 +738,6 @@ class StaffController extends Controller
         return response()->json($inv->fresh());
     }
 
-    // ---------- Usuarios del taller (admin) ----------
-
     public function storeStaff(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -856,8 +828,6 @@ class StaffController extends Controller
         return response()->json(['message' => 'Personal eliminado']);
     }
 
-    // ---------- Dashboard (admin) ----------
-
     public function dashboard(Request $request): JsonResponse
     {
         $period = in_array($request->get('period'), ['7d', '30d', '12m'], true)
@@ -867,8 +837,6 @@ class StaffController extends Controller
         return response()->json(app(\App\Services\DashboardService::class)->overview($period));
     }
 
-    // ---------- Mantenimiento predictivo (admin) ----------
-
     public function maintenanceAlerts(Request $request): JsonResponse
     {
         return response()->json(
@@ -876,14 +844,10 @@ class StaffController extends Controller
         );
     }
 
-    // ---------- Agenda del taller (admin) ----------
-
     public function workshopAgenda(Request $request): JsonResponse
     {
         return response()->json(app(\App\Services\AgendaService::class)->workshop());
     }
-
-    // ---------- Calendario (días ocupados) ----------
 
     public function calendar(Request $request): JsonResponse
     {
@@ -902,8 +866,6 @@ class StaffController extends Controller
 
         return response()->json(app(\App\Services\AgendaService::class)->month($month));
     }
-
-    // ---------- helpers ----------
 
     private function authorizeMechanic(Request $request, WorkOrder $order): void
     {

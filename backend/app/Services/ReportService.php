@@ -5,13 +5,10 @@ namespace App\Services;
 use App\Models\Invoice;
 use App\Models\WorkOrder;
 
-// reportes de ventas y deudores
 class ReportService
 {
-    // cuanto costo lo vendido en una factura
     public function invoiceCost(Invoice $i): float
     {
-        // Costo de ventas directas grabado en cada línea
         $directCost = (float) $i->items->sum('cost');
         if ($directCost > 0) {
             return round($directCost, 2);
@@ -28,10 +25,8 @@ class ReportService
         return round($cost, 2);
     }
 
-    // reporte del periodo con comparacion al anterior
     public function period(string $from, string $to, string $compareMode): array
     {
-        // Período anterior de la misma longitud para comparación
         $prevFrom = null;
         $prevTo = null;
         if ($compareMode !== 'none') {
@@ -69,7 +64,6 @@ class ReportService
         $salesTotal = round($invoices->sum('paid_amount'), 2);
         $periodProfit = round($salesTotal - $periodCost, 2);
 
-        // Métodos de pago (usa el total facturado del período)
         $byMethod = $invoices
             ->groupBy(fn ($i) => $i->payment_method ?: 'efectivo')
             ->map(fn ($group) => [
@@ -79,7 +73,6 @@ class ReportService
             ])
             ->values();
 
-        // Top 5 productos más vendidos (ventas directas + órdenes)
         $productCounts = [];
         foreach ($invoices as $i) {
             foreach ($i->items as $line) {
@@ -118,12 +111,10 @@ class ReportService
             ->take(5)
             ->values();
 
-        // Cuentas por cobrar abiertas (fuera del período, pendientes hoy)
         $outstanding = round((float) Invoice::whereIn('status', ['pending', 'partial'])
             ->get()
             ->sum(fn ($i) => max(0, (float) $i->total - (float) $i->paid_amount)), 2);
 
-        // Comparación con período anterior
         $prevSales = 0;
         $prevProfit = 0;
         $salesDelta = null;
@@ -159,7 +150,6 @@ class ReportService
         ];
     }
 
-    // los que deben plata, agrupados por cliente
     public function debtors(string $q): array
     {
         $invoices = Invoice::with('user', 'payments')

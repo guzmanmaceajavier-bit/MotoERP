@@ -243,7 +243,6 @@ export default function Home() {
 
   return (
     <div>
-      {/* hero */}
       <section className="relative isolate overflow-hidden bg-carbon-950 text-white h-[500px] md:h-[600px]">
         {heroImages.map((src, i) => (
           <div key={src} className="absolute inset-0 -z-10">
@@ -290,7 +289,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* marquesina */}
       <div className="border-y border-carbon-200 bg-white py-5">
         <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]">
           <div className="flex w-max gap-10 anim-marquee">
@@ -304,7 +302,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* barra de confianza */}
       <section className="mx-auto max-w-6xl px-4 pt-14">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           {stats.map((s, i) => (
@@ -325,7 +322,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* servicios destacados */}
       {services.length > 0 && (
         <section className="mx-auto max-w-6xl px-4 py-16">
           <Reveal className="flex flex-wrap items-end justify-between gap-4">
@@ -359,7 +355,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* como funciona */}
       <section className="mx-auto max-w-6xl px-4 pb-16">
         <Reveal className="text-center">
           <h2 className="text-3xl font-black md:text-4xl">En <span className="gradient-text">3 pasos</span></h2>
@@ -381,7 +376,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* marcas */}
       {brands.length > 0 && (
         <section className="border-y border-gray-100 bg-white py-10">
           <div className="mx-auto max-w-6xl px-4">
@@ -408,7 +402,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* productos destacados */}
       {products.length > 0 && (
         <section className="bg-gray-50 py-16">
           <div className="mx-auto max-w-6xl px-4">
@@ -432,7 +425,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* banners */}
       {banners.length > 0 && (() => {
         const visible = banners.slice(0, 6)
         return (
@@ -470,7 +462,6 @@ export default function Home() {
         )
       })()}
 
-      {/* blog */}
       {posts.length > 0 && (
         <section className="mx-auto max-w-6xl px-4 pb-16">
           <Reveal className="flex flex-wrap items-end justify-between gap-4">
@@ -505,7 +496,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* faq */}
       <section className="mx-auto max-w-3xl px-4 py-16">
         <Reveal className="text-center">
           <h2 className="text-3xl font-black md:text-4xl">Resolvemos tus <span className="gradient-text">dudas</span></h2>
@@ -544,7 +534,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* cta final */}
       <section className="border-t border-carbon-100 bg-carbon-50/70 py-20">
         <div className="mx-auto max-w-6xl px-4">
           <Reveal className="text-center">

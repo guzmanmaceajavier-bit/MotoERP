@@ -43,11 +43,6 @@ class InvoiceController extends Controller
         ];
     }
 
-    // ---------- Facturas (cliente) ----------
-
-    /**
-     * PDF de una factura para el staff (ventas de mostrador/tienda y órdenes).
-     */
     public function staffSalePdf(Request $request, Invoice $invoice): \Illuminate\Http\Response
     {
         if (! in_array($request->user()->role, ['admin', 'receptionist'])) {
@@ -111,13 +106,11 @@ class InvoiceController extends Controller
         $total = $query->toBase()->getCountForPagination();
         $rows = $query->forPage($page, $perPage)->get();
 
-        // Mapa nombre-producto => imagen para resolver miniaturas de los ítems
         $images = $this->serializer()->itemImages($rows);
         $isAdmin = $this->isAdmin($request);
 
         $items = $rows->map(fn ($i) => $this->serializer()->serialize($i, $withItems, $images, $isAdmin));
 
-        // Totales globales reales (de TODAS las facturas del cliente, sin paginar)
         $totals = app(TimelineService::class)->invoiceTotals(
             $request->user()->id,
             in_array($source, ['store', 'service'], true) ? $source : null
@@ -129,10 +122,6 @@ class InvoiceController extends Controller
         ]);
     }
 
-    /**
-     * Exporta el historial del cliente a CSV (compatible con Excel).
-     * Respeta los mismos filtros que myInvoices (source, status, term, from, to).
-     */
     public function exportCsv(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $query = Invoice::with('items')
@@ -169,8 +158,6 @@ class InvoiceController extends Controller
 
         return response()->streamDownload(function () use ($invoices, $statusLabels) {
             $out = fopen('php://output', 'w');
-
-            // BOM para que Excel detecte UTF-8
             fwrite($out, "\xEF\xBB\xBF");
 
             fputcsv($out, ['N° Factura', 'Fecha', 'Tipo', 'Método', 'Estado', 'Abonado', 'Total', 'Saldo', 'Detalle']);
@@ -205,11 +192,6 @@ class InvoiceController extends Controller
         }, 'historial-pedidos.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
-    /**
-     * Línea de tiempo unificada del cliente: facturas de tienda, facturas de
-     * servicio, órdenes de trabajo y movimientos de puntos, en un solo feed
-     * cronológico descendente. Respeta source, from, to y term.
-     */
     public function myTimeline(Request $request): JsonResponse
     {
         $user = $request->user();
@@ -220,7 +202,6 @@ class InvoiceController extends Controller
         $page = $this->page($request);
         $perPage = $this->perPage($request);
 
-        // Totales globales de facturas (sin paginar), igual que myInvoices
         $totals = app(TimelineService::class)->invoiceTotals(
             $user->id,
             in_array($filters['source'], ['store', 'service'], true) ? $filters['source'] : null
@@ -233,10 +214,6 @@ class InvoiceController extends Controller
         ]);
     }
 
-    /**
-     * Exporta la línea de tiempo unificada a CSV (compatible con Excel),
-     * ordenada por fecha ascendente, respetando los mismos filtros de myTimeline.
-     */
     public function timelineExport(Request $request): \Symfony\Component\HttpFoundation\StreamedResponse
     {
         $events = app(TimelineService::class)->collectExportRows($request->user(), $this->timelineFilters($request));
@@ -311,8 +288,6 @@ class InvoiceController extends Controller
         return Pdf::loadView('pdf.invoice', ['invoice' => $invoice, 'workshop' => $workshop]);
     }
 
-    // ---------- Generación de factura a partir de orden (staff) ----------
-
     public function generateFromOrder(Request $request, WorkOrder $order): JsonResponse
     {
         $order->load(['items', 'labors', 'user']);
@@ -321,7 +296,6 @@ class InvoiceController extends Controller
             return response()->json(['message' => 'La orden no tiene cliente asociado'], 422);
         }
 
-        // Idempotencia: una orden solo genera una factura (parcial o total).
         $existing = \App\Models\Invoice::where('work_order_id', $order->id)->first();
         if ($existing) {
             return response()->json([
@@ -351,8 +325,6 @@ class InvoiceController extends Controller
 
         return response()->json($this->serializer()->serialize($invoice->load('items', 'payments'), false, [], $this->isAdmin($request)), 201);
     }
-
-    // ---------- Pagos / abonos ----------
 
     public function registerPayment(Request $request, Invoice $invoice): JsonResponse
     {
@@ -386,11 +358,6 @@ class InvoiceController extends Controller
         return response()->json(app(PaymentService::class)->history($invoice));
     }
 
-    // ---------- Pedidos de la tienda ----------
-
-    /**
-     * Lista los pedidos de la tienda (facturas sin orden de servicio).
-     */
     public function shopOrders(Request $request): JsonResponse
     {
         $query = Invoice::whereNull('work_order_id')->with(['items', 'user', 'payments']);
@@ -425,9 +392,6 @@ class InvoiceController extends Controller
         return response()->json($this->paginatePayload($items, $page, $perPage, $total), 200, [], JSON_UNESCAPED_UNICODE);
     }
 
-    /**
-     * Cambia el estado de un pedido de tienda (verify+stock side effects).
-     */
     public function updateShopOrderStatus(Request $request, Invoice $invoice): JsonResponse
     {
         if ($invoice->work_order_id) {
@@ -458,9 +422,6 @@ class InvoiceController extends Controller
         return response()->json($this->serializer()->serialize($invoice->fresh()->load('items', 'payments', 'user'), false, [], $this->isAdmin($request)));
     }
 
-    /**
-     * El cliente sube el comprobante de pago (pasa a revisión).
-     */
     public function uploadProof(Request $request, Invoice $invoice): JsonResponse
     {
         $this->authorizeOwnership($request, $invoice);
@@ -503,9 +464,6 @@ class InvoiceController extends Controller
         return response()->json($this->serializer()->serialize($invoice->fresh()->load('items'), false, [], $this->isAdmin($request)));
     }
 
-    /**
-     * El cliente cancela su pedido mientras esté pendiente.
-     */
     public function cancelShopOrder(Request $request, Invoice $invoice): JsonResponse
     {
         $this->authorizeOwnership($request, $invoice);
@@ -513,8 +471,6 @@ class InvoiceController extends Controller
         if ($invoice->work_order_id) {
             return response()->json(['message' => 'La factura no es un pedido de tienda'], 422);
         }
-        // Pendientes (transferencia sin pagar) o confirmados que aún no se han pagado
-        // (efectivo sin cobrar): el cliente puede desistir antes de pagar.
         $canCancel = in_array($invoice->order_status, ['pending', 'confirmed'], true)
             && (float) $invoice->paid_amount <= 0;
         if (! $canCancel) {
@@ -534,9 +490,6 @@ class InvoiceController extends Controller
         return response()->json($this->serializer()->serialize($invoice->fresh()->load('items'), false, [], $this->isAdmin($request)));
     }
 
-    /**
-     * El staff sube el PDF de la factura para descarga del cliente.
-     */
     public function uploadInvoicePdf(Request $request, Invoice $invoice): JsonResponse
     {
         if ($invoice->work_order_id) {
@@ -563,9 +516,6 @@ class InvoiceController extends Controller
         return response()->json($this->serializer()->serialize($invoice->fresh()->load('items'), false, [], $this->isAdmin($request)));
     }
 
-    /**
-     * Descarga el PDF de la factura (subido por staff; fallback al generado).
-     */
     public function downloadInvoicePdf(Request $request, Invoice $invoice): \Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\Response
     {
         $authRole = $request->user()->role;
@@ -591,8 +541,6 @@ class InvoiceController extends Controller
             app(NotificationService::class)->notify($u, $title, $message, 'info', ['channel' => 'order']);
         }
     }
-
-    // ---------- Garantías ----------
 
     public function createWarranty(Request $request): JsonResponse
     {
@@ -653,8 +601,6 @@ class InvoiceController extends Controller
             $this->page($request)
         ));
     }
-
-    // ---------- Puntos (cliente) ----------
 
     public function myPoints(Request $request): JsonResponse
     {
@@ -731,8 +677,6 @@ class InvoiceController extends Controller
         return $pdf->download("garantia-{$warranty->id}.pdf");
     }
 
-    // ---------- helpers ----------
-
     private function authorizeOwnership(Request $request, Invoice $invoice): void
     {
         if (! in_array($request->user()->role, ['admin', 'receptionist'])
@@ -741,10 +685,6 @@ class InvoiceController extends Controller
         }
     }
 
-    /**
-     * Compatibilidad: StoreController y FinanceController usan
-     * InvoiceController::generateInvoiceNumber().
-     */
     public static function generateInvoiceNumber(): string
     {
         return app(InvoiceService::class)->generateInvoiceNumber();

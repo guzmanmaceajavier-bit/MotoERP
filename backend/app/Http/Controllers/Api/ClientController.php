@@ -107,8 +107,6 @@ class ClientController extends Controller
         ]);
     }
 
-    // ---------- Distribución de servicios del cliente (donut) ----------
-
     private function servicesByStatus(int $userId): array
     {
         $statuses = [
@@ -136,8 +134,6 @@ class ClientController extends Controller
             ->values()
             ->all();
     }
-
-    // ---------- Hoja de Vida Digital de una moto ----------
 
     public function requestService(Request $request): JsonResponse
     {
@@ -171,7 +167,6 @@ class ClientController extends Controller
             ['channel' => 'order']
         );
 
-        // Notificar a staff (admin/recepción)
         foreach (\App\Models\User::whereIn('role', ['admin', 'receptionist'])->get() as $staff) {
             app(\App\Services\NotificationService::class)->notify(
                 $staff,

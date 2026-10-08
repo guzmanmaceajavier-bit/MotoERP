@@ -120,9 +120,7 @@ export default function StaffLayout() {
       try {
         const res = await apiStaff<{ count: number }>('/notifications/unread-count')
         if (alive) setUnread(res.count)
-      } catch {
-        /* silencioso: el badge simplemente no se actualiza */
-      }
+      } catch {}
     }
     loadUnread()
     const t = setInterval(loadUnread, 45000)

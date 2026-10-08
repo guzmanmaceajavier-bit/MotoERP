@@ -35,16 +35,13 @@ export default function CartDrawer({ storePath: _storePath = '/tienda' }: { stor
   if (!drawerOpen) return null
 
   return (
-    <>
-      {/* Overlay */}
-      <div
+      <>
+        <div
         className="fixed inset-0 z-[9998] bg-black/30 backdrop-blur-sm transition-opacity"
         onClick={() => setDrawerOpen(false)}
       />
 
-      {/* Drawer */}
-      <div className="fixed inset-y-0 right-0 z-[9999] flex w-full max-w-md flex-col bg-white shadow-xl anim-slide-in-right">
-        {/* Header */}
+        <div className="fixed inset-y-0 right-0 z-[9999] flex w-full max-w-md flex-col bg-white shadow-xl anim-slide-in-right">
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
           <div className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5 text-orange-500" />
@@ -56,7 +53,6 @@ export default function CartDrawer({ storePath: _storePath = '/tienda' }: { stor
           </button>
         </div>
 
-        {/* Body */}
         <div className="flex-1 overflow-y-auto px-5 py-4">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -104,7 +100,6 @@ export default function CartDrawer({ storePath: _storePath = '/tienda' }: { stor
           )}
         </div>
 
-        {/* Footer */}
         {items.length > 0 && (
           <div className="border-t border-gray-100 px-5 py-4 space-y-3">
             <div className="flex items-center justify-between">

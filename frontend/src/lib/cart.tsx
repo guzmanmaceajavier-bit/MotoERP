@@ -53,14 +53,12 @@ const legacyFulfillmentKey = 'motohub_cart_fulfillment'
 
 function readFulfillment(key: string): Fulfillment {
   try {
-    // la vieja clave global solo se respeta una vez para el invitado y se migra
     const v = localStorage.getItem(fulfillmentKey(key)) ?? (key === guestKey ? localStorage.getItem(legacyFulfillmentKey) : null)
     if (v === 'shipping' || v === 'pickup' || v === 'installing') return v
   } catch {}
   return 'pickup'
 }
 
-// junta dos carritos sumando cantidades sin pasarse del stock
 function mergeItems(mine: CartItem[], incoming: CartItem[]): CartItem[] {
   const out = [...mine]
   for (const line of incoming) {
@@ -104,8 +102,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } catch {}
   }
 
-  // Al cambiar el usuario (login/logout) se restaura el carrito de la sesión correspondiente.
-  // Si entra con cosas de invitado, se fusionan a su cuenta en vez de perderse.
   const prevKey = useRef(storageKey)
   useEffect(() => {
     if (prevKey.current === storageKey) return
@@ -169,8 +165,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clear = () => setItems([])
 
-  // pregunta al servidor precios y stock reales y ajusta el carrito.
-  // quita lo desactivado y baja cantidades que ya no alcanzan.
   const validate = async (): Promise<{ removed: number; updated: number }> => {
     if (items.length === 0 || validating) return { removed: 0, updated: 0 }
     setValidating(true)
@@ -221,7 +215,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const count = items.reduce((acc, i) => acc + i.quantity, 0)
 
-  // Abrir drawer automáticamente al agregar un producto
   useEffect(() => {
     if (count > prevCount.current) {
       setDrawerOpen(true)

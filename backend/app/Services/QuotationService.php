@@ -6,16 +6,8 @@ use App\Models\QuotationVersion;
 use App\Models\User;
 use App\Models\WorkOrder;
 
-/**
- * Gestión y versionado de cotizaciones.
- *
- * Cada vez que se envía o se modifica una cotización se crea una nueva versión
- * (snapshot) con items, cantidades, precios y costos internos congelados.
- * La versión aprobada queda inmutable a historial.
- */
 class QuotationService
 {
-    /** Atribuye la siguiente versión y persiste el snapshot actual de la orden. */
     public function snapshot(WorkOrder $order, string $status, ?string $reason = null, ?User $actor = null, ?float $taxRate = null): QuotationVersion
     {
         $order->load(['items', 'labors']);
@@ -73,7 +65,6 @@ class QuotationService
         ]);
     }
 
-    /** Marca la última versión como aprobada (queda congelada). */
     public function markLatest(WorkOrder $order, string $status, ?string $reason = null): void
     {
         $latest = QuotationVersion::where('work_order_id', $order->id)

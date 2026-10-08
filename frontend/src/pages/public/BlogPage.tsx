@@ -85,7 +85,6 @@ export default function BlogPage() {
     const postCat = post.category
     return (
       <div className="bg-gray-50">
-        {/* Detail hero */}
         <section className="relative overflow-hidden bg-white pb-10 pt-14 md:pt-20">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-[radial-gradient(40rem_18rem_at_50%_-5rem,#ffedd5,transparent)]" />
           <div className="relative mx-auto max-w-4xl px-4">
@@ -170,10 +169,8 @@ export default function BlogPage() {
     )
   }
 
-  /* ──── LIST VIEW ──── */
   return (
     <div className="bg-gray-50">
-      {/* ──── HERO ──── */}
       <PageHero
         eyebrow="Blog"
         title={hero.slides?.[0]?.title ? <>{hero.slides[0].title}</> : <>Consejos y guías <span className="gradient-text">para tu moto</span></>}
@@ -186,7 +183,6 @@ export default function BlogPage() {
         images={hero.images}
       />
 
-      {/* ──── CATEGORIES FILTER ──── */}
       <section className="border-b border-gray-100 bg-white py-4">
         <div className="mx-auto max-w-6xl px-4">
           <CategoryRail
@@ -201,7 +197,6 @@ export default function BlogPage() {
         </div>
       </section>
 
-      {/* ──── ARTICLES ──── */}
       <section className="mx-auto max-w-6xl px-4 py-10">
         <div className="flex items-end justify-between">
           <div>

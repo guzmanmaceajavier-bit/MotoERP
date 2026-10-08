@@ -408,7 +408,6 @@ class PublicController extends Controller
 
         $order = WorkOrder::where('order_number', $validated['order_number'])->first();
 
-        // Si no es una orden de taller, puede ser una factura de la tienda.
         if (! $order) {
             $invoice = \App\Models\Invoice::where('invoice_number', $validated['order_number'])
                 ->with('items')

@@ -24,8 +24,6 @@ class FinanceController extends Controller
 {
     use Paginates;
 
-    // ---------- Ventas (todas las facturas) ----------
-
     public function sales(Request $request): JsonResponse
     {
         return response()->json(app(SaleService::class)->list(
@@ -39,11 +37,6 @@ class FinanceController extends Controller
         ));
     }
 
-    // ---------- Nueva venta (POS) ----------
-
-    /**
-     * Clientes para el buscador de la venta.
-     */
     public function saleClients(Request $request): JsonResponse
     {
         $q = trim((string) $request->get('q'));
@@ -51,10 +44,6 @@ class FinanceController extends Controller
         return response()->json(app(SaleService::class)->clients($q));
     }
 
-    /**
-     * Registrar una venta directa de repuestos (POS). Busca o crea el cliente,
-     * valida disponibilidad de stock y descuenta inventario de forma atómica.
-     */
     public function storeSale(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -102,10 +91,6 @@ class FinanceController extends Controller
         ], 201);
     }
 
-    /**
-     * Editar el método de pago o el estado de pago de una venta directa (POS).
-     * No se puede editar el tipo de venta con orden de trabajo.
-     */
     public function updateSale(Request $request, Invoice $invoice): JsonResponse
     {
         if ($invoice->work_order_id) {
@@ -123,9 +108,6 @@ class FinanceController extends Controller
         return response()->json(['message' => 'Venta actualizada'] + $result);
     }
 
-    /**
-     * Anular una venta directa: devuelve el stock y borra factura, líneas y pagos.
-     */
     public function deleteSale(Request $request, Invoice $invoice): JsonResponse
     {
         if ($invoice->work_order_id) {
@@ -136,8 +118,6 @@ class FinanceController extends Controller
 
         return response()->json(['message' => 'Venta anulada y stock devuelto al inventario']);
     }
-
-    // ---------- Reportes ----------
 
     public function reports(Request $request): JsonResponse
     {
@@ -151,8 +131,6 @@ class FinanceController extends Controller
         );
     }
 
-    // ---------- Caja ----------
-
     public function cashSessions(Request $request): JsonResponse
     {
         return response()->json(
@@ -160,9 +138,6 @@ class FinanceController extends Controller
         );
     }
 
-    /**
-     * Pagos paginados con búsqueda y filtros (para CRUD y exportación).
-     */
     public function cashPayments(Request $request): JsonResponse
     {
         return response()->json(app(CashService::class)->payments(
@@ -177,9 +152,6 @@ class FinanceController extends Controller
         ));
     }
 
-    /**
-     * Editar un pago (monto, método, referencia, notas) recalculando la factura.
-     */
     public function updatePayment(Request $request, Payment $payment): JsonResponse
     {
         $validated = $request->validate([
@@ -198,9 +170,6 @@ class FinanceController extends Controller
         return response()->json(['message' => 'Pago actualizado']);
     }
 
-    /**
-     * Eliminar un pago recalculando el estado de la factura.
-     */
     public function deletePayment(Request $request, Payment $payment): JsonResponse
     {
         $label = app(CashService::class)->deletePayment($payment);
@@ -233,16 +202,12 @@ class FinanceController extends Controller
         return response()->json(app(CashService::class)->close($session, $validated));
     }
 
-    // ---------- Deudores (abonos pendientes) ----------
-
     public function debtors(Request $request): JsonResponse
     {
         $q = trim((string) $request->get('q'));
 
         return response()->json(app(ReportService::class)->debtors($q));
     }
-
-    // ---------- Compras ----------
 
     public function suppliers(Request $request): JsonResponse
     {
@@ -319,9 +284,6 @@ class FinanceController extends Controller
         return response()->json($purchase->load('items'), 201);
     }
 
-    /**
-     * Editar una compra: cambia proveedor/fecha y ajusta el stock por la diferencia de cada línea.
-     */
     public function updatePurchase(Request $request, Purchase $purchase): JsonResponse
     {
         $validated = $request->validate([
@@ -348,17 +310,12 @@ class FinanceController extends Controller
         ]);
     }
 
-    /**
-     * Eliminar una compra revirtiendo el stock recibido.
-     */
     public function deletePurchase(Request $request, Purchase $purchase): JsonResponse
     {
         app(PurchaseService::class)->destroy($purchase, $request->user()->id);
 
         return response()->json(['message' => 'Compra eliminada y stock revertido']);
     }
-
-    // ---------- Configuración ----------
 
     public function settings(): JsonResponse
     {
@@ -423,11 +380,6 @@ class FinanceController extends Controller
         return response()->json(['message' => 'Configuración actualizada']);
     }
 
-    /**
-     * Sube una imagen para la configuración (logo, heroes, banners) y
-     * devuelve la URL final. Usa Cloudinary si está configurado; si no,
-     * guarda el archivo en storage/public.
-     */
     public function uploadSettingImage(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -438,8 +390,6 @@ class FinanceController extends Controller
             'url' => app(SettingsService::class)->uploadImage($request->file('image')),
         ]);
     }
-
-    // ---------- Reglas de mantenimiento predictivo ----------
 
     public function storeMaintenanceRule(Request $request): JsonResponse
     {
@@ -469,8 +419,6 @@ class FinanceController extends Controller
 
         return response()->json(['message' => 'Regla eliminada']);
     }
-
-    // ---------- Respaldo de base de datos ----------
 
     public function backupDatabase(): JsonResponse
     {

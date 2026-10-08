@@ -6,7 +6,6 @@ use App\Models\MaintenanceRule;
 use App\Support\Settings;
 use Illuminate\Http\UploadedFile;
 
-// configuracion del taller (lo que se edita desde el panel)
 class SettingsService
 {
     public function all(): array
@@ -50,7 +49,6 @@ class SettingsService
         ];
     }
 
-    // guarda lo que llegue (solo las claves que vengan)
     public function update(array $validated): void
     {
         $map = [
@@ -150,7 +148,6 @@ class SettingsService
         }
     }
 
-    // sube logo o imagenes, a cloudinary si hay si no a storage
     public function uploadImage(UploadedFile $file): string
     {
         return CloudinaryService::upload($file, 'site')

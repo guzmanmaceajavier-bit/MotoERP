@@ -9,10 +9,6 @@ use Illuminate\Support\Facades\Log;
 
 class CloudinaryService
 {
-    /**
-     * Credenciales: el .env (config) tiene prioridad; la tabla de ajustes es el fallback.
-     * Nunca se escribe la clave secreta en código.
-     */
     public static function cloudName(): ?string
     {
         return config('services.cloudinary.cloud_name') ?: env('CLOUDINARY_CLOUD_NAME') ?: null;
@@ -33,9 +29,6 @@ class CloudinaryService
         return self::cloudName() && self::apiKey() && self::apiSecret();
     }
 
-    /**
-     * Sube una imagen desde el navegador a Cloudinary y devuelve la URL segura.
-     */
     public static function upload(UploadedFile $file, string $folder = 'motoerp'): ?string
     {
         if (! self::configured()) {
@@ -66,10 +59,6 @@ class CloudinaryService
         }
     }
 
-    /**
-     * Sube a Cloudinary una imagen ya publicada en Internet (se trae y se guarda
-     * en tu nube). Útil para sembrar el catálogo o importar URLs.
-     */
     public static function uploadFromUrl(string $url, string $folder = 'motoerp'): ?string
     {
         if (! self::configured() || ! filter_var($url, FILTER_VALIDATE_URL)) {

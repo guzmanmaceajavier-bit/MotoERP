@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Models\WorkOrder;
 use Illuminate\Support\Facades\DB;
 
-// numeros del dashboard del admin
 class DashboardService
 {
     public function overview(string $period): array
@@ -67,7 +66,6 @@ class DashboardService
         ];
     }
 
-    // ventas separadas tienda vs taller por periodo
     private function channelSeries(string $period): array
     {
         $buckets = $this->periodBuckets($period);
@@ -96,7 +94,6 @@ class DashboardService
         ];
     }
 
-    // lo mas vendido
     private function topProducts(int $limit): array
     {
         $storeItems = \App\Models\InvoiceItem::selectRaw('product_id, sum(quantity) as qty, sum(total) as revenue')
@@ -129,7 +126,6 @@ class DashboardService
         ])->values()->all();
     }
 
-    // como pagan (efectivo, transferencia, tarjeta)
     private function paymentDistribution(string $period): array
     {
         $buckets = $this->periodBuckets($period);
@@ -158,7 +154,6 @@ class DashboardService
             ->all();
     }
 
-    // parte el periodo en pedazos para las graficas
     private function periodBuckets(string $period): array
     {
         $buckets = [];
@@ -203,7 +198,6 @@ class DashboardService
         return $buckets;
     }
 
-    // en que pedazo cae una fecha
     private function bucketIndex(array $buckets, $date, string $period): ?int
     {
         if (! $date) {
@@ -219,7 +213,6 @@ class DashboardService
         return null;
     }
 
-    // ordenes por estado para la dona
     private function ordersByStatus(): array
     {
         $statuses = [
@@ -255,7 +248,6 @@ class DashboardService
             ->all();
     }
 
-    // cuantas ordenes activas y terminadas tiene cada mecanico
     private function mechanicsWorkload(): array
     {
         return User::where('role', 'mechanic')
@@ -274,7 +266,6 @@ class DashboardService
             ->all();
     }
 
-    // lo que se gano este mes (cobrado menos repuestos)
     private function monthProfit(): float
     {
         $invoices = Invoice::with('workOrder.items.product')

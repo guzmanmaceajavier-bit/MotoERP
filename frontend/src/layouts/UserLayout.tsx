@@ -70,9 +70,7 @@ export default function UserLayout() {
       try {
         const r = await api<{ count: number }>('/notifications/unread-count')
         if (alive) setUnread(r.count)
-      } catch {
-        /* ignore */
-      }
+      } catch {}
     }
     tick()
     const id = setInterval(tick, 15000)

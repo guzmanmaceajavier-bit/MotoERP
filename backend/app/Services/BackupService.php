@@ -7,7 +7,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
 
-// copias de la base de datos con pg_dump
 class BackupService
 {
     private function dbEnv(): array
@@ -35,7 +34,6 @@ class BackupService
         return $proc;
     }
 
-    // saca el dump, si falla tira error
     public function backup(): array
     {
         try {
@@ -67,7 +65,6 @@ class BackupService
         ];
     }
 
-    // restaura el dump que llega en base64
     public function restore(string $sqlBase64): void
     {
         $sql = base64_decode($sqlBase64, true);
@@ -95,7 +92,6 @@ class BackupService
         Settings::set('last_restore_at', now()->toDateTimeString());
     }
 
-    // borra todo menos usuarios y configuracion
     public function reset(): void
     {
         $tables = DB::select("SELECT tablename FROM pg_tables WHERE schemaname = 'public'");

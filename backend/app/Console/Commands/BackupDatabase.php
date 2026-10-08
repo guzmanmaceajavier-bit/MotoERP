@@ -66,7 +66,6 @@ class BackupDatabase extends Command
             return 1;
         }
 
-        // Limpiar respaldos mayores a 30 días
         $kept = 0;
         foreach (glob($dir . '/backup-*.sql') ?: [] as $file) {
             if (filemtime($file) < now()->subDays(30)->getTimestamp()) {

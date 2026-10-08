@@ -7,7 +7,6 @@ use App\Models\Motorcycle;
 use App\Models\WorkOrder;
 use Illuminate\Support\Collection;
 
-// revisa las motos contra las reglas y dice que esta vencido o por vencer
 class MaintenanceService
 {
     public function alerts(?string $urgencyFilter = null): array
@@ -46,7 +45,6 @@ class MaintenanceService
         ];
     }
 
-    // lo de una moto sola (lo usa el portal del cliente tambien)
     public function forMotorcycle(Motorcycle $motorcycle, $rules): array
     {
         return $this->predictiveMaintenance($motorcycle, $rules);

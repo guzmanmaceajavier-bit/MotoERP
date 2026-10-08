@@ -6,7 +6,6 @@ use App\Models\Appointment;
 use App\Models\User;
 use App\Models\WorkOrder;
 
-// agenda del taller: mecanicos, citas de hoy y las que vienen, calendario
 class AgendaService
 {
     public function workshop(): array
@@ -54,7 +53,6 @@ class AgendaService
         ];
     }
 
-    // lo de un dia puntual
     public function dayDetail(string $day): array
     {
         return [
@@ -77,20 +75,17 @@ class AgendaService
         ];
     }
 
-    // que dias del mes estan ocupados
     public function month(string $month): array
     {
         $monthStart = $month . '-01';
         $monthEnd = $month . '-31';
 
-        // Citas agendadas por día (todas excepto canceladas)
         $appointments = Appointment::whereBetween('date', [$monthStart, $monthEnd])
             ->where('status', '!=', 'cancelled')
             ->selectRaw("date, count(*) as total")
             ->groupBy('date')
             ->pluck('total', 'date')->map(fn ($v) => (int) $v);
 
-        // Órdenes con entrega estimada en el mes (no finalizadas)
         $orders = WorkOrder::whereBetween('estimated_delivery', [$monthStart, $monthEnd])
             ->whereNotIn('status', ['completed', 'delivered', 'cancelled'])
             ->selectRaw("estimated_delivery, count(*) as total")

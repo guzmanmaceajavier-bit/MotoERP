@@ -5,20 +5,10 @@ namespace App\Support;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Cache;
 
-/**
- * Acceso a ajustes almacenados en BD (sobreexcribe a config() para
- * WhatsApp / Cloudinary / teléfono del taller sin depender del .env).
- *
- * Usa un único query + cache para evitar el problema N+1 con PgBouncer.
- */
 class Settings
 {
     private static ?array $cache = null;
 
-    /**
-     * Carga todos los settings en un solo query. Llamado automáticamente
-     * en el primer get(), pero puede invocarse explícitamente.
-     */
     public static function loadAll(): array
     {
         if (self::$cache !== null) {

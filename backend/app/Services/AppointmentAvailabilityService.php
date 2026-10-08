@@ -6,20 +6,14 @@ use App\Models\Appointment;
 use App\Support\Settings;
 use Illuminate\Support\Carbon;
 
-/**
- * Disponibilidad de agenda centralizada.
- * Reemplaza los validateSlot duplicados (PublicController y StaffController).
- */
 class AppointmentAvailabilityService
 {
-    /** Devuelve true o un mensaje de error. */
     public function check(string $date, ?string $time): true|string
     {
         $closed = (array) json_decode((string) Settings::get('closed_days', '[]'), true) ?: [];
 
-        $dow = (int) Carbon::parse($date)->dayOfWeek; // 0 = Domingo
+        $dow = (int) Carbon::parse($date)->dayOfWeek;
 
-        // Festivo: cerrado, con horario de sábado o con horario propio.
         $holiday = collect(json_decode((string) Settings::get('holidays', '[]'), true) ?: [])
             ->first(fn ($h) => ($h['date'] ?? null) === $date);
 
@@ -27,7 +21,6 @@ class AppointmentAvailabilityService
             return $this->checkHoliday($holiday, $date, $time, $closed);
         }
 
-        // Domingo: cerrado salvo que exista un horario explícito para ese día.
         $dayHours = collect(json_decode((string) Settings::get('day_hours', '[]'), true) ?: [])
             ->first(fn ($d) => ($d['day'] ?? null) === $dow);
 
@@ -77,7 +70,6 @@ class AppointmentAvailabilityService
             return 'Este día es festivo y el taller está cerrado. Elige otro día.';
         }
 
-        // Modo personalizado (o legado con horas)
         $holidayOpen = $holiday['open'] ?? null;
         $holidayClose = $holiday['close'] ?? ($holidayOpen ? null : '18:00');
         if ($time !== null && $time !== '' && $holidayClose !== null && $time > $holidayClose) {
@@ -108,7 +100,6 @@ class AppointmentAvailabilityService
         ];
     }
 
-    /** Aborta con 422 si el slot no es válido. */
     public function assertSlot(string $date, ?string $time): void
     {
         $result = $this->check($date, $time);

@@ -44,7 +44,6 @@ export default function AdminLogin() {
 
   return (
     <div className="flex min-h-screen bg-white">
-      {/* Panel izquierdo - marca */}
       <div className="relative hidden w-[45%] overflow-hidden lg:flex lg:flex-col lg:justify-between bg-gradient-to-br from-carbon-50 to-carbon-100 p-10">
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute -right-20 top-1/4 h-96 w-96 rotate-12 rounded-3xl bg-brand-500/10 blur-3xl" />
@@ -103,10 +102,8 @@ export default function AdminLogin() {
         </div>
       </div>
 
-      {/* Panel derecho - formulario */}
       <div className="flex flex-1 flex-col items-center justify-center px-6 py-12 sm:px-12">
         <div className="w-full max-w-md">
-          {/* Logo móvil */}
           <div className="mb-8 flex items-center gap-3 lg:hidden">
             {site.workshop_logo ? (
               <img src={site.workshop_logo} alt="Logo" className="h-10 w-10 rounded-xl object-cover" />
@@ -130,7 +127,6 @@ export default function AdminLogin() {
           <p className="mt-1 text-center text-sm text-carbon-500">Ingresa tus datos para continuar</p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-            {/* Email */}
             <div>
               <div className="relative">
                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-carbon-400">
@@ -148,7 +144,6 @@ export default function AdminLogin() {
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <div className="relative">
                 <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-carbon-400">
@@ -178,7 +173,6 @@ export default function AdminLogin() {
               </div>
             </div>
 
-            {/* Remember + Forgot */}
             <div className="flex items-center justify-between">
               <label className="flex cursor-pointer items-center gap-2 text-sm text-carbon-600">
                 <input
@@ -191,7 +185,6 @@ export default function AdminLogin() {
               </label>
             </div>
 
-            {/* Error */}
             {error && (
               <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 shrink-0"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
@@ -199,7 +192,6 @@ export default function AdminLogin() {
               </div>
             )}
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={submitting}

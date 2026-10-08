@@ -6,7 +6,6 @@ use App\Models\Purchase;
 use App\Models\Supplier;
 use Illuminate\Support\Facades\DB;
 
-// compras a proveedores
 class PurchaseService
 {
     public function suppliers(string $q, int $page, int $perPage): array
@@ -61,9 +60,6 @@ class PurchaseService
         $supplier->delete();
     }
 
-    /**
-     * @param array{q?:string,supplier_id?:int,from?:?string,to?:?string} $filters
-     */
     public function list(array $filters, int $page, int $perPage): array
     {
         $q = trim((string) ($filters['q'] ?? ''));
@@ -110,7 +106,6 @@ class PurchaseService
         ];
     }
 
-    // guarda la compra y suma el stock
     public function store(array $validated, int $actorId): Purchase
     {
         return DB::transaction(function () use ($validated, $actorId) {
@@ -132,7 +127,6 @@ class PurchaseService
                     'total' => $item['quantity'] * $item['unit_cost'],
                 ]);
 
-                // Reponer stock
                 if (! empty($item['product_id'])) {
                     app(InventoryService::class)->add($item['product_id'], $item['quantity'], [
                         'purchase_id' => $purchase->id,
@@ -147,14 +141,11 @@ class PurchaseService
         });
     }
 
-    // editar ajustando solo la diferencia de stock
-    // si algo falla tira RuntimeException y el controlador devuelve 422
     public function update(Purchase $purchase, array $validated, int $actorId): Purchase
     {
         DB::transaction(function () use ($purchase, $validated, $actorId) {
             $existing = $purchase->items()->get()->keyBy('id');
 
-            // Diferencial de stock por producto (nuevo - actual)
             $stockBefore = [];
             foreach ($existing as $item) {
                 if ($item->product_id) {
@@ -168,7 +159,6 @@ class PurchaseService
                 }
             }
 
-            // Reconciliar líneas: actualizar las existentes por id, crear las nuevas, borrar las que falten
             $total = 0;
             $sentIds = [];
             foreach ($validated['items'] as $line) {
@@ -201,7 +191,6 @@ class PurchaseService
                 }
             }
 
-            // Ajustar inventario según la diferencia neta por producto
             $inventory = app(InventoryService::class);
             foreach (array_unique(array_merge(array_keys($stockBefore), array_keys($stockAfter))) as $productId) {
                 $delta = ($stockAfter[$productId] ?? 0) - ($stockBefore[$productId] ?? 0);
@@ -226,7 +215,6 @@ class PurchaseService
         return $purchase->fresh()->load('items', 'supplier');
     }
 
-    // borrar compra y quitar lo que habia sumado al stock
     public function destroy(Purchase $purchase, int $actorId): void
     {
         DB::transaction(function () use ($purchase, $actorId) {

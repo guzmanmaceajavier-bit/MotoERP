@@ -13,8 +13,6 @@ use Illuminate\Support\Str;
 
 class ContentController extends Controller
 {
-    // ---------- Blog (admin) ----------
-
     public function staffPosts(Request $request): JsonResponse
     {
         $query = Post::with('author')->orderByDesc('id');
@@ -74,8 +72,6 @@ class ContentController extends Controller
         return response()->json(['message' => 'Publicación eliminada']);
     }
 
-    // ---------- Blog (público) ----------
-
     public function posts(Request $request): JsonResponse
     {
         $posts = Post::with('author')->where('is_published', true)
@@ -134,8 +130,6 @@ class ContentController extends Controller
         return max(1, (int) round($words / 200));
     }
 
-    // ---------- Valoraciones ----------
-
     public function storeRating(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -169,8 +163,6 @@ class ContentController extends Controller
         return response()->json($this->paginate($query, $request));
     }
 
-    // ---------- Mensajes de contacto (paneko) ----------
-
     public function staffMessages(Request $request): JsonResponse
     {
         $query = \App\Models\ContactMessage::orderByDesc('created_at');
@@ -195,8 +187,6 @@ class ContentController extends Controller
 
         return response()->json(['message' => 'Mensaje eliminado']);
     }
-
-    // ---------- helper ----------
 
     private function paginate($query, Request $request): array
     {

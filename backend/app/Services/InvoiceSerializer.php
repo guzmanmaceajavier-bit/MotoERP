@@ -7,7 +7,6 @@ use App\Models\Product;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-// arma el json de la factura para la api
 class InvoiceSerializer
 {
     public function serialize(Invoice $i, bool $withItems = false, array $itemImages = [], bool $isAdmin = false): array
@@ -77,7 +76,6 @@ class InvoiceSerializer
         return $data;
     }
 
-    // busca la foto de cada producto por el nombre (los items guardan la descripcion al vender)
     public function itemImages(Collection $invoices): array
     {
         $names = $invoices
@@ -98,7 +96,6 @@ class InvoiceSerializer
             ->all();
     }
 
-    // lo que se gano: lo cobrado menos lo que costaron los repuestos
     public function profit(Invoice $i): float
     {
         return round((float) $i->paid_amount - $this->costOfSold($i), 2);

@@ -8,29 +8,14 @@ use App\Models\User;
 use App\Models\WorkOrder;
 use App\Support\Settings;
 
-/**
- * Detección de turno / cola para citas del taller.
- * Para trabajos largos (varias horas) estima la posición que ocupa el
- * cliente en la cola del día según los mecánicos disponibles y la carga
- * ya programada. Si el día no alcanza, sugiere la siguiente jornada.
- */
 class AppointmentQueueService
 {
-    /** Duración estimada (min) por defecto cuando el servicio no la define. */
     public const DEFAULT_MINUTES = 60;
 
-    /** A partir de cuántos minutos se considera un trabajo "grande". */
     public const BIG_JOB_THRESHOLD_MINUTES = 180;
 
-    /** Factor de aprovechamiento de la jornada laboral (resta pausas/cambios). */
     public const DAY_EFFICIENCY = 0.9;
 
-    /**
-     * Calcula la posición en cola y el día sugerido.
-     *
-     * @param  int|null  $serviceId  Servicio seleccionado (id).
-     * @param  string|null  $serviceType  Texto libre cuando no hay servicio.
-     */
     public function forDate(string $date, ?int $serviceId, ?string $serviceType = null): array
     {
         $service = $serviceId ? Service::find($serviceId) : null;
@@ -58,7 +43,6 @@ class AppointmentQueueService
         $priorJobs = $confirmed->count() + $orders;
         $turn = $priorJobs + 1;
 
-        // Carga acumulada del día en minutos (citas + órdenes ya abiertas).
         $queuedMinutes = 0;
         foreach ($confirmed as $appointment) {
             $svc = $appointment->service_id ? Service::find($appointment->service_id) : null;
@@ -68,13 +52,12 @@ class AppointmentQueueService
 
         $waitMinutes = (int) round($queuedMinutes / $mechanics);
 
-        $dow = (int) \Carbon\Carbon::parse($date)->dayOfWeek; // 0 = Domingo
+        $dow = (int) \Carbon\Carbon::parse($date)->dayOfWeek;
 
         $dayHours = collect(json_decode((string) Settings::get('day_hours', '[]'), true) ?: [])
             ->first(fn ($d) => ($d['day'] ?? null) === $dow);
         $closedDays = (array) json_decode((string) Settings::get('closed_days', '[]'), true) ?: [];
 
-        // Domingo cerrado salvo horario explícito; días marcados como cerrados.
         if (($dow === 0 && ! $dayHours) || in_array($dow, $closedDays, true)) {
             $dayMinutes = 0;
         } else {
@@ -88,10 +71,8 @@ class AppointmentQueueService
             $effectiveDay = 60;
         }
 
-        // Si la espera supera la jornada, el turno cae para otro día.
         $sameDayFeasible = $waitMinutes + $duration <= $effectiveDay;
 
-        // Días corridos adicionales necesarios para caber.
         $daysOut = $waitMinutes > 0 ? (int) floor($waitMinutes / $effectiveDay) : 0;
 
         return [
@@ -108,7 +89,6 @@ class AppointmentQueueService
         ];
     }
 
-    /** Mensaje amigable para mostrar al cliente al confirmar su cita/turno. */
     public function message(array $queue): string
     {
         if ($queue['turn'] <= 1) {

@@ -6,9 +6,6 @@ use App\Models\AuditLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
-/**
- * Registro de auditoría (traza inmutable de acciones sensibles).
- */
 class AuditService
 {
     public function log(
@@ -35,7 +32,6 @@ class AuditService
         }
     }
 
-    /** Registra la acción con contexto completo del request (actor, IP, UA). */
     public function fromRequest(Request $request, string $action, ?string $entityType = null, ?int $entityId = null, ?array $details = null): void
     {
         $user = $request->user();

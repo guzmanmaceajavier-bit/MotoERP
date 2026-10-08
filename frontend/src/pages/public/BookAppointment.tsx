@@ -171,10 +171,8 @@ export default function BookAppointment() {
         }
       />
 
-      {/* ──── FORM + SIDEBAR ──── */}
       <section className="mx-auto max-w-6xl px-4 py-12">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Formulario */}
           <Reveal className="lg:col-span-2">
             <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
               <div className="flex items-center gap-3 border-b border-gray-100 px-6 py-4">
@@ -278,9 +276,7 @@ export default function BookAppointment() {
             </div>
           </Reveal>
 
-          {/* Sidebar */}
           <div className="space-y-5">
-            {/* ¿Qué puedes esperar? */}
             <Reveal delay={100}>
               <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
                 <h3 className="text-lg font-black text-gray-900">¿Qué puedes esperar?</h3>
@@ -302,7 +298,6 @@ export default function BookAppointment() {
               </div>
             </Reveal>
 
-            {/* Garantía */}
             <Reveal delay={150}>
               <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 p-5 text-white shadow-xl shadow-orange-500/25">
                 <div className="flex items-center gap-3">
@@ -315,7 +310,6 @@ export default function BookAppointment() {
               </div>
             </Reveal>
 
-            {/* Queue info */}
             {queueLoading && (
               <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
                 <h3 className="font-bold text-gray-900">Tu turno estimado</h3>
@@ -346,7 +340,6 @@ export default function BookAppointment() {
         </div>
       </section>
 
-      {/* ──── CTA WHATSAPP ──── */}
       <section className="mx-auto max-w-6xl px-4 pb-16">
         <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
           <div className="flex flex-col items-center gap-6 p-8 sm:flex-row sm:justify-between sm:px-12">

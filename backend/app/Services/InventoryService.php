@@ -6,22 +6,8 @@ use App\Models\Inventory;
 use App\Models\StockMovement;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Autoridad única para el inventario.
- *
- * stock_disponible = quantity (físico) - reserved (reservado)
- *
- * Garantiza las invariantes:
- *   - reserved nunca supera quantity (no stock_disponible < 0)
- *   - no se reserva/consume más de lo disponible
- *   - cada cambio se registra en stock_movements con trazabilidad
- *   - concurrencia controlada con bloqueo de fila (SELECT ... FOR UPDATE)
- */
 class InventoryService
 {
-    /**
-     * Lanza excepción si no hay stock disponible suficiente.
-     */
     public function assertAvailable(int $productId, int $qty): void
     {
         $inv = Inventory::where('product_id', $productId)->lockForUpdate()->first();
@@ -35,9 +21,6 @@ class InventoryService
         }
     }
 
-    /**
-     * Reserva sin quitar del físico. Falla si no hay disponible suficiente.
-     */
     public function reserve(int $productId, int $qty, array $ctx = []): void
     {
         if ($qty <= 0) {
@@ -60,9 +43,6 @@ class InventoryService
         });
     }
 
-    /**
-     * Libera una reserva (no tocap físico).
-     */
     public function release(int $productId, int $qty, array $ctx = []): void
     {
         if ($qty <= 0) {
@@ -79,9 +59,6 @@ class InventoryService
         });
     }
 
-    /**
-     * Consume una reserva existente al facturar: baja físico y reservado.
-     */
     public function consumeReserved(int $productId, int $qty, array $ctx = []): void
     {
         if ($qty <= 0) {
@@ -100,9 +77,6 @@ class InventoryService
         });
     }
 
-    /**
-     * Venta directa de tienda (sin reserva previa): solo baja físico.
-     */
     public function sell(int $productId, int $qty, array $ctx = []): void
     {
         if ($qty <= 0) {
@@ -121,9 +95,6 @@ class InventoryService
         });
     }
 
-    /**
-     * Entrada de stock (compra/suministro): sube físico.
-     */
     public function add(int $productId, int $qty, array $ctx = []): void
     {
         if ($qty <= 0) {
@@ -138,9 +109,6 @@ class InventoryService
         });
     }
 
-    /**
-     * Ajuste manual: diferencia puede ser positiva o negativa.
-     */
     public function adjust(int $productId, int $delta, array $ctx = []): void
     {
         if ($delta === 0) {

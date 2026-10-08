@@ -20,7 +20,6 @@ class StoreController extends Controller
 {
     public function recommended(Request $request): JsonResponse
     {
-        // Modelos de las motos del usuario (por motorcycle_model_id)
         $modelIds = $request->user()->motorcycles()
             ->whereNotNull('motorcycle_model_id')
             ->pluck('motorcycle_model_id')
@@ -35,21 +34,18 @@ class StoreController extends Controller
                 ->get();
         }
 
-        // Lubricantes adecuados (categoría aceites/lubricantes)
         $lubricants = Product::where('is_active', true)
             ->whereHas('category', fn ($q) => $q->where('name', 'ilike', '%aceite%')->orWhere('name', 'ilike', '%lubricante%'))
             ->with(['category', 'brand', 'inventory'])
             ->limit(4)
             ->get();
 
-        // Accesorios recomendados (categoría accesorios)
         $accessories = Product::where('is_active', true)
             ->whereHas('category', fn ($q) => $q->where('name', 'ilike', '%accesorios%'))
             ->with(['category', 'brand', 'inventory'])
             ->limit(4)
             ->get();
 
-        // Promociones personalizadas (productos con precio promocional)
         $promotions = Product::where('is_active', true)
             ->whereNotNull('promo_price')
             ->whereColumn('promo_price', '<', 'price')
@@ -58,7 +54,6 @@ class StoreController extends Controller
             ->limit(4)
             ->get();
 
-        // Repuestos alternativos (part_type = alternativo, sin modelo específico)
         $alternatives = Product::where('is_active', true)
             ->where('part_type', 'alternativo')
             ->with(['category', 'brand', 'inventory'])
@@ -66,7 +61,6 @@ class StoreController extends Controller
             ->limit(4)
             ->get();
 
-        // Accesibles/lubricantes y repuestos genéricos como sugerencias
         $suggestions = Product::where('is_active', true)
             ->whereNull('motorcycle_model_id')
             ->with(['category', 'brand', 'inventory'])
@@ -105,7 +99,6 @@ class StoreController extends Controller
         $validated = $this->validateCart($request);
         $validated['checkout_token'] = $request->input('checkout_token');
 
-        // Prevenir doble clic: si ya existe una orden reciente con este token, retornar la existente
         if ($validated['checkout_token']) {
             try {
                 $existingOrder = \App\Models\Invoice::where('checkout_token', $validated['checkout_token'])
@@ -115,17 +108,12 @@ class StoreController extends Controller
                     return response()->json($existingOrder->load('items'), 200);
                 }
             } catch (\Throwable $e) {
-                // Columna checkout_token puede no existir aún
             }
         }
 
         return $this->processCheckout($request->user(), $request, $validated);
     }
 
-    /**
-     * Compra sin registro: crea (o reutiliza) un cliente con los datos que
-     * ingresó el visitante y procesa la factura igual que un comprador normal.
-     */
     public function checkoutGuest(Request $request): JsonResponse
     {
         $validated = $this->validateCart($request);
@@ -145,7 +133,6 @@ class StoreController extends Controller
         $validated['points_to_use'] = 0;
         $validated['checkout_token'] = $identity['checkout_token'] ?? null;
 
-        // Prevenir doble clic: si ya existe una orden reciente con este token, retornar la existente
         if ($validated['checkout_token']) {
             try {
                 $existingOrder = \App\Models\Invoice::where('checkout_token', $validated['checkout_token'])
@@ -155,7 +142,6 @@ class StoreController extends Controller
                     return response()->json($existingOrder->load('items'), 200);
                 }
             } catch (\Throwable $e) {
-                // Columna checkout_token puede no existir aún
             }
         }
 
@@ -170,12 +156,10 @@ class StoreController extends Controller
                 ]
             );
 
-            // Guest: crear pedido simple sin tocar stock (el taller confirma al pagar)
             $expirationDays = (int) (\App\Support\Settings::get('order_expiration_days', 1));
             $expirationDays = $expirationDays > 0 ? $expirationDays : 1;
 
             $request->merge(['user' => $user]);
-            // Reusar processCheckout pero sin reserva de stock para guest
             $validated['skip_stock'] = true;
             $validated['due_date'] = now()->addDays($expirationDays)->toDateString();
 
@@ -186,11 +170,6 @@ class StoreController extends Controller
         }
     }
 
-    /**
-     * Revalida un carrito contra el catálogo actual: precio vigente,
-     * stock real y variantes válidas. El frontend lo usa al abrir el
-     * carrito y antes de pagar; el checkout igual recalcula todo.
-     */
     public function validateCartLines(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -229,10 +208,6 @@ class StoreController extends Controller
         return response()->json(['lines' => $lines]);
     }
 
-    /**
-     * Normaliza la variante pedida contra el catálogo del producto.
-     * Lanza RuntimeException si no existe (el llamador la vuelve 422).
-     */
     private function resolveVariant(Product $product, ?string $variant): ?string
     {
         $variantName = is_string($variant) && trim($variant) !== '' ? trim($variant) : null;
@@ -288,7 +263,6 @@ class StoreController extends Controller
 
     private function processCheckout(User $user, Request $request, array $validated): JsonResponse
     {
-        // Verificar que la moto de instalación sea del usuario (si aplica)
         if (! empty($validated['motorcycle_id'])) {
             $owns = \App\Models\Motorcycle::where('id', $validated['motorcycle_id'])
                 ->where('user_id', $user->id)
@@ -303,17 +277,14 @@ class StoreController extends Controller
 
         try {
             $result = DB::transaction(function () use ($user, $validated) {
-            // Reconstruir items con costo/stock (no confiar en cliente) + bloqueo atómico
             $lineItems = [];
             $subtotal = 0;
             $stock = app(\App\Services\InventoryService::class);
             foreach ($validated['items'] as $line) {
                 $product = Product::with('inventory')->where('is_active', true)->findOrFail($line['product_id']);
-                // Validación de disponibilidad; la baja real se hace con bloqueo al facturar. Guest skip_stock no valida stock.
                 if (!($validated['skip_stock'] ?? false)) {
                     $stock->assertAvailable($line['product_id'], $line['quantity']);
                 }
-                // Usa el precio final (respeta promociones)
                 $price = $product->final_price;
                 $total = round($price * $line['quantity'], 2);
                 $subtotal += $total;
@@ -327,7 +298,6 @@ class StoreController extends Controller
                 ];
             }
 
-            // Costo de envío a domicilio (gratis desde cierto subtotal)
             $shippingFee = 0.0;
             if ($validated['fulfillment'] === 'shipping') {
                 $freeThreshold = (float) Settings::get('store_free_shipping_threshold', config('store.free_shipping_threshold', 150000));
@@ -348,9 +318,6 @@ class StoreController extends Controller
             $total += $tax;
 
             $paymentMethod = $validated['payment_method'] ?? 'efectivo';
-            // En efectivo (retiro/instalación/contra entrega) el pedido se confirma al crearlo:
-            // se prepara y se paga al retirar/recibir. Con transferencia/tarjeta queda a la
-            // espera del comprobante.
             $orderStatus = $paymentMethod === 'efectivo' ? 'confirmed' : 'pending';
 
             $invoice = Invoice::create([
@@ -381,7 +348,6 @@ class StoreController extends Controller
                     'total' => $line['total'],
                 ]);
 
-                // Reservar stock del pedido (se confirma la venta al verificar el pago)
                 if ($line['product']->id && !($validated['skip_stock'] ?? false)) {
                     $stock->reserve($line['product']->id, $line['quantity'], [
                         'invoice_id' => $invoice->id,
@@ -401,7 +367,6 @@ class StoreController extends Controller
                 ]);
             }
 
-            // Crear orden de instalación si aplica
             if ($validated['fulfillment'] === 'installing') {
                 $user->workOrders()->create([
                     'order_number' => \App\Http\Controllers\Api\OrderController::generateOrderNumber(),
@@ -413,8 +378,6 @@ class StoreController extends Controller
                 ]);
             }
 
-            // Efectivo: el pedido queda confirmado de inmediato → consumir el stock reservado
-            // y cobrar los puntos canjeados por el descuento.
             if ($orderStatus === 'confirmed' && !($validated['skip_stock'] ?? false)) {
                 foreach (\App\Models\StockMovement::where('type', 'reserve')->where('invoice_id', $invoice->id)->get() as $m) {
                     $stock->consumeReserved($m->product_id, $m->quantity, [
@@ -441,7 +404,6 @@ class StoreController extends Controller
             return response()->json(['message' => $e->getMessage()], 422);
         }
 
-        // Set checkout_token/due_date AFTER transaction (columns may not exist yet)
         try {
             $update = [];
             if (!empty($validated['checkout_token'])) $update['checkout_token'] = $validated['checkout_token'];
@@ -450,7 +412,6 @@ class StoreController extends Controller
                 $result->update($update);
             }
         } catch (\Throwable $e) {
-            // Columns don't exist yet — migration pending, ignore
         }
 
         app(NotificationService::class)->notify(
@@ -462,7 +423,6 @@ class StoreController extends Controller
             ['channel' => 'invoice']
         );
 
-        // Avisar al equipo del taller
         $this->notifyStaff(
             "Nuevo pedido {$result->invoice_number}",
             "Pedido por " . number_format($result->total, 2) . " ({$result->payment_method}), cliente: {$result->customer_name}. Gestionarlo en Ventas → Pedidos de tienda.",
@@ -539,8 +499,6 @@ class StoreController extends Controller
         }
     }
 
-    // ---------- Favoritos ----------
-
     public function favorites(Request $request): JsonResponse
     {
         $items = $request->user()->favorites()
@@ -589,10 +547,8 @@ class StoreController extends Controller
             ['target_price' => $target],
         );
 
-        // Snapshot inicial: si no hay historial, guarda el precio actual como punto de partida.
         app(\App\Services\ProductAlertService::class)->recordPriceChange($product);
 
-        // Si ya está al precio objetivo, notifica inmediatamente.
         app(\App\Services\ProductAlertService::class)->checkPriceAlerts($product);
 
         return response()->json(['price_alert' => (float) $alert->fresh()->target_price]);
