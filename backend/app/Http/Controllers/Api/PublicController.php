@@ -68,7 +68,6 @@ class PublicController extends Controller
                 'photo' => $m->photo,
                 'specialty' => $m->specialty,
                 'bio' => $m->bio,
-                'phone' => $m->phone,
             ]);
 
         return response()->json($members);

@@ -6,6 +6,7 @@ const COOKIE_KEY = 'motohub_cookie_consent'
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false)
+  const [configuring, setConfiguring] = useState(false)
   const { workshop_name: siteName } = useSiteInfo()
   const name = siteName || APP_NAME
 
@@ -14,13 +15,8 @@ export default function CookieConsent() {
     if (!consent) setVisible(true)
   }, [])
 
-  function accept() {
-    localStorage.setItem(COOKIE_KEY, 'accepted')
-    setVisible(false)
-  }
-
-  function reject() {
-    localStorage.setItem(COOKIE_KEY, 'rejected')
+  function save(value: string) {
+    localStorage.setItem(COOKIE_KEY, value)
     setVisible(false)
   }
 
@@ -54,21 +50,44 @@ export default function CookieConsent() {
             </p>
           </div>
         </div>
+        {configuring && (
+          <div className="mt-4 rounded-xl border border-carbon-200 bg-carbon-50 px-4 py-3 dark:border-carbon-700 dark:bg-carbon-800">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold text-carbon-800 dark:text-carbon-200">Estrictamente necesarias</p>
+                <p className="mt-0.5 text-xs text-carbon-500 dark:text-carbon-400">Sesión, carrito y seguridad. Sin estas la página no funciona.</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">Siempre activas</span>
+            </div>
+            <p className="mt-3 text-xs leading-relaxed text-carbon-500 dark:text-carbon-400">
+              No usamos cookies de analítica ni publicidad, así que no hay nada más que activar.
+            </p>
+          </div>
+        )}
         <div className="mt-4 flex items-center gap-3 sm:justify-end">
           <button
-            onClick={reject}
+            onClick={() => save('rejected')}
             className="rounded-xl border border-carbon-200 px-4 py-2 text-xs font-semibold text-carbon-600 transition hover:bg-carbon-50 dark:border-carbon-600 dark:text-carbon-400 dark:hover:bg-carbon-800"
           >
             Rechazar
           </button>
-          <a
-            href="/privacidad"
-            className="rounded-xl border border-carbon-200 px-4 py-2 text-xs font-semibold text-carbon-600 transition hover:bg-carbon-50 dark:border-carbon-600 dark:text-carbon-400 dark:hover:bg-carbon-800"
-          >
-            Configurar
-          </a>
+          {configuring ? (
+            <button
+              onClick={() => save('custom')}
+              className="rounded-xl bg-brand-600 px-5 py-2 text-xs font-bold text-white shadow-md transition hover:bg-brand-700 hover:shadow-lg active:scale-[0.97]"
+            >
+              Guardar
+            </button>
+          ) : (
+            <button
+              onClick={() => setConfiguring(true)}
+              className="rounded-xl border border-carbon-200 px-4 py-2 text-xs font-semibold text-carbon-600 transition hover:bg-carbon-50 dark:border-carbon-600 dark:text-carbon-400 dark:hover:bg-carbon-800"
+            >
+              Configurar
+            </button>
+          )}
           <button
-            onClick={accept}
+            onClick={() => save('accepted')}
             className="rounded-xl bg-brand-600 px-5 py-2 text-xs font-bold text-white shadow-md transition hover:bg-brand-700 hover:shadow-lg active:scale-[0.97]"
           >
             Aceptar todas

@@ -146,11 +146,11 @@ function parseContent(raw: string): { h: string; p: string }[] {
 export default function LegalPage({ title }: { title: string }) {
   const isPrivacy = title === 'Política de privacidad'
   const [custom, setCustom] = useState<string | null>(null)
-  const { workshop_name: siteName, workshop_phone: sitePhone, workshop_address: siteAddress } = useSiteInfo()
+  const { workshop_name: siteName, workshop_phone: sitePhone, workshop_address: siteAddress, workshop_email: siteEmail } = useSiteInfo()
   const name = siteName || APP_NAME
   const phone = sitePhone || ''
   const address = siteAddress || ''
-  const email = 'informacion@motohouse.com'
+  const email = siteEmail || 'informacion@motohouse.com'
 
   useEffect(() => {
     let alive = true
